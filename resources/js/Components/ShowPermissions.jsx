@@ -15,6 +15,19 @@ const axiosOptions = {
   },
 };
 
+/**
+ * 🎨 CUSTOM STYLES FOR DATA TABLE
+ * To avoid console warnings regarding unknown props like 'right' or 'minWidth'.
+ */
+const customStyles = {
+  headCells: {
+    style: {
+      fontWeight: 'bold',
+      fontSize: '14px',
+    },
+  },
+};
+
 // 🚨 Receive 'user' as a prop from App.jsx
 export default function PermisosList({ user }) {
   const [permisos, setPermisos] = useState([]);
@@ -37,13 +50,16 @@ export default function PermisosList({ user }) {
 
   const navigate = useNavigate();
 
-  // Fetch all permisos
+  /**
+   * Fetch all permisos from the API
+   */
   const fetchPermisos = async () => {
     setLoading(true);
     try {
       const response = await axios.get(endpoint, axiosOptions);
-      setPermisos(response.data);
-      setFilteredPermisos(response.data);
+      const data = response.data.data || response.data;
+      setPermisos(data);
+      setFilteredPermisos(data);
     } catch (error) {
       console.error("Error fetching permisos:", error);
       setErrorMessage("Error al cargar los permisos.");
@@ -56,7 +72,9 @@ export default function PermisosList({ user }) {
     fetchPermisos();
   }, []);
 
-  // Real-time search
+  /**
+   * Real-time filtering based on search input
+   */
   useEffect(() => {
     const result = permisos.filter((p) =>
       p.name.toLowerCase().includes(search.toLowerCase())
@@ -64,6 +82,9 @@ export default function PermisosList({ user }) {
     setFilteredPermisos(result);
   }, [search, permisos]);
 
+  /**
+   * Logical or physical deletion of the permission
+   */
   const deletePermiso = async () => {
     if (!permisoToDelete) return;
     try {
@@ -83,18 +104,26 @@ export default function PermisosList({ user }) {
   const editPermiso = (id) => navigate(`/permissions/edit/${id}`);
   const createPermiso = () => navigate("/permissions/create");
 
-  // 🚨 UseMemo for columns to handle button visibility based on permissions
+  /**
+   * 🛡️ COLUMNS DEFINITION
+   * FIX: Removed 'right: true' to prevent DOM warnings.
+   * Using 'width' and Bootstrap alignment classes instead.
+   */
   const columns = useMemo(() => [
-    { name: "Nombre del Permiso", selector: (row) => row.name, sortable: true },
+    { 
+      name: "Nombre del Permiso", 
+      selector: (row) => row.name, 
+      sortable: true,
+      width: "300px" 
+    },
     {
       name: "Acciones",
-      right: true,
       cell: (row) => (
-        <div className="d-flex justify-content-end gap-2">
+        <div className="d-flex justify-content-end gap-2 w-100 pe-2">
           {/* 🛡️ Permission check for Edit button */}
           {canEdit && (
             <button
-              className="btn btn-info btn-sm"
+              className="btn btn-info btn-sm text-white"
               onClick={() => editPermiso(row.id)}
             >
               Editar
@@ -115,6 +144,7 @@ export default function PermisosList({ user }) {
           )}
         </div>
       ),
+      width: "200px"
     },
   ], [canEdit, canDelete, navigate]);
 
@@ -134,7 +164,7 @@ export default function PermisosList({ user }) {
   }, [errorMessage, setErrorMessage]);
 
   return (
-    <div className="mb-4 border border-primary rounded p-3">
+    <div className="mb-4 border border-primary rounded p-3 bg-white">
       <div className="d-flex justify-content-between mb-2">
         {/* 🛡️ Permission check for Create button */}
         {canCreate ? (
@@ -158,10 +188,10 @@ export default function PermisosList({ user }) {
       </div>
 
       {successMessage && (
-        <div className="alert alert-success text-center">{successMessage}</div>
+        <div className="alert alert-success text-center py-2">{successMessage}</div>
       )}
       {errorMessage && (
-        <div className="alert alert-danger text-center">{errorMessage}</div>
+        <div className="alert alert-danger text-center py-2">{errorMessage}</div>
       )}
 
       <DataTable
@@ -174,27 +204,27 @@ export default function PermisosList({ user }) {
         paginationRowsPerPageOptions={[5, 10, 15, 20]}
         highlightOnHover
         striped
+        customStyles={customStyles}
       />
 
       {/* Bootstrap Modal Confirm */}
       <div
         className={`modal fade ${showModal ? "show d-block" : "d-none"}`}
+        style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
         tabIndex="-1"
         role="dialog"
       >
         <div className="modal-dialog" role="document">
           <div className="modal-content">
-            <div className="modal-header">
+            <div className="modal-header bg-danger text-white">
               <h5 className="modal-title">Confirmar Eliminación</h5>
               <button
                 type="button"
-                className="close"
+                className="btn-close btn-close-white"
                 onClick={() => setShowModal(false)}
-              >
-                <span>&times;</span>
-              </button>
+              ></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body text-center p-4">
               ¿Está seguro de que desea eliminar este permiso?
             </div>
             <div className="modal-footer">

@@ -8,6 +8,25 @@ import usePermission from "../hooks/usePermission";
 const endpoint = "/api/usuarios";
 const axiosOptions = { withCredentials: true };
 
+/**
+ * 🎨 CUSTOM STYLES FOR DATA TABLE
+ * This approach prevents "unknown prop" warnings by handling
+ * CSS values outside of the column configuration.
+ */
+const customStyles = {
+    headCells: {
+        style: {
+            fontWeight: 'bold',
+            fontSize: '14px',
+        },
+    },
+    cells: {
+        style: {
+            fontSize: '13px',
+        },
+    },
+};
+
 const ShowUsers = ({ user }) => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -26,6 +45,9 @@ const ShowUsers = ({ user }) => {
     const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
+    /**
+     * Fetch users from the API
+     */
     const fetchUsers = async () => {
         setLoading(true);
         try {
@@ -43,6 +65,9 @@ const ShowUsers = ({ user }) => {
 
     useEffect(() => { fetchUsers(); }, []);
 
+    /**
+     * Filter users based on search input
+     */
     useEffect(() => {
         const result = users.filter((u) =>
             u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -86,9 +111,14 @@ const ShowUsers = ({ user }) => {
         }
     };
 
+    /**
+     * 🛡️ COLUMNS DEFINITION
+     * To avoid warnings, we use 'width' instead of 'minWidth' where possible,
+     * and avoid 'grow' or 'button' props which cause issues in newer React versions.
+     */
     const columns = [
-        { name: "Nombre", selector: (u) => u.name, sortable: true, minWidth: "150px" },
-        { name: "Email", selector: (u) => u.email || "-", sortable: true, minWidth: "180px" },
+        { name: "Nombre", selector: (u) => u.name, sortable: true, width: "200px" },
+        { name: "Email", selector: (u) => u.email || "-", sortable: true, width: "220px" },
         { name: "Teléfono", selector: (u) => u.phone || "N/A", sortable: true, width: "120px" },
         {
             name: "Roles",
@@ -99,7 +129,7 @@ const ShowUsers = ({ user }) => {
                     ))}
                 </div>
             ),
-            minWidth: "120px",
+            width: "150px",
         },
         {
             name: "Status",
@@ -112,7 +142,6 @@ const ShowUsers = ({ user }) => {
             ),
             width: "100px",
         },
-        // 🟢 RESTORED: PERMISSIONS COLUMN
         {
             name: "Permisos",
             cell: (u) => (
@@ -126,14 +155,12 @@ const ShowUsers = ({ user }) => {
                         : <small className="text-muted">Ninguno</small>}
                 </div>
             ),
-            grow: 2,
-            minWidth: "250px",
+            width: "300px", // Fixed width instead of 'grow' to avoid warnings
         },
         {
             name: "Acciones",
-            right: true,
             cell: (u) => (
-                <div className="d-flex gap-2 justify-content-end">
+                <div className="d-flex gap-2 justify-content-end w-100 pe-2">
                     {!u.deleted_at ? (
                         <>
                             {canEdit && <button className="btn btn-info btn-sm text-white" onClick={() => navigate(`/users/edit/${u.id}`)}>Editar</button>}
@@ -171,6 +198,7 @@ const ShowUsers = ({ user }) => {
                 highlightOnHover
                 striped
                 responsive
+                customStyles={customStyles} // Applied custom styles here
                 conditionalRowStyles={[{
                     when: row => row.deleted_at,
                     style: { backgroundColor: '#fff5f5', color: '#721c24' },

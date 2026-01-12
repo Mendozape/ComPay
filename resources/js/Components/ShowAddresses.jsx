@@ -8,6 +8,24 @@ import usePermission from "../hooks/usePermission";
 
 const endpoint = '/api/addresses';
 
+/**
+ * 🎨 CUSTOM STYLES FOR DATA TABLE
+ * Centralized styles to avoid passing unknown props to the DOM elements.
+ */
+const customStyles = {
+    headCells: {
+        style: {
+            fontWeight: 'bold',
+            fontSize: '14px',
+        },
+    },
+    cells: {
+        style: {
+            fontSize: '13px',
+        },
+    },
+};
+
 const ShowAddresses = ({ user }) => {
     // --- STATE VARIABLES ---
     const [addresses, setAddresses] = useState([]);
@@ -32,7 +50,6 @@ const ShowAddresses = ({ user }) => {
     const navigate = useNavigate();
 
     // --- NAVIGATION FUNCTIONS ---
-    // 🟢 FIXED: Added missing navigation functions
     const editAddress = (id) => navigate(`/addresses/edit/${id}`);
     const createAddress = () => navigate('/addresses/create');
     const createPayment = (id) => navigate(`/addresses/payment/${id}`);
@@ -48,8 +65,9 @@ const ShowAddresses = ({ user }) => {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
             });
-            setAddresses(response.data.data || []);
-            setFilteredAddresses(response.data.data || []);
+            const data = response.data.data || response.data;
+            setAddresses(data);
+            setFilteredAddresses(data);
         } catch (error) {
             console.error('Error fetching addresses:', error);
             setErrorMessage('Fallo al cargar el catálogo de direcciones.');
@@ -78,6 +96,9 @@ const ShowAddresses = ({ user }) => {
         setFilteredAddresses(result);
     }, [search, addresses]);
 
+    /**
+     * Deactivate address logic
+     */
     const deactivateAddress = async (id, reason) => {
         try {
             const response = await axios.delete(`${endpoint}/${id}`, {
@@ -116,23 +137,25 @@ const ShowAddresses = ({ user }) => {
     }
 
     // --- DATA TABLE COLUMNS ---
+    // FIX: Replaced minWidth with fixed width and used flex classes for Actions
     const columns = useMemo(() => [
         {
             name: 'Dirección',
             selector: row => row.street?.name || '', 
             sortable: true,
+            width: '240px',
             cell: row => (
                 <div style={{ lineHeight: '1.2' }}>
                     <span className="d-block"><strong>{row.street?.name || 'N/A'} #{row.street_number}</strong></span>
                     <span className="badge bg-secondary">{row.type}</span>
                 </div>
             ),
-            minWidth: '220px',
         },
         {
             name: 'Residente (Usuario)',
             selector: row => row.user ? row.user.name : 'Sin asignar',
             sortable: true,
+            width: '220px',
             cell: row => (
                 <div>
                     <span className={row.user ? 'fw-bold' : 'text-muted'}>
@@ -141,13 +164,13 @@ const ShowAddresses = ({ user }) => {
                     {row.user && <small className="d-block text-muted">{row.user.email}</small>}
                 </div>
             ),
-            minWidth: '200px',
         },
-        { name: 'Comentarios', selector: row => row.comments, sortable: true, wrap: true },
+        { name: 'Comentarios', selector: row => row.comments, sortable: true, wrap: true, width: '200px' },
         {
             name: 'Estado', 
             selector: row => row.deleted_at ? 'Inactivo' : 'Activo',
             sortable: true,
+            width: '100px',
             cell: row => (
                 <span className={`badge ${row.deleted_at ? 'bg-danger' : 'bg-info'}`}>
                     {row.deleted_at ? 'Inactivo' : 'Activo'}
@@ -157,7 +180,7 @@ const ShowAddresses = ({ user }) => {
         {
             name: 'Acciones', 
             cell: row => (
-                <div className="d-flex gap-1">
+                <div className="d-flex gap-1 justify-content-end w-100 pe-2">
                     {!row.deleted_at && (
                         <>
                             {canCreatePayment && (
@@ -190,7 +213,7 @@ const ShowAddresses = ({ user }) => {
                     )}
                 </div>
             ),
-            minWidth: '300px', 
+            width: '320px', 
         },
     ], [canEdit, canDeactivate, canCreatePayment, canViewPayments, navigate]);
 
@@ -201,27 +224,29 @@ const ShowAddresses = ({ user }) => {
     );
 
     return (
-        <div className="row mb-4 border border-primary rounded p-3 bg-white">
-            <div className="col-md-6">
-                {canCreate && (
-                    <button className='btn btn-success btn-sm mt-2 mb-2 text-white' onClick={createAddress}>
-                        <i className="fas fa-plus"></i> Crear Dirección
-                    </button>
-                )}
-            </div>
-            <div className="col-md-6 d-flex justify-content-end align-items-center">
-                <input
-                    type="text"
-                    className="col-md-7 form-control form-control-sm mt-2 mb-2"
-                    placeholder="Buscar por calle, número o residente..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
+        <div className="mb-4 border border-primary rounded p-3 bg-white">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="col-md-6">
+                    {canCreate && (
+                        <button className='btn btn-success btn-sm mt-2 mb-2 text-white' onClick={createAddress}>
+                            <i className="fas fa-plus"></i> Crear Dirección
+                        </button>
+                    )}
+                </div>
+                <div className="col-md-6 d-flex justify-content-end align-items-center">
+                    <input
+                        type="text"
+                        className="form-control form-control-sm w-75 mt-2 mb-2"
+                        placeholder="Buscar por calle, número o residente..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
             </div>
 
             <div className="col-md-12 mt-2">
                 {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-                {errorMessage && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
+                {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
             </div>
 
             <div className="col-md-12 mt-2">
@@ -235,6 +260,7 @@ const ShowAddresses = ({ user }) => {
                     highlightOnHover
                     striped
                     responsive
+                    customStyles={customStyles}
                 />
             </div>
 
@@ -247,18 +273,19 @@ const ShowAddresses = ({ user }) => {
                             <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
                         </div>
                         <div className="modal-body">
-                            <p>¿Está seguro de que desea dar de baja esta dirección? Esta acción es irreversible.</p>
+                            <p className="text-center">¿Está seguro de que desea dar de baja esta dirección? Esta acción es irreversible.</p>
                             <div className="form-group mt-3">
                                 <label htmlFor="reason">Motivo de la Baja <span className="text-danger">*</span></label>
                                 <textarea
                                     id="reason"
-                                    className="form-control"
+                                    className="form-control mt-2"
                                     rows="3"
                                     value={deactivationReason}
                                     onChange={(e) => setDeactivationReason(e.target.value)}
                                     placeholder="Ingrese la razón detallada..."
                                 />
                             </div>
+                            {errorMessage && <div className="alert alert-danger text-center mt-3 py-2">{errorMessage}</div>}
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button>

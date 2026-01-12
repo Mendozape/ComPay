@@ -192,7 +192,7 @@ const ResidentStatement = ({ user }) => {
                     ) : (
                         <div className="alert alert-warning border-warning shadow-sm">
                             <i className="fas fa-exclamation-circle me-2"></i>
-                            <strong>No Property Assigned:</strong> Please contact administration.
+                            <strong>No tiene ninguna Propiedad asignada:</strong>
                         </div>
                     )}
                 </div>

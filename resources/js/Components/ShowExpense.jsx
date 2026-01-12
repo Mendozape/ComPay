@@ -8,6 +8,24 @@ import usePermission from "../hooks/usePermission";
 
 const endpoint = '/api/expenses';
 
+/**
+ * 🎨 CUSTOM STYLES FOR DATA TABLE
+ * Centralized styles to avoid passing unknown props like 'minWidth' to the DOM.
+ */
+const customStyles = {
+    headCells: {
+        style: {
+            fontWeight: 'bold',
+            fontSize: '14px',
+        },
+    },
+    cells: {
+        style: {
+            fontSize: '13px',
+        },
+    },
+};
+
 // 🚨 Receive 'user' as a prop from App.jsx
 const ExpensesTable = ({ user }) => {
     // State variables for data and filtering
@@ -34,7 +52,9 @@ const ExpensesTable = ({ user }) => {
     const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
-    // Function to fetch all expenses
+    /**
+     * Fetch all expenses from the API
+     */
     const fetchExpenses = async () => {
         setLoading(true);
         try {
@@ -42,8 +62,9 @@ const ExpensesTable = ({ user }) => {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
             });
-            setExpenses(response.data.data || []);
-            setFilteredExpenses(response.data.data || []);
+            const data = response.data.data || response.data;
+            setExpenses(data);
+            setFilteredExpenses(data);
         } catch (error) {
             console.error('Error fetching expenses:', error);
             setErrorMessage('Fallo al cargar los gastos.');
@@ -56,7 +77,9 @@ const ExpensesTable = ({ user }) => {
         fetchExpenses();
     }, []);
 
-    // Filter expenses based on search input
+    /**
+     * Filter expenses based on search input
+     */
     useEffect(() => {
         const lowerCaseSearch = search.toLowerCase();
         const result = expenses.filter(expense => 
@@ -66,10 +89,12 @@ const ExpensesTable = ({ user }) => {
         setFilteredExpenses(result);
     }, [search, expenses]);
 
+    /**
+     * Logic to delete an expense with a reason
+     */
     const deleteExpense = async (id, reason) => {
         setModalError('');
         setSuccessMessage('');
-        setErrorMessage('');
 
         try {
             const response = await axios.delete(`${endpoint}/${id}`, {
@@ -92,15 +117,20 @@ const ExpensesTable = ({ user }) => {
 
     const editExpense = (id) => navigate(`/expenses/edit/${id}`);
     const createExpense = () => navigate('/expenses/create');
-    const toggleModal = () => setShowModal(!showModal);
+    
+    const toggleModal = () => {
+        setShowModal(!showModal);
+        if (showModal) {
+            setModalError('');
+            setDeletionReason('');
+        }
+    };
     
     const confirmDeletion = (id) => {
         setExpenseToDelete(id);
         setDeletionReason('');
-        setErrorMessage(''); 
-        setSuccessMessage('');
         setModalError(''); 
-        toggleModal();
+        setShowModal(true);
     };
 
     const handleDeletion = () => {
@@ -111,19 +141,25 @@ const ExpensesTable = ({ user }) => {
         deleteExpense(expenseToDelete, deletionReason);
     };
 
-    // 🚨 UseMemo for columns to handle button visibility based on permissions
+    /**
+     * 🛡️ COLUMNS DEFINITION
+     * FIX: Replaced 'minWidth' with 'width' and removed 'right: true'.
+     * Using Bootstrap classes for alignment in Actions column.
+     */
     const columns = useMemo(() => [
-        { name: 'Categoría', selector: row => row.category?.name || 'N/A', sortable: true },
-        { name: 'Monto', selector: row => `$${parseFloat(row.amount).toFixed(2)}`, sortable: true },
+        { name: 'Categoría', selector: row => row.category?.name || 'N/A', sortable: true, width: '200px' },
+        { name: 'Monto', selector: row => `$${parseFloat(row.amount).toFixed(2)}`, sortable: true, width: '120px' },
         { 
             name: 'Fecha', 
             selector: row => new Date(row.expense_date).toLocaleDateString('es-MX'), 
-            sortable: true 
+            sortable: true,
+            width: '120px'
         },
         { 
             name: 'Estado',
             selector: row => row.deleted_at ? 'Inactivo' : 'Activo', 
             sortable: true,
+            width: '120px',
             cell: row => (
                 <span className={`badge ${row.deleted_at ? 'bg-danger' : 'bg-success'}`}> 
                     {row.deleted_at ? 'Inactivo' : 'Activo'}
@@ -133,11 +169,11 @@ const ExpensesTable = ({ user }) => {
         {
             name: 'Acciones',
             cell: row => (
-                <div style={{ display: 'flex', gap: '5px' }}>
+                <div className="d-flex gap-2 justify-content-end w-100 pe-2">
                     {/* 🛡️ Permission check for Edit button */}
                     {canEdit && (
                         <button 
-                            className="btn btn-info btn-sm" 
+                            className="btn btn-info btn-sm text-white" 
                             onClick={() => editExpense(row.id)} 
                             disabled={!!row.deleted_at}
                         >
@@ -164,7 +200,7 @@ const ExpensesTable = ({ user }) => {
                     )}
                 </div>
             ),
-            minWidth: '200px',
+            width: '200px',
         },
     ], [canEdit, canDelete, navigate]);
 
@@ -174,6 +210,7 @@ const ExpensesTable = ({ user }) => {
         </div>
     );
 
+    // Auto-clear success messages
     useEffect(() => {
         if (successMessage) {
             const timer = setTimeout(() => setSuccessMessage(null), 5000);
@@ -185,83 +222,76 @@ const ExpensesTable = ({ user }) => {
         <div className="container-fluid mt-4">
             <h2 className="mb-4 text-primary">Lista de Gastos</h2>
 
-            <div className="row mb-4 border border-primary rounded p-3">
-                <div className="col-md-6">
+            <div className="mb-4 border border-primary rounded p-3 bg-white">
+                <div className="d-flex justify-content-between align-items-center mb-3">
                     {/* 🛡️ Permission check for Create button */}
                     {canCreate ? (
-                        <button className='btn btn-success btn-sm mt-2 mb-2 text-white' onClick={createExpense}>
+                        <button className='btn btn-success btn-sm text-white' onClick={createExpense}>
                             Crear Gasto
                         </button>
                     ) : <div />}
-                </div>
-                <div className="col-md-6 d-flex justify-content-end align-items-center">
+                    
                     <input
                         type="text"
-                        className="col-md-3 form-control form-control-sm mt-2 mb-2"
+                        className="form-control form-control-sm w-25"
                         placeholder="Buscar por categoría o monto"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
 
-                <div className="col-md-12 mt-4">
-                    {successMessage && <div className="alert alert-success text-center">{successMessage}</div>}
-                    {errorMessage && !showModal && <div className="alert alert-danger text-center">{errorMessage}</div>}
-                </div>
+                {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
+                {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
-                <div className="col-md-12 mt-4">
-                    <DataTable
-                        title="Lista de Gastos"
-                        columns={columns}
-                        data={filteredExpenses}
-                        progressPending={loading}
-                        noDataComponent={<NoDataComponent />}
-                        pagination
-                        highlightOnHover
-                        striped
-                    />
-                </div>
+                <DataTable
+                    title="Lista de Gastos"
+                    columns={columns}
+                    data={filteredExpenses}
+                    progressPending={loading}
+                    noDataComponent={<NoDataComponent />}
+                    pagination
+                    highlightOnHover
+                    striped
+                    customStyles={customStyles}
+                />
+            </div>
 
-                {/* MODAL FOR DELETION */}
-                <div className={`modal ${showModal ? 'd-block' : 'd-none'}`} tabIndex="-1" role="dialog">
-                    <div className="modal-dialog" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header bg-danger text-white">
-                                <h5 className="modal-title">Confirmar Eliminación de Gasto</h5>
-                                <button type="button" className="close" onClick={toggleModal}>
-                                    <span>&times;</span>
-                                </button>
+            {/* MODAL FOR DELETION */}
+            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header bg-danger text-white">
+                            <h5 className="modal-title">Confirmar Eliminación</h5>
+                            <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
+                        </div>
+                        <div className="modal-body p-4">
+                            <p className="text-center">¿Está seguro de que desea eliminar este gasto?</p>
+                            <div className="form-group mt-3">
+                                <label htmlFor="reason">Motivo de la Eliminación <span className="text-danger">*</span></label>
+                                <textarea
+                                    id="reason"
+                                    className="form-control mt-2"
+                                    rows="3"
+                                    value={deletionReason}
+                                    onChange={(e) => setDeletionReason(e.target.value)}
+                                    placeholder="Ingrese la razón de la eliminación (mínimo 10 caracteres)."
+                                />
                             </div>
-                            <div className="modal-body">
-                                <p>¿Está seguro de que desea eliminar este gasto?</p>
-                                <div className="form-group mt-3">
-                                    <label htmlFor="reason">Motivo de la Eliminación <span className="text-danger">*</span></label>
-                                    <textarea
-                                        id="reason"
-                                        className="form-control"
-                                        rows="3"
-                                        value={deletionReason}
-                                        onChange={(e) => setDeletionReason(e.target.value)}
-                                        placeholder="Ingrese la razón de la eliminación (mínimo 10 caracteres)."
-                                    />
-                                </div>
-                                {modalError && <div className="alert alert-danger text-center mt-3">{modalError}</div>}
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button>
-                                <button 
-                                    type="button" 
-                                    className="btn btn-danger" 
-                                    onClick={handleDeletion}
-                                    disabled={!deletionReason.trim()}
-                                >
-                                    Eliminar
-                                </button>
-                            </div>
+                            {modalError && <div className="alert alert-danger text-center mt-3 py-2">{modalError}</div>}
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button>
+                            <button 
+                                type="button" 
+                                className="btn btn-danger" 
+                                onClick={handleDeletion}
+                                disabled={!deletionReason.trim()}
+                            >
+                                Confirmar Eliminación
+                            </button>
                         </div>
                     </div>
                 </div>
-                {showModal && <div className="modal-backdrop fade show"></div>}
             </div>
         </div>
     );

@@ -8,6 +8,24 @@ import usePermission from "../hooks/usePermission";
 
 const endpoint = '/api/expense_categories';
 
+/**
+ * 🎨 CUSTOM STYLES FOR DATA TABLE
+ * Centralized styles to avoid passing unknown props to the DOM.
+ */
+const customStyles = {
+    headCells: {
+        style: {
+            fontWeight: 'bold',
+            fontSize: '14px',
+        },
+    },
+    cells: {
+        style: {
+            fontSize: '13px',
+        },
+    },
+};
+
 // 🚨 Receive 'user' as a prop from App.jsx
 const ShowExpenseCategories = ({ user }) => {
     // State variables for data and filtering
@@ -33,7 +51,9 @@ const ShowExpenseCategories = ({ user }) => {
     const { setSuccessMessage, setErrorMessage, errorMessage, successMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
-    // Function to fetch all categories
+    /**
+     * Fetch all expense categories from the API
+     */
     const fetchCategories = async () => {
         setLoading(true);
         try {
@@ -41,8 +61,9 @@ const ShowExpenseCategories = ({ user }) => {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
             });
-            setCategories(response.data.data || []);
-            setFilteredCategories(response.data.data || []);
+            const data = response.data.data || response.data;
+            setCategories(data);
+            setFilteredCategories(data);
         } catch (error) {
             console.error('Error fetching categories:', error);
             setErrorMessage('Fallo al cargar las categorías.');
@@ -55,6 +76,9 @@ const ShowExpenseCategories = ({ user }) => {
         fetchCategories();
     }, []);
 
+    /**
+     * Search filter logic
+     */
     useEffect(() => {
         const result = categories.filter(category => 
             category.name.toLowerCase().includes(search.toLowerCase())
@@ -62,6 +86,9 @@ const ShowExpenseCategories = ({ user }) => {
         setFilteredCategories(result);
     }, [search, categories]);
 
+    /**
+     * Delete/Deactivate category
+     */
     const deleteCategory = async (id) => {
         setModalError('');
         setSuccessMessage('');
@@ -86,14 +113,15 @@ const ShowExpenseCategories = ({ user }) => {
 
     const editCategory = (id) => navigate(`/expense_categories/edit/${id}`);
     const createCategory = () => navigate('/expense_categories/create');
-    const toggleModal = () => setShowModal(!showModal);
+    const toggleModal = () => {
+        setShowModal(!showModal);
+        if (showModal) setModalError('');
+    };
     
     const confirmDeletion = (id) => {
         setCategoryToDelete(id);
         setModalError(''); 
-        setErrorMessage('');
-        setSuccessMessage('');
-        toggleModal();
+        setShowModal(true);
     };
     
     const handleDeletion = () => {
@@ -102,14 +130,18 @@ const ShowExpenseCategories = ({ user }) => {
         }
     };
 
-    // 🚨 UseMemo for columns to handle button visibility based on permissions
+    /**
+     * 🛡️ COLUMNS DEFINITION
+     * FIX: Replaced 'minWidth' with fixed 'width' and removed custom styling props.
+     */
     const columns = useMemo(() => [
-        { name: 'ID', selector: row => row.id, sortable: true, width: '60px' },
-        { name: 'Nombre de la Categoría', selector: row => row.name, sortable: true },
+        { name: 'ID', selector: row => row.id, sortable: true, width: '80px' },
+        { name: 'Nombre de la Categoría', selector: row => row.name, sortable: true, width: '300px' },
         { 
             name: 'Estado',
             selector: row => row.deleted_at ? 'Inactivo' : 'Activo', 
             sortable: true,
+            width: '120px',
             cell: row => (
                 <span className={`badge ${row.deleted_at ? 'bg-danger' : 'bg-success'}`}> 
                     {row.deleted_at ? 'Inactivo' : 'Activo'}
@@ -119,11 +151,11 @@ const ShowExpenseCategories = ({ user }) => {
         {
             name: 'Acciones',
             cell: row => (
-                <div style={{ display: 'flex', gap: '5px' }}>
+                <div className="d-flex gap-2 justify-content-end w-100 pe-2">
                     {/* 🛡️ Permission check for Edit button */}
                     {canEdit && (
                         <button 
-                            className="btn btn-info btn-sm" 
+                            className="btn btn-info btn-sm text-white" 
                             onClick={() => editCategory(row.id)} 
                             disabled={!!row.deleted_at}
                         >
@@ -150,7 +182,7 @@ const ShowExpenseCategories = ({ user }) => {
                     )}
                 </div>
             ),
-            minWidth: '150px',
+            width: '200px',
         },
     ], [canEdit, canDelete, navigate]);
 
@@ -172,57 +204,51 @@ const ShowExpenseCategories = ({ user }) => {
         <div className="container-fluid mt-4">
             <h2 className="mb-4 text-primary">Catálogo de Categorías de Gastos</h2>
 
-            <div className="row mb-4 border border-primary rounded p-3">
-                <div className="col-md-6">
+            <div className="mb-4 border border-primary rounded p-3 bg-white">
+                <div className="d-flex justify-content-between align-items-center mb-3">
                     {/* 🛡️ Permission check for Create button */}
                     {canCreate ? (
-                        <button className='btn btn-success btn-sm mt-2 mb-2 text-white' onClick={createCategory}>
+                        <button className='btn btn-success btn-sm text-white' onClick={createCategory}>
                             Crear Categoría
                         </button>
                     ) : <div />}
-                </div>
-                <div className="col-md-6 d-flex justify-content-end align-items-center">
+
                     <input
                         type="text"
-                        className="col-md-5 form-control form-control-sm mt-2 mb-2"
+                        className="form-control form-control-sm w-25"
                         placeholder="Buscar por nombre"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
 
-                <div className="col-md-12 mt-4">
-                    {successMessage && <div className="alert alert-success text-center">{successMessage}</div>}
-                    {errorMessage && !showModal && <div className="alert alert-danger text-center">{errorMessage}</div>}
-                </div>
+                {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
+                {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
-                <div className="col-md-12 mt-4">
-                    <DataTable
-                        title="Lista de Categorías"
-                        columns={columns}
-                        data={filteredCategories}
-                        progressPending={loading}
-                        noDataComponent={<NoDataComponent />}
-                        pagination
-                        highlightOnHover
-                        striped
-                    />
-                </div>
+                <DataTable
+                    title="Lista de Categorías"
+                    columns={columns}
+                    data={filteredCategories}
+                    progressPending={loading}
+                    noDataComponent={<NoDataComponent />}
+                    pagination
+                    highlightOnHover
+                    striped
+                    customStyles={customStyles}
+                />
             </div>
 
             {/* Modal for Deletion Confirmation */}
-            <div className={`modal ${showModal ? 'd-block' : 'd-none'}`} tabIndex="-1" role="dialog">
+            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
                 <div className="modal-dialog" role="document">
                     <div className="modal-content">
                         <div className="modal-header bg-danger text-white">
                             <h5 className="modal-title">Confirmar Eliminación</h5>
-                            <button type="button" className="close" onClick={toggleModal}>
-                                <span>&times;</span>
-                            </button>
+                            <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
                         </div>
-                        <div className="modal-body">
+                        <div className="modal-body text-center p-4">
                             <p>¿Está seguro de que desea dar de baja la categoría?</p>
-                            {modalError && <div className="alert alert-danger text-center mt-3">{modalError}</div>}
+                            {modalError && <div className="alert alert-danger text-center mt-3 py-2">{modalError}</div>}
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-secondary" onClick={toggleModal}>
@@ -233,13 +259,12 @@ const ShowExpenseCategories = ({ user }) => {
                                 className="btn btn-danger" 
                                 onClick={handleDeletion}
                             >
-                                Dar de baja
+                                Confirmar Baja
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            {showModal && <div className="modal-backdrop fade show"></div>}
         </div>
     );
 };

@@ -8,6 +8,19 @@ import usePermission from "../hooks/usePermission";
 
 const endpoint = "/api/roles";
 
+/**
+ * 🎨 CUSTOM STYLES FOR DATA TABLE
+ * Used to avoid console warnings regarding unknown props.
+ */
+const customStyles = {
+    headCells: {
+        style: {
+            fontWeight: 'bold',
+            fontSize: '14px',
+        },
+    },
+};
+
 // 🚨 Receive 'user' as a prop
 export default function ShowRoles({ user }) {
   const [roles, setRoles] = useState([]);
@@ -32,6 +45,9 @@ export default function ShowRoles({ user }) {
   const navigate = useNavigate();
   const axiosOptions = { withCredentials: true, headers: { Accept: "application/json" } };
 
+  /**
+   * Fetch roles from the API
+   */
   const fetchRoles = async () => {
     setLoading(true);
     try {
@@ -50,6 +66,9 @@ export default function ShowRoles({ user }) {
     fetchRoles();
   }, []);
 
+  /**
+   * Filter roles based on search
+   */
   useEffect(() => {
     const result = roles.filter((r) =>
       r.name.toLowerCase().includes(search.toLowerCase())
@@ -57,6 +76,9 @@ export default function ShowRoles({ user }) {
     setFilteredRoles(result);
   }, [search, roles]);
 
+  /**
+   * Delete a specific role
+   */
   const deleteRole = async (id) => {
     try {
       await axios.delete(`${endpoint}/${id}`, axiosOptions);
@@ -68,14 +90,22 @@ export default function ShowRoles({ user }) {
     }
   };
 
-  // 🚨 UseMemo for columns to handle dynamic permissions correctly
+  /**
+   * 🚨 COLUMNS DEFINITION
+   * FIX: Removed 'right: true' to prevent DOM warnings.
+   * Using fixed 'width' and Bootstrap classes for alignment.
+   */
   const columns = useMemo(() => [
-    { name: "Rol", selector: (r) => r.name, sortable: true },
+    { 
+        name: "Rol", 
+        selector: (r) => r.name, 
+        sortable: true,
+        width: "250px" 
+    },
     {
       name: "Acciones",
-      right: true,
       cell: (r) => (
-        <div className="d-flex gap-2 justify-content-end">
+        <div className="d-flex gap-2 justify-content-end w-100 pe-2">
           {/* 🛡️ canEdit Check */}
           {canEdit && (
             <button
@@ -100,6 +130,7 @@ export default function ShowRoles({ user }) {
           )}
         </div>
       ),
+      width: "200px"
     },
   ], [canEdit, canDelete, navigate]);
 
@@ -117,12 +148,8 @@ export default function ShowRoles({ user }) {
     }
   }, [errorMessage, setErrorMessage]);
 
-  // 🛑 GUARD REMOVED: We don't block the whole component with "Cargando permisos".
-  // If user is not yet loaded, canCreate/canEdit/canDelete will simply be false 
-  // until App.jsx updates the state and re-renders this component.
-
   return (
-    <div className="mb-4 border border-primary rounded p-3">
+    <div className="mb-4 border border-primary rounded p-3 bg-white">
       <div className="d-flex justify-content-between mb-2">
         {/* 🛡️ canCreate Check */}
         {canCreate ? (
@@ -162,27 +189,27 @@ export default function ShowRoles({ user }) {
         pagination
         highlightOnHover
         striped
+        customStyles={customStyles}
       />
 
       {/* Bootstrap Modal Confirm */}
       <div
         className={`modal fade ${showModal ? "show d-block" : "d-none"}`}
+        style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
         tabIndex="-1"
         role="dialog"
       >
         <div className="modal-dialog" role="document">
           <div className="modal-content">
-            <div className="modal-header">
+            <div className="modal-header bg-danger text-white">
               <h5 className="modal-title">Confirmar Eliminación</h5>
               <button
                 type="button"
-                className="close"
+                className="btn-close btn-close-white"
                 onClick={() => setShowModal(false)}
-              >
-                <span>&times;</span>
-              </button>
+              ></button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body text-center p-4">
               ¿Está seguro de que desea eliminar este rol?
             </div>
             <div className="modal-footer">

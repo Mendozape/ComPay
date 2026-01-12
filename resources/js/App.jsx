@@ -65,8 +65,6 @@ import ResidentStatement from "./components/ResidentStatement";
 import ChatBadgeUpdater from "./components/ChatBadgeUpdater";
 
 const App = () => {
-    const rootEl = document.getElementById("react-container");
-
     /**
      * 🛡️ ROBUST USER DETECTION
      * Checks both window.Laravel.user and window.Laravel.data.user
@@ -99,7 +97,15 @@ const App = () => {
     return (
         <>
             <ChatBadgeUpdater />
-            <BrowserRouter>
+            {/* * 🛠️ REACT ROUTER V7 PREPARATION
+              * Enabling future flags to opt-in to v7 behavior early and remove console warnings.
+              */}
+            <BrowserRouter 
+                future={{ 
+                    v7_startTransition: true, 
+                    v7_relativeSplatPath: true 
+                }}
+            >
                 <Routes>
                     <Route path="/" element={<Navigate to="/home" replace />} />
 
@@ -108,6 +114,8 @@ const App = () => {
                     <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
                     <Route path="/chat" element={<ChatPage user={user} />} />
 
+                    {/* --------------------------------------------------- */}
+                    {/* 🏠 ADDRESS PAYMENTS routes (Using Address-based model) */}
                     {/* --------------------------------------------------- */}
                     <Route
                         path="/addresses/payment/:id"
