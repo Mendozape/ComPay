@@ -10,8 +10,6 @@ const axiosOptions = { withCredentials: true };
 
 /**
  * 🎨 CUSTOM STYLES FOR DATA TABLE
- * This approach prevents "unknown prop" warnings by handling
- * CSS values outside of the column configuration.
  */
 const customStyles = {
     headCells: {
@@ -44,6 +42,24 @@ const ShowUsers = ({ user }) => {
 
     const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
+
+    /**
+     * 🛡️ AUTO-HIDE MESSAGES EFFECT
+     * Clears success or error messages after 5 seconds
+     */
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => setSuccessMessage(null), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, setSuccessMessage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => setErrorMessage(null), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [errorMessage, setErrorMessage]);
 
     /**
      * Fetch users from the API
@@ -111,11 +127,6 @@ const ShowUsers = ({ user }) => {
         }
     };
 
-    /**
-     * 🛡️ COLUMNS DEFINITION
-     * To avoid warnings, we use 'width' instead of 'minWidth' where possible,
-     * and avoid 'grow' or 'button' props which cause issues in newer React versions.
-     */
     const columns = [
         { name: "Nombre", selector: (u) => u.name, sortable: true, width: "200px" },
         { name: "Email", selector: (u) => u.email || "-", sortable: true, width: "220px" },
@@ -155,7 +166,7 @@ const ShowUsers = ({ user }) => {
                         : <small className="text-muted">Ninguno</small>}
                 </div>
             ),
-            width: "300px", // Fixed width instead of 'grow' to avoid warnings
+            width: "300px",
         },
         {
             name: "Acciones",
@@ -198,7 +209,7 @@ const ShowUsers = ({ user }) => {
                 highlightOnHover
                 striped
                 responsive
-                customStyles={customStyles} // Applied custom styles here
+                customStyles={customStyles}
                 conditionalRowStyles={[{
                     when: row => row.deleted_at,
                     style: { backgroundColor: '#fff5f5', color: '#721c24' },

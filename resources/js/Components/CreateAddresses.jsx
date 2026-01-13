@@ -95,7 +95,7 @@ export default function CreateAddresses() {
         setUserSuggestions([]); 
         
         // Check if the user already has an assigned address (1:1 logic)
-        setHasExistingAddress(!!user.address); 
+        setHasExistingAddress(false); 
     };
 
     const store = async (e) => {
@@ -103,7 +103,7 @@ export default function CreateAddresses() {
         const form = e.currentTarget;
 
         // Validation check
-        if (form.checkValidity() === false || !userId || !streetId || hasExistingAddress) {
+        if (form.checkValidity() === false || !userId || !streetId) {
             e.stopPropagation();
             if (hasExistingAddress) {
                 setErrorMessage('El usuario seleccionado ya tiene una dirección asignada.');

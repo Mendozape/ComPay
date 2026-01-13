@@ -4,16 +4,11 @@ import axios from "axios";
 /**
  * FINAL LOGIC: Uses the 'profile_photo_path' field from the database 
  * and concatenates it directly after the public storage URL.
- * * Assumes the DB field contains ONLY the filename (e.g., "1765920857.png").
- * Assumes the final configuration resolves /storage/ to the image folder.
- * * @param {object} profile - The user profile object.
- * @returns {string} The public URL for the image or a default avatar path.
  */
 const getProfilePhotoUrl = (profile) => {
     const defaultUrl = "/default-avatar.png";
     const photoPath = profile.profile_photo_path;
     if (photoPath) {
-        // This works on both PC and Cloud because it's a relative path from the domain root
         return `/storage/images/${photoPath}`;
     }
     return defaultUrl;
@@ -31,7 +26,21 @@ const Profile = ({ user }) => {
     const [status, setStatus] = useState("");
     const [errors, setErrors] = useState({});
 
-    // Fetch user info on component mount (or if user prop is missing)
+    /**
+     * 🛡️ AUTO-HIDE MESSAGES EFFECT
+     * Clears status and general error messages after 5 seconds
+     */
+    useEffect(() => {
+        if (status || errors.general) {
+            const timer = setTimeout(() => {
+                setStatus("");
+                setErrors((prev) => ({ ...prev, general: "" }));
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [status, errors.general]);
+
+    // Fetch user info on component mount
     useEffect(() => {
         if (!user) {
             axios
@@ -63,7 +72,6 @@ const Profile = ({ user }) => {
         }
     };
 
-    // 🔹 Update profile (name, email, photo)
     const updateProfile = async (e) => {
         e.preventDefault();
         setStatus("");
@@ -75,19 +83,16 @@ const Profile = ({ user }) => {
             formData.append("email", profile.email);
             if (photo) formData.append("photo", photo);
 
-            // 🛑 Use the dedicated API endpoint
             const response = await axios.post("/api/profile/update", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            // Status message from backend
             setStatus(response.data.message);
 
-            // Fetch updated user data (calls the fresh /api/user endpoint)
             const res = await axios.get("/api/user");
             setProfile(res.data);
             setPhoto(null);
-            setPreview(null); // Clear preview after successful upload
+            setPreview(null);
         } catch (err) {
             if (err.response?.data?.errors) {
                 setErrors(err.response.data.errors);
@@ -97,7 +102,6 @@ const Profile = ({ user }) => {
         }
     };
 
-    // 🔹 Update password
     const updatePassword = async (e) => {
         e.preventDefault();
         setStatus("");
@@ -122,20 +126,18 @@ const Profile = ({ user }) => {
 
     if (!profile) return <div>Cargando información del usuario...</div>;
 
-    // 🚨 Determine the final URL for the image display using the helper function
     const finalPhotoUrl = getProfilePhotoUrl(profile);
 
     return (
         <div className="container mt-3">
-            {status && <div className="alert alert-success">{status}</div>}
-            {errors.general && <div className="alert alert-danger">{errors.general}</div>}
+            {status && <div className="alert alert-success text-center py-2">{status}</div>}
+            {errors.general && <div className="alert alert-danger text-center py-2">{errors.general}</div>}
 
             {/* Profile Form */}
             <div className="card p-4 mb-4 shadow-sm border-0">
                 <h5 className="mb-3">Actualizar Información del Perfil</h5>
 
                 <form onSubmit={updateProfile}>
-                    {/* Profile Image */}
                     <div className="text-center mb-3">
                         <img
                             src={preview || finalPhotoUrl}
@@ -149,7 +151,6 @@ const Profile = ({ user }) => {
                         />
                     </div>
 
-                    {/* Custom File Input */}
                     <div className="mb-4 text-center">
                         <label
                             htmlFor="photo"
@@ -196,7 +197,6 @@ const Profile = ({ user }) => {
                         {errors.email && <div className="invalid-feedback">{errors.email[0]}</div>}
                     </div>
 
-                    {/* 🌈 Stylish Update Button */}
                     <button
                         type="submit"
                         className="btn w-100 py-2 fw-bold"
@@ -206,10 +206,7 @@ const Profile = ({ user }) => {
                             border: "none",
                             borderRadius: "10px",
                             boxShadow: "0 3px 10px rgba(0, 123, 255, 0.3)",
-                            transition: "all 0.3s ease",
                         }}
-                        onMouseOver={(e) => (e.target.style.opacity = "0.9")}
-                        onMouseOut={(e) => (e.target.style.opacity = "1")}
                     >
                         <i className="bi bi-cloud-upload me-2"></i>
                         Actualizar Perfil

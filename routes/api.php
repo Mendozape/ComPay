@@ -24,7 +24,7 @@ use App\Models\User;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json(
         User::with([
-            'address.street', 
+            'addresses.street', 
             'roles.permissions', // Permissions assigned through Roles (Spatie)
             'permissions'        // Direct permissions assigned to the user
         ])->findOrFail($request->user()->id)
@@ -51,8 +51,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/roles/count', [RolesController::class, 'count']);
     
     // --- RESIDENTS, FEES, ADDRESSES ---
-    Route::apiResource('/residents', ResidentController::class);
-    Route::get('/residents/unassigned/search', [ResidentController::class, 'searchUnassigned']);
     Route::apiResource('/fees', FeeController::class);
     
      // --- STREETS/CRUD ROUTES ---
@@ -90,7 +88,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('reports/payments-by-address', [ReportController::class, 'paymentsByAddressId']); 
     Route::get('reports/income-by-month', [ReportController::class, 'incomeByMonth']);
     Route::get('/reports/available-years', [ReportController::class, 'paymentYears']);
-    Route::get('reports/search-residents', [ResidentController::class, 'searchResidents']); 
     Route::get('reports/expenses', [ReportController::class, 'expenses']);
     
     // --- EXPENSES MODULE ROUTES ---

@@ -1523,3 +1523,1169 @@ Stack trace:
 [stacktrace]
 #0 {main}
 "} 
+[2026-01-12 21:00:46] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 21:03:08] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 21:16:20] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 21:20:08] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 21:29:33] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 21:42:08] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 21:45:05] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 22:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 22:25:02] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 22:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 23:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-12 23:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 00:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 00:14:02] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 00:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 01:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 01:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 02:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 02:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 03:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 03:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 04:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 04:30:30] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 05:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 05:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 06:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 06:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 07:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 07:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 07:42:38] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 08:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 08:24:44] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 08:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 09:00:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 09:30:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 10:00:12] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 10:30:12] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 11:00:12] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 11:30:12] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 12:00:12] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 12:30:12] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 12:38:32] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 13:00:12] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 13:07:38] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 13:18:26] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 13:30:12] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 13:48:11] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 13:56:19] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 13:58:59] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 14:07:59] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 14:11:56] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 14:14:55] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 
+[2026-01-13 16:16:13] local.ERROR: Uncaught Symfony\Component\HttpKernel\Exception\HttpException: No tienes permisos para realizar esta acción. in C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1426
+Stack trace:
+#0 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php(47): Illuminate\Foundation\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\laragon\www\ComPay\app\Exceptions\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(221): App\Exceptions\Handler->render(Object(Illuminate\Http\Request), Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#3 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(198): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#4 C:\laragon\www\ComPay\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php(258): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#5 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->Illuminate\Foundation\Bootstrap\{closure}(Object(Symfony\Component\HttpKernel\Exception\HttpException))
+#6 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught Symfony\\Component\\HttpKernel\\Exception\\HttpException: No tienes permisos para realizar esta acción. in C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426
+Stack trace:
+#0 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\helpers.php(47): Illuminate\\Foundation\\Application->abort(403, 'No tienes permi...', Array)
+#1 C:\\laragon\\www\\ComPay\\app\\Exceptions\\Handler.php(72): abort(403, 'No tienes permi...')
+#2 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(221): App\\Exceptions\\Handler->render(Object(Illuminate\\Http\\Request), Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#3 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(198): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->renderHttpResponse(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#4 C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#5 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(Object(Symfony\\Component\\HttpKernel\\Exception\\HttpException))
+#6 {main}
+  thrown at C:\\laragon\\www\\ComPay\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php:1426)
+[stacktrace]
+#0 {main}
+"} 

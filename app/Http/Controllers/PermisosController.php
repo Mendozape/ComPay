@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Facades\Log; // For better error logging
+use Illuminate\Support\Facades\Log;
 
 class PermisosController extends Controller
 {
@@ -21,7 +21,8 @@ class PermisosController extends Controller
      */
     public function index()
     {
-        $permisos = Permission::all(); // Fetches all permissions
+        // 🛡️ Security: Only return necessary fields for the list
+        $permisos = Permission::all(['id', 'name']); 
         return response()->json($permisos);
     }
 
@@ -33,10 +34,11 @@ class PermisosController extends Controller
         $permiso = Permission::find($id);
 
         if (!$permiso) {
-            return response()->json(['message' => 'Permiso no encontrado'], 404); // User message in Spanish
+            return response()->json(['message' => 'Permiso no encontrado'], 404);
         }
 
-        return response()->json($permiso);
+        // 🛡️ Security: Return only 'id' and 'name' to the frontend
+        return response()->json($permiso->only(['id', 'name']));
     }
 
     /**
@@ -44,35 +46,30 @@ class PermisosController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the incoming request
         $request->validate([
-            'name' => 'required|string|max:255|unique:permissions,name', // Added unique validation
+            'name' => 'required|string|max:255|unique:permissions,name',
         ]);
 
         try {
-            // Create the permission
             $permiso = Permission::create([
                 'name' => $request->input('name'),
                 'guard_name' => 'web',
             ]);
 
-            // 🚨 CRITICAL FIX: Clear Spatie cache immediately after creating the permission
+            // Clear Spatie cache
             app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
-            // Return success response
             return response()->json([
-                'message' => 'Permiso creado correctamente.', // User message in Spanish
-                'permiso' => $permiso
+                'message' => 'Permiso creado correctamente.',
+                'permiso' => $permiso->only(['id', 'name']) // 🛡️ Controlled output
             ], 201);
 
         } catch (\Exception $e) {
-            // Log the exception for debugging
             Log::error('Error creating permission: ' . $e->getMessage());
-
-            // Return an error response
             return response()->json([
-                'message' => 'Fallo al crear el permiso.', // User message in Spanish
-                'error' => $e->getMessage()
+                'message' => 'Fallo al crear el permiso.',
+                // Do not return $e->getMessage() in production for security
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error'
             ], 500);
         }
     }
@@ -82,26 +79,28 @@ class PermisosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:permissions,name,' . $id, // Added unique validation
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:permissions,name,' . $id,
         ]);
         
         try {
             $permiso = Permission::findOrFail($id);
-            $permiso->update(['name' => $request->input('name')]);
+            
+            // 🛡️ Explicitly update only the name to prevent injection of other fields
+            $permiso->update(['name' => $validated['name']]);
 
-            // 🚨 CRITICAL FIX: Clear Spatie cache immediately after updating the permission
+            // Clear Spatie cache
             app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
             return response()->json([
-                'message' => 'El permiso ha sido actualizado con éxito.', // User message in Spanish
-                'permiso' => $permiso
+                'message' => 'El permiso ha sido actualizado con éxito.',
+                'permiso' => $permiso->only(['id', 'name']) // 🛡️ Controlled output
             ]);
         } catch (\Exception $e) {
              Log::error('Error updating permission: ' . $e->getMessage());
              return response()->json([
-                'message' => 'Fallo al actualizar el permiso.', // User message in Spanish
-                'error' => $e->getMessage()
+                'message' => 'Fallo al actualizar el permiso.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error'
              ], 500);
         }
     }
@@ -114,15 +113,15 @@ class PermisosController extends Controller
         try {
             Permission::destroy($id);
             
-            // 🚨 CRITICAL FIX: Clear Spatie cache immediately after deleting the permission
+            // Clear Spatie cache
             app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
             
-            return response()->json(['message' => 'El permiso ha sido eliminado con éxito.']); // User message in Spanish
+            return response()->json(['message' => 'El permiso ha sido eliminado con éxito.']);
         } catch (\Exception $e) {
              Log::error('Error deleting permission: ' . $e->getMessage());
              return response()->json([
-                'message' => 'Fallo al eliminar el permiso.', // User message in Spanish
-                'error' => $e->getMessage()
+                'message' => 'Fallo al eliminar el permiso.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error'
              ], 500);
         }
     }

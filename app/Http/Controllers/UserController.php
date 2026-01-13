@@ -14,14 +14,15 @@ class UserController extends Controller
     {
         $this->middleware('permission:Ver-usuarios', ['only' => ['index', 'show', 'count']]);
         $this->middleware('permission:Crear-usuarios', ['only' => ['store']]);
-        $this->middleware('permission:Editar-usuarios', ['only' => ['update', 'restore']]); // Restore added
+        $this->middleware('permission:Editar-usuarios', ['only' => ['update', 'restore']]);
         $this->middleware('permission:Eliminar-usuarios', ['only' => ['destroy']]);
     }
 
     public function index(Request $request)
     {
         try {
-            $query = User::withTrashed()->with(['roles', 'address']);
+            // 🟢 FIXED: Use 'addresses' (plural)
+            $query = User::withTrashed()->with(['roles', 'addresses']);
 
             if ($request->has('search')) {
                 $search = $request->query('search');
@@ -43,24 +44,34 @@ class UserController extends Controller
                     'comments' => $user->comments,
                     'roles' => $user->roles,
                     'permissions' => $user->getAllPermissions(),
-                    'address' => $user->address,
+                    'addresses' => $user->addresses,
+                    // Compatibility for frontend validation
+                    'address' => $user->addresses->first(),
                     'deleted_at' => $user->deleted_at,
                 ];
             });
 
             return response()->json($usuarios);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            \Log::error("User Index Error: " . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error', 'message' => $e->getMessage()], 500);
         }
     }
 
     public function show($id)
     {
         try {
-            $user = User::withTrashed()->with(['roles', 'address'])->findOrFail($id);
+            // 🟢 FIX: Changed 'address' to 'addresses' to avoid the 500 error when loading the edit form
+            $user = User::withTrashed()->with(['roles', 'addresses'])->findOrFail($id);
+            
+            // Add a virtual property for frontend compatibility if needed
+            $user->address = $user->addresses->first();
             $user->all_permissions = $user->getAllPermissions();
+            
             return response()->json($user);
         } catch (\Exception $e) {
+            // This is what was causing your "Error al cargar los datos" message
+            \Log::error("User Show Error: " . $e->getMessage());
             return response()->json(['error' => 'Usuario no encontrado'], 404);
         }
     }
@@ -108,19 +119,14 @@ class UserController extends Controller
         return response()->json(['message' => 'Usuario actualizado', 'user' => $user]);
     }
 
-    /**
-     * 🟢 NEW METHOD: Restore a soft-deleted user
-     */
     public function restore($id)
     {
         try {
-            // Essential to use withTrashed() to find a record that is currently "deleted"
             $user = User::withTrashed()->findOrFail($id);
             $user->restore();
-
             return response()->json(['message' => 'Usuario reactivado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'No se pudo reactivar al usuario: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'No se pudo reactivar al usuario'], 500);
         }
     }
 
@@ -128,9 +134,12 @@ class UserController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            if ($user->address) {
-                return response()->json(['error' => 'El usuario tiene un predio asignado.'], 400);
+
+            // 🟢 FIX: Use 'addresses' and check if the collection is not empty
+            if ($user->addresses()->exists()) {
+                return response()->json(['error' => 'El usuario tiene uno o más predios asignados.'], 400);
             }
+
             $user->delete();
             return response()->json(['message' => 'Usuario desactivado']);
         } catch (\Exception $e) {
@@ -143,7 +152,6 @@ class UserController extends Controller
         return response()->json([
             'userCount' => User::count(),
             'roleCount' => Role::count(),
-            //'residentCount' => User::role('Residente')->count(),
         ]);
     }
 }

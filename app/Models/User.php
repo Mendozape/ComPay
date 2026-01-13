@@ -9,7 +9,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes; // Added
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -34,8 +34,8 @@ class User extends Authenticatable
     /**
      * Get the address associated with the user (if they are a resident).
      */
-    public function address(): HasOne
+    public function addresses(): HasMany
     {
-        return $this->hasOne(Address::class, 'user_id');
+        return $this->hasMany(Address::class, 'user_id');
     }
 }

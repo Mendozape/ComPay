@@ -12,6 +12,20 @@ const axiosOptions = {
     },
 };
 
+const customStyles = {
+    headCells: {
+        style: {
+            fontWeight: 'bold',
+            fontSize: '14px',
+        },
+    },
+    cells: {
+        style: {
+            fontSize: '13px',
+        },
+    },
+};
+
 const PaymentHistoryPage = ({ user }) => {
     const { id: addressId } = useParams(); 
     const navigate = useNavigate();
@@ -29,13 +43,39 @@ const PaymentHistoryPage = ({ user }) => {
     
     const [streetName, setStreetName] = useState('Cargando...'); 
 
-    // 🛡️ Initialize the permission hook
     const { can } = usePermission(user);
-
-    // 🛡️ User permission check for cancellation action
     const canCancelPayment = user ? can('Eliminar-pagos') : false;
 
-    // Helper to get Spanish month names
+    /**
+     * 🛡️ CLEANUP ON MOUNT
+     * Ensures that if we arrive here with a message from a previous page 
+     * (like an Edit form), it gets cleared immediately or handled.
+     */
+    useEffect(() => {
+        // Clear any leftover messages from other pages when this component loads
+        return () => {
+            setSuccessMessage(null);
+            setErrorMessage(null);
+        };
+    }, []);
+
+    /**
+     * 🛡️ AUTO-HIDE MESSAGES EFFECT
+     */
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => setSuccessMessage(null), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, setSuccessMessage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => setErrorMessage(null), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [errorMessage, setErrorMessage]);
+
     const getMonthName = (monthNum) => {
         const monthNames = [
             'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
@@ -44,20 +84,15 @@ const PaymentHistoryPage = ({ user }) => {
         return monthNum >= 1 && monthNum <= 12 ? monthNames[monthNum - 1] : 'N/A';
     };
     
-    // Formatting property address string
     const getFormattedAddress = () => {
         if (!addressDetails) return 'Cargando Dirección...';
         const { street_number, type } = addressDetails;
         return `${streetName} #${street_number} (${type})`;
     };
 
-    /**
-     * Fetch property details and payment history records
-     */
     const fetchPaymentHistory = async () => {
         setLoading(true);
         try {
-            // Fetch basic address data
             const addressResponse = await axios.get(`/api/addresses/${addressId}`, axiosOptions);
             const addressData = addressResponse.data.data || addressResponse.data;
             setAddressDetails(addressData);
@@ -67,7 +102,6 @@ const PaymentHistoryPage = ({ user }) => {
                 setStreetName(streetResponse.data.name || 'Calle Desconocida');
             }
             
-            // Fetch transaction history
             const paymentsResponse = await axios.get(`/api/address_payments/history/${addressId}`, axiosOptions);
             const fetchedPayments = paymentsResponse.data?.data || paymentsResponse.data || [];
             
@@ -86,7 +120,6 @@ const PaymentHistoryPage = ({ user }) => {
         if (addressId) fetchPaymentHistory();
     }, [addressId]); 
     
-    // Real-time filtering logic
     useEffect(() => {
         const paymentsArray = Array.isArray(payments) ? payments : []; 
         const result = paymentsArray.filter(payment => 
@@ -96,9 +129,6 @@ const PaymentHistoryPage = ({ user }) => {
         setFilteredPayments(result);
     }, [search, payments]);
 
-    /**
-     * Submit payment cancellation request
-     */
     const handleCancellation = async () => {
         if (!cancellationReason.trim()) {
             setErrorMessage('Debe especificar un motivo de cancelación.');
@@ -118,31 +148,31 @@ const PaymentHistoryPage = ({ user }) => {
         }
     };
 
-    // --- DATATABLE COLUMN DEFINITIONS ---
     const columns = useMemo(() => [
-        { name: 'Cuota', selector: row => row.fee ? row.fee.name : 'N/A', sortable: true, wrap: true }, 
+        { name: 'Cuota', selector: row => row.fee ? row.fee.name : 'N/A', sortable: true, wrap: true, width: '150px' }, 
         { 
             name: 'Monto', 
-            // 🟢 FIXED: Using 'amount_paid' to match backend field
             selector: row => row.amount_paid, 
             sortable: true, 
+            width: '120px',
             cell: row => (
-                <span className="fw-bold">
+                <div className="w-100 text-end fw-bold">
                     ${parseFloat(row.amount_paid || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </span>
+                </div>
             ),
-            right: true 
         },
         { 
             name: 'Periodo', 
-            selector: row => `${row.year}${row.month}`, // sort selector
+            selector: row => `${row.year}${row.month}`,
             cell: row => `${getMonthName(row.month)} ${row.year}`,
-            sortable: true 
+            sortable: true,
+            width: '150px'
         },
-        { name: 'Fecha Pago', selector: row => row.payment_date, sortable: true },
+        { name: 'Fecha Pago', selector: row => row.payment_date, sortable: true, width: '130px' },
         { 
             name: 'Estado', 
             selector: row => row.status, 
+            width: '110px',
             cell: row => (
                 <span className={`badge ${
                     row.deleted_at ? 'bg-secondary' : 
@@ -153,11 +183,12 @@ const PaymentHistoryPage = ({ user }) => {
                 </span>
             ),
         },
-        { name: 'Motivo Cancelación', selector: row => row.deletion_reason || '', wrap: true, grow: 1.5 },
+        { name: 'Motivo Cancelación', selector: row => row.deletion_reason || '', wrap: true, width: '200px' },
         {
             name: 'Acción',
+            width: '120px',
             cell: row => (
-                <div className="d-flex justify-content-end w-100">
+                <div className="d-flex justify-content-end w-100 pe-2">
                     {!row.deleted_at && canCancelPayment && (row.status === 'Pagado' || row.status === 'Condonado') ? (
                         <button 
                             className="btn btn-outline-danger btn-sm" 
@@ -174,15 +205,14 @@ const PaymentHistoryPage = ({ user }) => {
                     ) : null}
                 </div>
             ),
-            minWidth: '120px',
         },
     ], [canCancelPayment, navigate]);
 
     return (
         <div className="row mb-4 border border-primary rounded p-3 mx-auto mt-4" style={{ maxWidth: '95%', backgroundColor: '#fff' }}>
             <div className="col-md-12">
-                {successMessage && <div className="alert alert-success text-center">{successMessage}</div>}
-                {errorMessage && <div className="alert alert-danger text-center">{errorMessage}</div>}
+                {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
+                {errorMessage && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
                 
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <h4 className="text-primary mb-0"><i className="fas fa-history me-2"></i>Historial: {getFormattedAddress()}</h4>
@@ -207,6 +237,7 @@ const PaymentHistoryPage = ({ user }) => {
                             highlightOnHover
                             striped
                             responsive
+                            customStyles={customStyles}
                             noDataComponent={<div className="p-4">No hay pagos registrados para este predio.</div>}
                         />
                     </div>
@@ -217,24 +248,23 @@ const PaymentHistoryPage = ({ user }) => {
                 </button>
             </div>
             
-            {/* Cancellation Modal */}
-            <div className={`modal fade ${showCancelModal ? 'show d-block' : ''}`} tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className={`modal fade ${showCancelModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header bg-danger text-white">
                             <h5 className="modal-title">Confirmar Anulación</h5>
                             <button type="button" className="btn-close btn-close-white" onClick={() => setShowCancelModal(false)}></button>
                         </div>
-                        <div className="modal-body">
-                            <p>¿Confirma la anulación del pago de <strong>{paymentToCancel?.fee?.name}</strong> por valor de <strong>${parseFloat(paymentToCancel?.amount_paid || 0).toFixed(2)}</strong>?</p>
-                            <div className="form-group">
+                        <div className="modal-body text-center p-4">
+                            <p>¿Confirma la anulación del pago de <strong>{paymentToCancel?.fee?.name}</strong>?</p>
+                            <div className="form-group text-start">
                                 <label className="fw-bold small">Motivo de la Anulación *</label>
                                 <textarea
-                                    className="form-control"
+                                    className="form-control mt-2"
                                     rows="3"
                                     value={cancellationReason}
                                     onChange={(e) => setCancellationReason(e.target.value)}
-                                    placeholder="Explique por qué se anula este pago..."
+                                    placeholder="Explique por qué se anula..."
                                     required
                                 ></textarea>
                             </div>
@@ -242,7 +272,7 @@ const PaymentHistoryPage = ({ user }) => {
                         <div className="modal-footer">
                             <button className="btn btn-secondary" onClick={() => setShowCancelModal(false)}>Cerrar</button>
                             <button className="btn btn-danger" onClick={handleCancellation} disabled={!cancellationReason.trim()}>
-                                Confirmar Anulación
+                                Confirmar
                             </button>
                         </div>
                     </div>

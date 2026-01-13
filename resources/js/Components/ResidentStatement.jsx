@@ -4,7 +4,8 @@ import { MessageContext } from './MessageContext';
 
 const ResidentStatement = ({ user }) => {
     // --- STATE MANAGEMENT ---
-    const [addressDetails, setAddressDetails] = useState(null);
+    const [allAddresses, setAllAddresses] = useState([]); // Store all properties
+    const [addressDetails, setAddressDetails] = useState(null); // Selected property
     const [year, setYear] = useState(new Date().getFullYear());
     const [paidMonths, setPaidMonths] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,8 +28,7 @@ const ResidentStatement = ({ user }) => {
     const availableYears = [currentYear - 1, currentYear, currentYear + 1];
 
     /**
-     * Initial Effect: Loads the user's address.
-     * Permission is also checked here for the first load.
+     * Initial Effect: Loads the user's properties (Plural logic).
      */
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -45,13 +45,22 @@ const ResidentStatement = ({ user }) => {
                     return;
                 }
 
-                if (freshUser.address) {
+                // Handle Plural Relationship (addresses)
+                const userProperties = freshUser.addresses || [];
+                
+                if (userProperties.length > 0) {
+                    setAllAddresses(userProperties);
+                    setAddressDetails(userProperties[0]); // Default to the first one
+                } else if (freshUser.address) {
+                    // Fallback if it still arrives as a single object
+                    setAllAddresses([freshUser.address]);
                     setAddressDetails(freshUser.address);
                 } else {
-                    setErrorMessage("No active property linked to this account.");
+                    setErrorMessage("No se encontraron propiedades vinculadas a esta cuenta.");
                 }
             } catch (error) {
                 console.error("Error during initial data fetch:", error);
+                setErrorMessage("Error al conectar con el servidor.");
             } finally {
                 setLoading(false);
             }
@@ -60,9 +69,7 @@ const ResidentStatement = ({ user }) => {
     }, []);
 
     /**
-     * Effect: Fetch payments. 
-     * This runs every time the 'year' or 'addressDetails' changes.
-     * If the server returns 403, we know the permission was revoked.
+     * Effect: Fetch payments for the selected address and year.
      */
     useEffect(() => {
         const fetchStatement = async () => {
@@ -73,15 +80,12 @@ const ResidentStatement = ({ user }) => {
                     `/api/address_payments/paid-months/${addressDetails.id}/${year}`,
                     axiosOptions
                 );
-                
-                // If the request succeeds, it means the user STILL has permissions
                 setPaidMonths(response.data.months || []);
                 setIsAuthorized(true); 
             } catch (error) {
-                // 🛑 CRITICAL: If the backend returns 403 (Forbidden), permission was revoked
                 if (error.response && error.response.status === 403) {
                     setIsAuthorized(false);
-                    setPaidMonths([]); // Clear data to avoid showing "Pending"
+                    setPaidMonths([]);
                 }
                 console.error("Error fetching payment status:", error);
             }
@@ -96,19 +100,16 @@ const ResidentStatement = ({ user }) => {
     if (loading) return (
         <div className="text-center mt-5">
             <div className="spinner-border text-primary" role="status"></div>
-            <p className="mt-2">Verifying data...</p>
+            <p className="mt-2">Verificando información...</p>
         </div>
     );
 
-    // 2. Unauthorized View (Permission Revoked)
-    // This will replace the entire interface if isAuthorized becomes false
+    // 2. Unauthorized View
     if (!isAuthorized) return (
         <div className="container mt-5">
             <div className="alert alert-danger shadow-sm border-danger">
                 <h4 className="alert-heading"><i className="fas fa-lock me-2"></i>Acceso Denegado</h4>
-                <p>Sus permisos han sido actualizados. Ya no tiene autorización para ver este módulo.</p>
-                <hr />
-                <p className="mb-0 small">Por favor, contacte al administrador si cree que esto es un error.</p>
+                <p>No tiene autorización para ver este módulo.</p>
             </div>
         </div>
     );
@@ -123,21 +124,38 @@ const ResidentStatement = ({ user }) => {
                 <div className="card-body">
                     {addressDetails ? (
                         <>
-                            <div className="row mb-4 bg-light p-3 rounded mx-0 border">
-                                <div className="col-md-6">
-                                    <small className="text-muted text-uppercase fw-bold">Propiedad:</small>
-                                    <h4 className="fw-bold mb-0">
-                                        {addressDetails.street?.name || 'Calle'} #{addressDetails.street_number}
-                                    </h4>
-                                    <span className="badge bg-secondary">{addressDetails.type}</span>
+                            <div className="row mb-4 bg-light p-3 rounded mx-0 border align-items-center">
+                                <div className="col-md-5">
+                                    <small className="text-muted text-uppercase fw-bold">Propiedad Seleccionada:</small>
+                                    
+                                    {/* IF MULTIPLE PROPERTIES EXIST, SHOW SELECTOR */}
+                                    {allAddresses.length > 1 ? (
+                                        <select 
+                                            className="form-select form-select-lg fw-bold border-primary mt-1"
+                                            value={addressDetails.id}
+                                            onChange={(e) => setAddressDetails(allAddresses.find(a => a.id === parseInt(e.target.value)))}
+                                        >
+                                            {allAddresses.map(addr => (
+                                                <option key={addr.id} value={addr.id}>
+                                                    {addr.street?.name} #{addr.street_number} ({addr.type})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <h4 className="fw-bold mb-0">
+                                            {addressDetails.street?.name || 'Calle'} #{addressDetails.street_number}
+                                            <br/><span className="badge bg-secondary fs-6 mt-1">{addressDetails.type}</span>
+                                        </h4>
+                                    )}
                                 </div>
-                                <div className="col-md-6 text-md-end mt-3 mt-md-0">
-                                    <label className="form-label text-muted d-block small fw-bold">CONSULTAR OTRO AÑO:</label>
+
+                                <div className="col-md-7 text-md-end mt-3 mt-md-0">
+                                    <label className="form-label text-muted d-block small fw-bold">CAMBIAR AÑO:</label>
                                     <div className="btn-group">
                                         {availableYears.map(y => (
                                             <button 
                                                 key={y} 
-                                                className={`btn btn-sm ${year === y ? 'btn-primary' : 'btn-outline-primary'}`}
+                                                className={`btn ${year === y ? 'btn-primary' : 'btn-outline-primary'}`}
                                                 onClick={() => setYear(y)}
                                             >
                                                 {y}
@@ -153,7 +171,7 @@ const ResidentStatement = ({ user }) => {
                                         <tr>
                                             <th className="text-start ps-4">Mes</th>
                                             <th>Estado</th>
-                                            <th>Concepto (Cuota)</th>
+                                            <th>Concepto</th>
                                             <th>Fecha de Pago</th>
                                             <th className="text-end pe-4">Monto</th>
                                         </tr>
@@ -192,7 +210,7 @@ const ResidentStatement = ({ user }) => {
                     ) : (
                         <div className="alert alert-warning border-warning shadow-sm">
                             <i className="fas fa-exclamation-circle me-2"></i>
-                            <strong>No tiene ninguna Propiedad asignada:</strong>
+                            <strong>No tiene ninguna Propiedad asignada.</strong>
                         </div>
                     )}
                 </div>

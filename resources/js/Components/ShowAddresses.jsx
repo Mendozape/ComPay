@@ -10,7 +10,6 @@ const endpoint = '/api/addresses';
 
 /**
  * 🎨 CUSTOM STYLES FOR DATA TABLE
- * Centralized styles to avoid passing unknown props to the DOM elements.
  */
 const customStyles = {
     headCells: {
@@ -38,6 +37,35 @@ const ShowAddresses = ({ user }) => {
     const [addressToDeactivate, setAddressToDeactivate] = useState(null);
     const [deactivationReason, setDeactivationReason] = useState('');
 
+    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
+    const navigate = useNavigate();
+
+    /**
+     * 🛡️ AUTO-HIDE & CLEANUP EFFECTS
+     */
+    // 1. Clear messages when the component is first loaded (Mount)
+    useEffect(() => {
+        return () => {
+            // Optional: clear on unmount if preferred
+        };
+    }, []);
+
+    // 2. Success message timer
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => setSuccessMessage(null), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, setSuccessMessage]);
+
+    // 3. Error message timer
+    useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => setErrorMessage(null), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [errorMessage, setErrorMessage]);
+
     // --- PERMISSIONS CONFIGURATION ---
     const { can } = usePermission(user);
     const canCreate = user ? can('Crear-predios') : false;
@@ -46,18 +74,12 @@ const ShowAddresses = ({ user }) => {
     const canCreatePayment = user ? can('Crear-pagos') : false;
     const canViewPayments = user ? can('Ver-pagos') : false;
 
-    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
-    const navigate = useNavigate();
-
     // --- NAVIGATION FUNCTIONS ---
     const editAddress = (id) => navigate(`/addresses/edit/${id}`);
     const createAddress = () => navigate('/addresses/create');
     const createPayment = (id) => navigate(`/addresses/payment/${id}`);
     const viewPaymentHistory = (id) => navigate(`/addresses/payments/history/${id}`);
 
-    /**
-     * Fetches all address records from the API.
-     */
     const fetchAddresses = async () => {
         setLoading(true);
         try {
@@ -80,9 +102,6 @@ const ShowAddresses = ({ user }) => {
         fetchAddresses();
     }, []);
 
-    /**
-     * Real-time search filter.
-     */
     useEffect(() => {
         const result = addresses.filter(addr => {
             const streetName = addr.street?.name || ''; 
@@ -96,9 +115,6 @@ const ShowAddresses = ({ user }) => {
         setFilteredAddresses(result);
     }, [search, addresses]);
 
-    /**
-     * Deactivate address logic
-     */
     const deactivateAddress = async (id, reason) => {
         try {
             const response = await axios.delete(`${endpoint}/${id}`, {
@@ -136,8 +152,6 @@ const ShowAddresses = ({ user }) => {
         deactivateAddress(addressToDeactivate, deactivationReason);
     }
 
-    // --- DATA TABLE COLUMNS ---
-    // FIX: Replaced minWidth with fixed width and used flex classes for Actions
     const columns = useMemo(() => [
         {
             name: 'Dirección',
@@ -272,9 +286,9 @@ const ShowAddresses = ({ user }) => {
                             <h5 className="modal-title">Confirmar Baja de Catálogo</h5>
                             <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
                         </div>
-                        <div className="modal-body">
-                            <p className="text-center">¿Está seguro de que desea dar de baja esta dirección? Esta acción es irreversible.</p>
-                            <div className="form-group mt-3">
+                        <div className="modal-body text-center p-4">
+                            <p>¿Está seguro de que desea dar de baja esta dirección? Esta acción es irreversible.</p>
+                            <div className="form-group mt-3 text-start">
                                 <label htmlFor="reason">Motivo de la Baja <span className="text-danger">*</span></label>
                                 <textarea
                                     id="reason"
