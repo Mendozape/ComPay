@@ -130,7 +130,7 @@ class AddressPaymentController extends Controller
                 ->withTrashed()
                 ->with(['fee' => fn($q) => $q->withTrashed()])
                 ->orderBy('year', 'desc')
-                ->orderBy('month', 'desc')
+                ->orderBy('month', 'asc')
                 ->get();
 
             return response()->json(['success' => true, 'data' => $payments]);
