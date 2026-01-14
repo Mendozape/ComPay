@@ -7,11 +7,12 @@ import usePermission from "../hooks/usePermission";
 
 const axiosOptions = {
     withCredentials: true,
-    headers: {
-        Accept: 'application/json',
-    },
+    headers: { Accept: 'application/json' },
 };
 
+/**
+ * 🎨 CUSTOM STYLES FOR DATA TABLE
+ */
 const customStyles = {
     headCells: {
         style: {
@@ -31,6 +32,7 @@ const PaymentHistoryPage = ({ user }) => {
     const navigate = useNavigate();
     const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     
+    // --- STATE MANAGEMENT ---
     const [payments, setPayments] = useState([]);
     const [addressDetails, setAddressDetails] = useState(null); 
     const [loading, setLoading] = useState(true);
@@ -40,239 +42,207 @@ const PaymentHistoryPage = ({ user }) => {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [paymentToCancel, setPaymentToCancel] = useState(null);
     const [cancellationReason, setCancellationReason] = useState('');
-    
     const [streetName, setStreetName] = useState('Cargando...'); 
 
+    // --- PERMISSIONS ---
     const { can } = usePermission(user);
     const canCancelPayment = user ? can('Eliminar-pagos') : false;
 
     /**
-     * 🛡️ CLEANUP ON MOUNT
-     * Ensures that if we arrive here with a message from a previous page 
-     * (like an Edit form), it gets cleared immediately or handled.
+     * Fetch payment history and address details on mount
      */
     useEffect(() => {
-        // Clear any leftover messages from other pages when this component loads
-        return () => {
-            setSuccessMessage(null);
-            setErrorMessage(null);
-        };
-    }, []);
-
-    /**
-     * 🛡️ AUTO-HIDE MESSAGES EFFECT
-     */
-    useEffect(() => {
-        if (successMessage) {
-            const timer = setTimeout(() => setSuccessMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, setSuccessMessage]);
-
-    useEffect(() => {
-        if (errorMessage) {
-            const timer = setTimeout(() => setErrorMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [errorMessage, setErrorMessage]);
-
-    const getMonthName = (monthNum) => {
-        const monthNames = [
-            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-        ];
-        return monthNum >= 1 && monthNum <= 12 ? monthNames[monthNum - 1] : 'N/A';
-    };
-    
-    const getFormattedAddress = () => {
-        if (!addressDetails) return 'Cargando Dirección...';
-        const { street_number, type } = addressDetails;
-        return `${streetName} #${street_number} (${type})`;
-    };
+        if (addressId) fetchPaymentHistory();
+    }, [addressId]); 
 
     const fetchPaymentHistory = async () => {
         setLoading(true);
         try {
+            // Fetch the specific address details
             const addressResponse = await axios.get(`/api/addresses/${addressId}`, axiosOptions);
             const addressData = addressResponse.data.data || addressResponse.data;
             setAddressDetails(addressData);
 
+            // Fetch street name if street_id is present
             if (addressData && addressData.street_id) {
                 const streetResponse = await axios.get(`/api/streets/${addressData.street_id}`, axiosOptions);
                 setStreetName(streetResponse.data.name || 'Calle Desconocida');
             }
             
+            // Fetch payment records for this specific address
             const paymentsResponse = await axios.get(`/api/address_payments/history/${addressId}`, axiosOptions);
-            const fetchedPayments = paymentsResponse.data?.data || paymentsResponse.data || [];
-            
-            setPayments(fetchedPayments);
-            setFilteredPayments(fetchedPayments);
-            
+            const data = paymentsResponse.data?.data || paymentsResponse.data || [];
+            setPayments(data);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error("Error fetching history:", error);
             setErrorMessage('Error al cargar el historial de pagos.'); 
         } finally {
             setLoading(false);
         }
     };
 
+    /**
+     * Handle search filtering logic
+     */
     useEffect(() => {
-        if (addressId) fetchPaymentHistory();
-    }, [addressId]); 
-    
-    useEffect(() => {
-        const paymentsArray = Array.isArray(payments) ? payments : []; 
-        const result = paymentsArray.filter(payment => 
-            (payment.fee?.name || '').toLowerCase().includes(search.toLowerCase()) ||
-            (payment.status || '').toLowerCase().includes(search.toLowerCase())
+        const result = payments.filter(p => 
+            (p.fee?.name || '').toLowerCase().includes(search.toLowerCase()) ||
+            (p.status || '').toLowerCase().includes(search.toLowerCase())
         );
         setFilteredPayments(result);
     }, [search, payments]);
 
+    /**
+     * Send cancellation request to the API
+     */
     const handleCancellation = async () => {
-        if (!cancellationReason.trim()) {
-            setErrorMessage('Debe especificar un motivo de cancelación.');
-            return;
-        }
-
+        if (!cancellationReason.trim()) return;
         try {
-            await axios.post(`/api/address_payments/cancel/${paymentToCancel.id}`, 
-                { reason: cancellationReason }, 
-                axiosOptions
-            );
+            await axios.post(`/api/address_payments/cancel/${paymentToCancel.id}`, { reason: cancellationReason }, axiosOptions);
             setSuccessMessage('Pago anulado exitosamente.');
             setShowCancelModal(false); 
             fetchPaymentHistory(); 
         } catch (error) {
-            setErrorMessage(error.response?.data?.message || 'Fallo al anular el pago.');
+            setErrorMessage('Fallo al anular el pago.');
         }
     };
 
+    /**
+     * 🔥 Helper to format the address header with Type and Occupation Status
+     */
+    const getFormattedHeader = () => {
+        if (!addressDetails) return 'Cargando...';
+        const { street_number, type, status } = addressDetails;
+        const typeLabel = type === 'CASA' ? `CASA (${status})` : type;
+        return `${streetName} #${street_number} - ${typeLabel}`;
+    };
+
+    /**
+     * Table columns configuration
+     */
     const columns = useMemo(() => [
-        { name: 'Cuota', selector: row => row.fee ? row.fee.name : 'N/A', sortable: true, wrap: true, width: '150px' }, 
+        { name: 'Cuota', selector: row => row.fee?.name || 'N/A', sortable: true, width: '180px' }, 
         { 
             name: 'Monto', 
             selector: row => row.amount_paid, 
             sortable: true, 
             width: '120px',
-            cell: row => (
-                <div className="w-100 text-end fw-bold">
-                    ${parseFloat(row.amount_paid || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </div>
-            ),
+            cell: row => <div className="fw-bold text-end w-100">${parseFloat(row.amount_paid || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
         },
         { 
             name: 'Periodo', 
-            selector: row => `${row.year}${row.month}`,
-            cell: row => `${getMonthName(row.month)} ${row.year}`,
+            cell: row => `${row.month}/${row.year}`,
             sortable: true,
-            width: '150px'
+            width: '120px'
         },
         { name: 'Fecha Pago', selector: row => row.payment_date, sortable: true, width: '130px' },
         { 
             name: 'Estado', 
-            selector: row => row.status, 
-            width: '110px',
-            cell: row => (
-                <span className={`badge ${
-                    row.deleted_at ? 'bg-secondary' : 
-                    row.status === 'Pagado' ? 'bg-success' : 
-                    row.status === 'Condonado' ? 'bg-info' : 'bg-danger'
-                }`}>
-                    {row.deleted_at ? 'Anulado' : row.status}
-                </span>
-            ),
+            width: '120px',
+            cell: row => {
+                // 🎨 COLOR LOGIC: PAGADO = SUCCESS (GREEN)
+                let badgeClass = "bg-warning text-dark"; // Default: Pending
+                let statusText = row.status;
+
+                if (row.deleted_at) {
+                    badgeClass = "bg-danger"; // Red for Cancelled/Deleted
+                    statusText = "Anulado";
+                } else if (row.status === 'Pagado') {
+                    badgeClass = "bg-success"; // ✅ GREEN FOR PAID
+                } else if (row.status === 'Condonado') {
+                    badgeClass = "bg-info text-white"; // Blue for Condoned
+                }
+
+                return <span className={`badge ${badgeClass} shadow-sm px-3`}>{statusText}</span>;
+            }
         },
-        { name: 'Motivo Cancelación', selector: row => row.deletion_reason || '', wrap: true, width: '200px' },
+        { name: 'Motivo', selector: row => row.deletion_reason || '', wrap: true, width: '200px' },
         {
             name: 'Acción',
             width: '120px',
             cell: row => (
                 <div className="d-flex justify-content-end w-100 pe-2">
-                    {!row.deleted_at && canCancelPayment && (row.status === 'Pagado' || row.status === 'Condonado') ? (
+                    {!row.deleted_at && canCancelPayment && (row.status === 'Pagado' || row.status === 'Condonado') && (
                         <button 
-                            className="btn btn-outline-danger btn-sm" 
-                            onClick={() => {
-                                setPaymentToCancel(row);
-                                setShowCancelModal(true);
-                                setCancellationReason('');
-                            }}
+                            className="btn btn-danger btn-sm shadow-sm" 
+                            onClick={() => { setPaymentToCancel(row); setShowCancelModal(true); setCancellationReason(''); }}
                         >
-                            <i className="fas fa-times me-1"></i> Anular
+                            <i className="fas fa-ban me-1"></i> Anular
                         </button>
-                    ) : row.deleted_at ? (
-                        <small className="text-muted italic">Sin acciones</small>
-                    ) : null}
+                    )}
                 </div>
             ),
         },
-    ], [canCancelPayment, navigate]);
+    ], [canCancelPayment]);
 
     return (
-        <div className="row mb-4 border border-primary rounded p-3 mx-auto mt-4" style={{ maxWidth: '95%', backgroundColor: '#fff' }}>
-            <div className="col-md-12">
-                {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-                {errorMessage && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
-                
+        <div className="container-fluid mt-4">
+            <div className="mb-4 border border-primary rounded p-3 bg-white shadow-sm mx-auto" style={{ maxWidth: '95%' }}>
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h4 className="text-primary mb-0"><i className="fas fa-history me-2"></i>Historial: {getFormattedAddress()}</h4>
-                    <div className="w-25">
-                        <input
-                            type="text"
-                            className="form-control form-control-sm"
-                            placeholder="Buscar por Cuota o Estado..." 
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
+                    <h4 className="text-primary mb-0">
+                        <i className="fas fa-history me-2"></i>Historial: {getFormattedHeader()}
+                    </h4>
+                    <input 
+                        type="text" 
+                        className="form-control form-control-sm w-25" 
+                        placeholder="Buscar cuota o estado..." 
+                        value={search} 
+                        onChange={(e) => setSearch(e.target.value)} 
+                    />
                 </div>
 
-                <div className="card shadow-sm mb-4">
-                    <div className="card-body p-0">
-                        <DataTable
-                            columns={columns}
-                            data={filteredPayments}
-                            progressPending={loading}
-                            pagination
-                            highlightOnHover
-                            striped
-                            responsive
-                            customStyles={customStyles}
-                            noDataComponent={<div className="p-4">No hay pagos registrados para este predio.</div>}
-                        />
-                    </div>
-                </div>
+                {/* Status messages */}
+                {successMessage && <div className="alert alert-success text-center py-2 shadow-sm">{successMessage}</div>}
+                {errorMessage && <div className="alert alert-danger text-center py-2 shadow-sm">{errorMessage}</div>}
+
+                <DataTable
+                    columns={columns}
+                    data={filteredPayments}
+                    progressPending={loading}
+                    pagination
+                    highlightOnHover
+                    striped
+                    customStyles={customStyles}
+                    noDataComponent={<div className="p-4">No hay pagos registrados para este predio.</div>}
+                />
                 
-                <button className="btn btn-secondary btn-sm" onClick={() => navigate('/addresses')}>
-                    <i className="fas fa-arrow-left me-1"></i> Volver a Direcciones
-                </button>
+                <div className="mt-3 border-top pt-3">
+                    <button className="btn btn-secondary btn-sm" onClick={() => navigate('/addresses')}>
+                        <i className="fas fa-arrow-left me-1"></i> Volver a Direcciones
+                    </button>
+                </div>
             </div>
             
+            {/* CANCELLATION MODAL */}
             <div className={`modal fade ${showCancelModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
-                <div className="modal-dialog">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
-                            <h5 className="modal-title">Confirmar Anulación</h5>
+                            <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Anulación</h5>
                             <button type="button" className="btn-close btn-close-white" onClick={() => setShowCancelModal(false)}></button>
                         </div>
-                        <div className="modal-body text-center p-4">
-                            <p>¿Confirma la anulación del pago de <strong>{paymentToCancel?.fee?.name}</strong>?</p>
-                            <div className="form-group text-start">
-                                <label className="fw-bold small">Motivo de la Anulación *</label>
-                                <textarea
-                                    className="form-control mt-2"
-                                    rows="3"
-                                    value={cancellationReason}
-                                    onChange={(e) => setCancellationReason(e.target.value)}
-                                    placeholder="Explique por qué se anula..."
+                        <div className="modal-body p-4">
+                            <p className="text-center">¿Confirma la anulación del pago de <strong>{paymentToCancel?.fee?.name}</strong>?</p>
+                            <div className="form-group">
+                                <label className="fw-bold mb-2">Motivo de la Anulación *</label>
+                                <textarea 
+                                    className="form-control" 
+                                    rows="3" 
+                                    value={cancellationReason} 
+                                    onChange={(e) => setCancellationReason(e.target.value)} 
+                                    placeholder="Explique por qué se anula este pago..." 
                                     required
                                 ></textarea>
                             </div>
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-footer bg-light">
                             <button className="btn btn-secondary" onClick={() => setShowCancelModal(false)}>Cerrar</button>
-                            <button className="btn btn-danger" onClick={handleCancellation} disabled={!cancellationReason.trim()}>
-                                Confirmar
+                            <button 
+                                className="btn btn-danger shadow-sm" 
+                                onClick={handleCancellation} 
+                                disabled={!cancellationReason.trim()}
+                            >
+                                Confirmar Anulación
                             </button>
                         </div>
                     </div>

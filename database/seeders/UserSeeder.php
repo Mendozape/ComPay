@@ -16,20 +16,20 @@ class UserSeeder extends Seeder
     {
         $passwordHash = Hash::make('123456');
         User::create([
-            'name' => 'Erasto Mendoza Perez',
+            'name' => 'Administrador',
             'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
             'password' => $passwordHash,
             'remember_token' => Str::random(10),
         ])->assignRole('Admin');
         
-        User::create([
+        /*User::create([
             'name' => 'Maximiliano Mendoza Alvarado',
             'email' => 'erasto.mendoza.perez@gmail.com',
             'email_verified_at' => now(),
             'password' => $passwordHash,
             'remember_token' => Str::random(10),
-        ])->assignRole('Presidente');
+        ])->assignRole('Presidente');*/
 
     }
 }

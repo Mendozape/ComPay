@@ -3,7 +3,6 @@ import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { MessageContext } from "./MessageContext";
-// 🚨 Import the hook
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = "/api/permisos";
@@ -17,7 +16,6 @@ const axiosOptions = {
 
 /**
  * 🎨 CUSTOM STYLES FOR DATA TABLE
- * To avoid console warnings regarding unknown props like 'right' or 'minWidth'.
  */
 const customStyles = {
   headCells: {
@@ -26,9 +24,13 @@ const customStyles = {
       fontSize: '14px',
     },
   },
+  cells: {
+    style: {
+      fontSize: '13px',
+    },
+  },
 };
 
-// 🚨 Receive 'user' as a prop from App.jsx
 export default function PermisosList({ user }) {
   const [permisos, setPermisos] = useState([]);
   const [filteredPermisos, setFilteredPermisos] = useState([]);
@@ -37,10 +39,10 @@ export default function PermisosList({ user }) {
   const [showModal, setShowModal] = useState(false);
   const [permisoToDelete, setPermisoToDelete] = useState(null);
 
-  // 🚨 Initialize the permission hook
+  // Initialize permission hook
   const { can } = usePermission(user);
 
-  // 🛡️ Extraction to constants for stable permission evaluation
+  // Permission constants
   const canCreate = user ? can('Crear-permisos') : false;
   const canEdit = user ? can('Editar-permisos') : false;
   const canDelete = user ? can('Eliminar-permisos') : false;
@@ -83,7 +85,7 @@ export default function PermisosList({ user }) {
   }, [search, permisos]);
 
   /**
-   * Logical or physical deletion of the permission
+   * Logical deletion of the permission
    */
   const deletePermiso = async () => {
     if (!permisoToDelete) return;
@@ -105,9 +107,7 @@ export default function PermisosList({ user }) {
   const createPermiso = () => navigate("/permissions/create");
 
   /**
-   * 🛡️ COLUMNS DEFINITION
-   * FIX: Removed 'right: true' to prevent DOM warnings.
-   * Using 'width' and Bootstrap alignment classes instead.
+   * Columns definition with standardized colors
    */
   const columns = useMemo(() => [
     { 
@@ -120,7 +120,7 @@ export default function PermisosList({ user }) {
       name: "Acciones",
       cell: (row) => (
         <div className="d-flex justify-content-end gap-2 w-100 pe-2">
-          {/* 🛡️ Permission check for Edit button */}
+          {/* 🛡️ Edit - Standard Info Blue */}
           {canEdit && (
             <button
               className="btn btn-info btn-sm text-white"
@@ -130,7 +130,7 @@ export default function PermisosList({ user }) {
             </button>
           )}
 
-          {/* 🛡️ Permission check for Delete button */}
+          {/* 🛡️ Delete - Standard Danger Red */}
           {canDelete && (
             <button
               className="btn btn-danger btn-sm"
@@ -165,23 +165,23 @@ export default function PermisosList({ user }) {
 
   return (
     <div className="mb-4 border border-primary rounded p-3 bg-white">
-      <div className="d-flex justify-content-between mb-2">
-        {/* 🛡️ Permission check for Create button */}
+      <div className="d-flex justify-content-between align-items-center mb-3">
         {canCreate ? (
+          // 🟢 Standard Success Green
           <button
             className="btn btn-success btn-sm text-white"
             onClick={createPermiso}
           >
-            Crear Permiso
+            <i className="fas fa-plus-circle me-1"></i> Crear Permiso
           </button>
         ) : (
-          <div /> // Layout spacer
+          <div /> 
         )}
         
         <input
           type="text"
           className="form-control form-control-sm w-25"
-          placeholder="Buscar por nombre"
+          placeholder="Buscar por nombre..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -195,29 +195,30 @@ export default function PermisosList({ user }) {
       )}
 
       <DataTable
-        title="Lista de Permisos"
+        title="Gestión de Permisos"
         columns={columns}
         data={filteredPermisos}
         progressPending={loading}
         pagination
         paginationPerPage={10}
-        paginationRowsPerPageOptions={[5, 10, 15, 20]}
         highlightOnHover
         striped
+        responsive
         customStyles={customStyles}
       />
 
-      {/* Bootstrap Modal Confirm */}
+      {/* MODAL DE CONFIRMACIÓN */}
       <div
         className={`modal fade ${showModal ? "show d-block" : "d-none"}`}
         style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
         tabIndex="-1"
-        role="dialog"
       >
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content border-0 shadow">
             <div className="modal-header bg-danger text-white">
-              <h5 className="modal-title">Confirmar Eliminación</h5>
+              <h5 className="modal-title">
+                <i className="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+              </h5>
               <button
                 type="button"
                 className="btn-close btn-close-white"
@@ -225,9 +226,9 @@ export default function PermisosList({ user }) {
               ></button>
             </div>
             <div className="modal-body text-center p-4">
-              ¿Está seguro de que desea eliminar este permiso?
+              <p className="mb-0">¿Está seguro de que desea eliminar este permiso? Esta acción no se puede deshacer.</p>
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer bg-light">
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -240,7 +241,7 @@ export default function PermisosList({ user }) {
                 className="btn btn-danger"
                 onClick={deletePermiso}
               >
-                Eliminar
+                Eliminar Permanentemente
               </button>
             </div>
           </div>

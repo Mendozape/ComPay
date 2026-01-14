@@ -3,14 +3,12 @@ import DataTable from 'react-data-table-component';
 import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// 🚨 Import the hook
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = '/api/expenses';
 
 /**
  * 🎨 CUSTOM STYLES FOR DATA TABLE
- * Centralized styles to avoid passing unknown props like 'minWidth' to the DOM.
  */
 const customStyles = {
     headCells: {
@@ -26,9 +24,8 @@ const customStyles = {
     },
 };
 
-// 🚨 Receive 'user' as a prop from App.jsx
 const ExpensesTable = ({ user }) => {
-    // State variables for data and filtering
+    // --- STATE VARIABLES ---
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -40,15 +37,12 @@ const ExpensesTable = ({ user }) => {
     const [deletionReason, setDeletionReason] = useState(''); 
     const [modalError, setModalError] = useState(''); 
 
-    // 🚨 Initialize the permission hook
+    // --- PERMISSIONS ---
     const { can } = usePermission(user);
-
-    // 🛡️ Extraction to constants for stable permission evaluation
     const canCreate = user ? can('Crear-gastos') : false;
     const canEdit = user ? can('Editar-gastos') : false;
     const canDelete = user ? can('Eliminar-gastos') : false;
 
-    // Context hook for global messages
     const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
@@ -63,8 +57,9 @@ const ExpensesTable = ({ user }) => {
                 headers: { Accept: 'application/json' },
             });
             const data = response.data.data || response.data;
-            setExpenses(data);
-            setFilteredExpenses(data);
+            const expensesArray = Array.isArray(data) ? data : [];
+            setExpenses(expensesArray);
+            setFilteredExpenses(expensesArray);
         } catch (error) {
             console.error('Error fetching expenses:', error);
             setErrorMessage('Fallo al cargar los gastos.');
@@ -94,8 +89,6 @@ const ExpensesTable = ({ user }) => {
      */
     const deleteExpense = async (id, reason) => {
         setModalError('');
-        setSuccessMessage('');
-
         try {
             const response = await axios.delete(`${endpoint}/${id}`, {
                 withCredentials: true,
@@ -143,12 +136,16 @@ const ExpensesTable = ({ user }) => {
 
     /**
      * 🛡️ COLUMNS DEFINITION
-     * FIX: Replaced 'minWidth' with 'width' and removed 'right: true'.
-     * Using Bootstrap classes for alignment in Actions column.
      */
     const columns = useMemo(() => [
         { name: 'Categoría', selector: row => row.category?.name || 'N/A', sortable: true, width: '200px' },
-        { name: 'Monto', selector: row => `$${parseFloat(row.amount).toFixed(2)}`, sortable: true, width: '120px' },
+        { 
+            name: 'Monto', 
+            selector: row => row.amount, 
+            sortable: true, 
+            width: '120px',
+            cell: row => `$${parseFloat(row.amount).toLocaleString(undefined, {minimumFractionDigits: 2})}` 
+        },
         { 
             name: 'Fecha', 
             selector: row => new Date(row.expense_date).toLocaleDateString('es-MX'), 
@@ -170,7 +167,7 @@ const ExpensesTable = ({ user }) => {
             name: 'Acciones',
             cell: row => (
                 <div className="d-flex gap-2 justify-content-end w-100 pe-2">
-                    {/* 🛡️ Permission check for Edit button */}
+                    {/* 🛡️ Edit - Standard Info Blue */}
                     {canEdit && (
                         <button 
                             className="btn btn-info btn-sm text-white" 
@@ -181,7 +178,7 @@ const ExpensesTable = ({ user }) => {
                         </button>
                     )}
                     
-                    {/* 🛡️ Permission check for Delete button */}
+                    {/* 🛡️ Delete - Standard Danger Red */}
                     {canDelete && (
                         <>
                             {row.deleted_at ? (
@@ -206,7 +203,7 @@ const ExpensesTable = ({ user }) => {
 
     const NoDataComponent = () => (
         <div style={{ padding: '24px', textAlign: 'center', fontSize: '1.1em', color: '#6c757d' }}>
-            No hay registros para mostrar.
+            No hay gastos registrados.
         </div>
     );
 
@@ -220,21 +217,19 @@ const ExpensesTable = ({ user }) => {
 
     return (
         <div className="container-fluid mt-4">
-            <h2 className="mb-4 text-primary">Lista de Gastos</h2>
-
-            <div className="mb-4 border border-primary rounded p-3 bg-white">
+            <div className="mb-4 border border-primary rounded p-3 bg-white shadow-sm">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                    {/* 🛡️ Permission check for Create button */}
                     {canCreate ? (
+                        // 🟢 Standard Success Green
                         <button className='btn btn-success btn-sm text-white' onClick={createExpense}>
-                            Crear Gasto
+                            <i className="fas fa-plus-circle me-1"></i> Registrar Gasto
                         </button>
                     ) : <div />}
                     
                     <input
                         type="text"
                         className="form-control form-control-sm w-25"
-                        placeholder="Buscar por categoría o monto"
+                        placeholder="Buscar por categoría o monto..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -244,7 +239,7 @@ const ExpensesTable = ({ user }) => {
                 {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
                 <DataTable
-                    title="Lista de Gastos"
+                    title="Control de Gastos"
                     columns={columns}
                     data={filteredExpenses}
                     progressPending={loading}
@@ -252,40 +247,40 @@ const ExpensesTable = ({ user }) => {
                     pagination
                     highlightOnHover
                     striped
+                    responsive
                     customStyles={customStyles}
                 />
             </div>
 
-            {/* MODAL FOR DELETION */}
+            {/* MODAL DE CONFIRMACIÓN */}
             <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
-                            <h5 className="modal-title">Confirmar Eliminación</h5>
+                            <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
                             <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
                         </div>
                         <div className="modal-body p-4">
-                            <p className="text-center">¿Está seguro de que desea eliminar este gasto?</p>
-                            <div className="form-group mt-3">
-                                <label htmlFor="reason">Motivo de la Eliminación <span className="text-danger">*</span></label>
+                            <p className="text-center mb-3">¿Está seguro de que desea eliminar este registro de gasto?</p>
+                            <div className="form-group">
+                                <label htmlFor="reason" className="fw-bold mb-2">Motivo de la Eliminación <span className="text-danger">*</span></label>
                                 <textarea
                                     id="reason"
-                                    className="form-control mt-2"
+                                    className="form-control"
                                     rows="3"
                                     value={deletionReason}
                                     onChange={(e) => setDeletionReason(e.target.value)}
-                                    placeholder="Ingrese la razón de la eliminación (mínimo 10 caracteres)."
+                                    placeholder="Ingrese la razón (mínimo 10 caracteres)..."
                                 />
                             </div>
                             {modalError && <div className="alert alert-danger text-center mt-3 py-2">{modalError}</div>}
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-footer bg-light">
                             <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button>
                             <button 
                                 type="button" 
                                 className="btn btn-danger" 
                                 onClick={handleDeletion}
-                                disabled={!deletionReason.trim()}
                             >
                                 Confirmar Eliminación
                             </button>

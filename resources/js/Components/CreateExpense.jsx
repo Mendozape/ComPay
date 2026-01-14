@@ -1,186 +1,188 @@
-// src/components/CreateExpense.jsx
-
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 
-
 const endpoint = '/api/expenses';
-const categoriesEndpoint = '/api/expense_categories'; // Endpoint for catalog
+const categoriesEndpoint = '/api/expense_categories';
 
-// Helper function to get today's date in YYYY-MM-DD format
+/**
+ * Helper function to get today's date in YYYY-MM-DD format
+ */
 const getTodayDate = () => {
     return new Date().toISOString().split('T')[0];
 };
 
 export default function CreateExpense() {
-    // State variables
+    // --- STATE VARIABLES ---
     const [expenseCategoryId, setExpenseCategoryId] = useState('');
-    // REMOVED: const [name, setName] = useState(''); // Removed the redundant name state
     const [amount, setAmount] = useState('');
     const [expenseDate, setExpenseDate] = useState(getTodayDate());
     const [formValidated, setFormValidated] = useState(false);
-
-    // NEW STATES: To hold the list of categories from the API
     const [categories, setCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
 
-    // Context and navigation hooks
+    // --- CONTEXT AND NAVIGATION ---
     const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
-    // Effect to fetch categories on component mount
+    /**
+     * Fetch active expense categories on component mount
+     */
     useEffect(() => {
         const fetchCategories = async () => {
-            // Clear any stale error message immediately before starting the fetch.
             setErrorMessage(''); 
-            
             try {
                 const res = await axios.get(categoriesEndpoint, {
                     withCredentials: true,
                     headers: { Accept: 'application/json' },
                 });
                 
-                // If the request succeeds, filter active categories.
-                const activeCategories = res.data.data.filter(cat => !cat.deleted_at);
+                // Filter active categories from the response
+                const data = res.data.data || res.data;
+                const activeCategories = data.filter(cat => !cat.deleted_at);
                 setCategories(activeCategories);
-                
-                // Re-add explicit clearance after successful async operation to override any late context error.
                 setErrorMessage(''); 
                 
             } catch (error) {
-                // Log the detailed error response
                 console.error("Error fetching categories:", error.response || error);
-                
-                // Display error only if the API call genuinely failed
-                setErrorMessage("Fallo al cargar el catálogo de categorías."); // USER-FACING SPANISH TEXT
+                setErrorMessage("Fallo al cargar el catálogo de categorías.");
             } finally {
-                // Set loading state to false regardless of success/failure
                 setLoadingCategories(false);
             }
         };
         fetchCategories();
-    }, [setErrorMessage]); // Dependency array included to satisfy linter
+    }, [setErrorMessage]);
 
-
+    /**
+     * Handle form submission to store a new expense
+     */
     const store = async (e) => {
         e.preventDefault();
         const form = e.currentTarget;
 
-        // Frontend validation check
-        // We only check category ID and amount, as 'name' is now entirely optional/removed
+        // Form validation check
         if (form.checkValidity() === false || !expenseCategoryId) { 
             e.stopPropagation();
-            setErrorMessage('Por favor, complete todos los campos obligatorios correctamente.'); // USER-FACING SPANISH TEXT
+            setErrorMessage('Por favor, complete todos los campos obligatorios correctamente.');
         } else {
-            // Build FormData to send to the API
-            const formData = new FormData();
-            formData.append('expense_category_id', expenseCategoryId);
-            // REMOVED: formData.append('name', name);
-            formData.append('amount', amount);
-            formData.append('expense_date', expenseDate);
+            const payload = {
+                expense_category_id: expenseCategoryId,
+                amount: amount,
+                expense_date: expenseDate
+            };
 
             try {
-                await axios.post(endpoint, formData, {
+                await axios.post(endpoint, payload, {
                     withCredentials: true,
                     headers: { Accept: 'application/json' },
                 });
 
-                // Success feedback and redirect
-                setSuccessMessage('Gasto creado exitosamente.'); // USER-FACING SPANISH TEXT
+                setSuccessMessage('Gasto registrado exitosamente.');
                 setErrorMessage('');
                 navigate('/expenses');
             } catch (error) {
-                // API error handling
-                let errorMsg = 'Fallo al crear el gasto. Por favor, revise los datos.'; // USER-FACING SPANISH TEXT
-
-                if (error.response?.data?.errors) {
-                    errorMsg = 'Error de validación. Revise los campos.'; // USER-FACING SPANISH TEXT
-                }
-                setErrorMessage(errorMsg);
                 console.error('Error creating expense:', error.response || error);
+                const errorMsg = error.response?.data?.errors 
+                    ? 'Error de validación. Revise los campos.' 
+                    : 'Fallo al registrar el gasto.';
+                setErrorMessage(errorMsg);
             }
         }
         setFormValidated(true);
     };
 
     return (
-        <div className="container-fluid">
-            <h2 className="mb-4">Crear Nuevo Gasto</h2>
-            <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
-
-                {/* Error Message Display */}
-                <div className="col-md-12 mt-4">
-                    {errorMessage && (
-                        <div className="alert alert-danger text-center">
-                            {errorMessage}
+        <div className="container mt-4">
+            <div className="row justify-content-center">
+                <div className="col-md-8">
+                    <div className="card shadow-sm border-0">
+                        {/* Standardized Success Green Header */}
+                        <div className="card-header bg-success text-white p-3">
+                            <h2 className="mb-0 h4">
+                                <i className="fas fa-money-bill-wave me-2"></i>Registrar Nuevo Gasto
+                            </h2>
                         </div>
-                    )}
-                </div>
+                        <div className="card-body p-4">
+                            {/* Error Alert Display */}
+                            {errorMessage && (
+                                <div className="alert alert-danger text-center shadow-sm">
+                                    {errorMessage}
+                                </div>
+                            )}
 
-                {/* 1. Category Select (REPLACES NAME INPUT) */}
-                <div className='mb-3'>
-                    <label className='form-label'>Categoría del Gasto</label>
-                    <select
-                        value={expenseCategoryId}
-                        onChange={(e) => setExpenseCategoryId(e.target.value)}
-                        className='form-control'
-                        required
-                        disabled={loadingCategories}
-                    >
-                        <option value="">-- Seleccione una Categoría --</option>
-                        {loadingCategories ? (
-                            <option value="" disabled>Cargando categorías...</option>
-                        ) : categories.map(cat => (
-                            <option key={cat.id} value={cat.id}>
-                                {cat.name}
-                            </option>
-                        ))}
-                    </select>
-                    <div className="invalid-feedback">
-                        Por favor, seleccione la categoría del gasto.
+                            <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
+                                <div className="row g-3">
+                                    {/* 1. Category Selection */}
+                                    <div className='col-md-12 mb-3'>
+                                        <label className='form-label fw-bold'>Categoría del Gasto <span className="text-danger">*</span></label>
+                                        <select
+                                            value={expenseCategoryId}
+                                            onChange={(e) => setExpenseCategoryId(e.target.value)}
+                                            className='form-select'
+                                            required
+                                            disabled={loadingCategories}
+                                        >
+                                            <option value="">-- Seleccione una Categoría --</option>
+                                            {categories.map(cat => (
+                                                <option key={cat.id} value={cat.id}>
+                                                    {cat.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="invalid-feedback">Por favor, seleccione una categoría.</div>
+                                    </div>
+
+                                    {/* 2. Amount Input */}
+                                    <div className='col-md-6 mb-3'>
+                                        <label className='form-label fw-bold'>Monto Total <span className="text-danger">*</span></label>
+                                        <div className="input-group">
+                                            <span className="input-group-text">$</span>
+                                            <input
+                                                value={amount}
+                                                onChange={(e) => setAmount(e.target.value)}
+                                                type='number'
+                                                step='0.01'
+                                                className='form-control'
+                                                placeholder="0.00"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="invalid-feedback">Ingrese un monto válido.</div>
+                                    </div>
+
+                                    {/* 3. Date Input */}
+                                    <div className='col-md-6 mb-3'>
+                                        <label className='form-label fw-bold'>Fecha del Gasto <span className="text-danger">*</span></label>
+                                        <input
+                                            value={expenseDate}
+                                            onChange={(e) => setExpenseDate(e.target.value)}
+                                            type='date'
+                                            className='form-control'
+                                            required
+                                        />
+                                        <div className="invalid-feedback">Seleccione la fecha del gasto.</div>
+                                    </div>
+                                </div>
+
+                                {/* Action Buttons */}
+                                <div className="d-flex gap-2 mt-4 pt-3 border-top">
+                                    <button type='submit' className='btn btn-success px-4 shadow-sm'>
+                                        <i className="fas fa-save me-2"></i>Guardar Gasto
+                                    </button>
+                                    <button 
+                                        type='button' 
+                                        className="btn btn-secondary px-4" 
+                                        onClick={() => navigate('/expenses')}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-
-                {/* REMOVED: 1.5. Optional Description/Name Field */}
-
-                {/* 2. Amount Field */}
-                <div className='mb-3'>
-                    <label className='form-label'>Monto Total</label>
-                    <input
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        type='number'
-                        step='0.01' // Allows decimal values
-                        className='form-control'
-                        required
-                    />
-                    <div className="invalid-feedback">
-                        Por favor, ingrese el monto total del gasto.
-                    </div>
-                </div>
-
-                {/* 3. Expense Date Field */}
-                <div className='mb-3'>
-                    <label className='form-label'>Fecha del Gasto</label>
-                    <input
-                        value={expenseDate}
-                        onChange={(e) => setExpenseDate(e.target.value)}
-                        type='date'
-                        className='form-control'
-                        required
-                    />
-                    <div className="invalid-feedback">
-                        Por favor, ingrese la fecha en que ocurrió el gasto.
-                    </div>
-                </div>
-
-                {/* Submit Button */}
-                <button type='submit' className='btn btn-success'>
-                    Guardar Gasto
-                </button>
-            </form>
+            </div>
         </div>
     );
 }

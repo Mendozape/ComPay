@@ -9,7 +9,6 @@ const CreateUser = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    // NEW: Unified fields for residents/users
     const [phone, setPhone] = useState("");
     const [comments, setComments] = useState("");
 
@@ -22,22 +21,24 @@ const CreateUser = () => {
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [roleError, setRoleError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    // Context for global messages and navigation
-    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } =
-        useContext(MessageContext);
+    // --- CONTEXT AND NAVIGATION ---
+    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     const axiosOptions = { withCredentials: true, headers: { Accept: "application/json" } };
 
-    // Clear global messages on component mount
+    /**
+     * Clear context messages on mount
+     */
     useEffect(() => {
         setSuccessMessage("");
         setErrorMessage("");
     }, [setSuccessMessage, setErrorMessage]);
 
     /**
-     * Resets all form fields and error states to initial values
+     * Reset local states
      */
     const resetForm = () => {
         setName("");
@@ -54,7 +55,7 @@ const CreateUser = () => {
     };
 
     /**
-     * Fetches available roles from the API to populate the select dropdown
+     * Fetch available roles from API
      */
     useEffect(() => {
         const fetchRoles = async () => {
@@ -62,6 +63,7 @@ const CreateUser = () => {
                 const res = await axios.get("/api/roles", axiosOptions);
                 setRoles(res.data);
             } catch (err) {
+                console.error("Error fetching roles:", err);
                 setErrorMessage("Error al cargar los roles.");
             }
         };
@@ -69,42 +71,26 @@ const CreateUser = () => {
     }, []);
 
     /**
-     * Handles the form submission logic
+     * Handle form submission to create a new user/resident
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
-        // Clear previous messages
-        setSuccessMessage("");
+        // Reset error messages
         setErrorMessage("");
         setNameError("");
         setEmailError("");
         setPasswordError("");
         setRoleError("");
 
-        // --- CLIENT-SIDE VALIDATIONS ---
-        if (!name.trim()) {
-            setNameError("El Nombre es obligatorio");
-            return;
-        }
-        if (!email.trim()) {
-            setEmailError("El Correo Electrónico es obligatorio");
-            return;
-        }
-        if (!password) {
-            setPasswordError("La Contraseña es obligatoria");
-            return;
-        }
-        if (password !== confirmPassword) {
-            setPasswordError("Las Contraseñas no coinciden");
-            return;
-        }
-        if (!selectedRole) {
-            setRoleError("Por favor, seleccione un rol");
-            return;
-        }
+        // --- FRONTEND VALIDATIONS ---
+        if (!name.trim()) { setNameError("El Nombre es obligatorio"); setLoading(false); return; }
+        if (!email.trim()) { setEmailError("El Correo Electrónico es obligatorio"); setLoading(false); return; }
+        if (!password) { setPasswordError("La Contraseña es obligatoria"); setLoading(false); return; }
+        if (password !== confirmPassword) { setPasswordError("Las Contraseñas no coinciden"); setLoading(false); return; }
+        if (!selectedRole) { setRoleError("Por favor, seleccione un rol"); setLoading(false); return; }
 
-        // --- API SUBMISSION ---
         try {
             await axios.post(
                 "/api/usuarios",
@@ -115,7 +101,7 @@ const CreateUser = () => {
                     password_confirmation: confirmPassword,
                     phone,
                     comments,
-                    roles: [selectedRole], // Laravel expects an array of role names or IDs
+                    roles: [selectedRole],
                 },
                 axiosOptions
             );
@@ -127,82 +113,89 @@ const CreateUser = () => {
         } catch (err) {
             console.error(err);
             let errorMsg = "Error al crear el usuario.";
-
-            if (err.response) {
-                // Priority: Backend custom error -> Laravel message -> Fallback
-                errorMsg = err.response.data.error || err.response.data.message || errorMsg;
+            if (err.response?.data?.errors) {
+                // Mapping Laravel validation errors if present
+                const firstError = Object.values(err.response.data.errors)[0][0];
+                errorMsg = firstError || errorMsg;
+            } else if (err.response?.data?.message) {
+                errorMsg = err.response.data.message;
             }
-
             setErrorMessage(errorMsg);
-            // Auto-hide error after 5 seconds
-            setTimeout(() => setErrorMessage(""), 5000);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="container mt-4">
-            <div className="card shadow-sm">
-                <div className="card-header bg-primary text-white">
-                    <h2 className="mb-0 h4">Crear Nuevo Usuario o Residente</h2>
+            <div className="card shadow-sm border-0">
+                {/* Standardized Success Green Header */}
+                <div className="card-header bg-success text-white p-3">
+                    <h2 className="mb-0 h4">
+                        <i className="fas fa-user-plus me-2"></i>Crear Nuevo Usuario o Residente
+                    </h2>
                 </div>
-                <div className="card-body">
-                    {/* Global messages */}
-                    {successMessage && <div className="alert alert-success">{successMessage}</div>}
-                    {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+                <div className="card-body p-4">
+                    {/* Error Alerts */}
+                    {errorMessage && <div className="alert alert-danger text-center shadow-sm">{errorMessage}</div>}
 
                     <form onSubmit={handleSubmit}>
-                        <div className="row">
+                        <div className="row g-3 mb-4">
                             {/* Full Name */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Nombre Completo</label>
+                            <div className="col-md-6">
+                                <label className="form-label fw-bold">Nombre Completo <span className="text-danger">*</span></label>
                                 <input
                                     type="text"
                                     className={`form-control ${nameError ? "is-invalid" : ""}`}
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    autoComplete="off"
                                     placeholder="Ej. Juan Pérez"
+                                    required
                                 />
                                 {nameError && <div className="invalid-feedback">{nameError}</div>}
                             </div>
 
                             {/* Email Address */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Correo Electrónico</label>
+                            <div className="col-md-6">
+                                <label className="form-label fw-bold">Correo Electrónico <span className="text-danger">*</span></label>
                                 <input
                                     type="email"
                                     className={`form-control ${emailError ? "is-invalid" : ""}`}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    autoComplete="off"
                                     placeholder="correo@ejemplo.com"
+                                    required
                                 />
                                 {emailError && <div className="invalid-feedback">{emailError}</div>}
                             </div>
                         </div>
 
-                        <div className="row">
-                            {/* Phone Number - NEW UNIFIED FIELD */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Teléfono de Contacto</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-                                    placeholder="10 dígitos"
-                                />
+                        <div className="row g-3 mb-4">
+                            {/* Phone Number */}
+                            <div className="col-md-6">
+                                <label className="form-label fw-bold">Teléfono de Contacto</label>
+                                <div className="input-group">
+                                    <span className="input-group-text"><i className="fas fa-phone"></i></span>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
+                                        placeholder="10 dígitos"
+                                    />
+                                </div>
                             </div>
 
                             {/* Role Selection */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Rol del Sistema</label>
+                            <div className="col-md-6">
+                                <label className="form-label fw-bold">Rol del Sistema <span className="text-danger">*</span></label>
                                 <select
-                                    className={`form-control ${roleError ? "is-invalid" : ""}`}
+                                    className={`form-select ${roleError ? "is-invalid" : ""}`}
                                     value={selectedRole}
                                     onChange={(e) => setSelectedRole(e.target.value)}
+                                    required
                                 >
-                                    <option value="">Seleccione un rol</option>
+                                    <option value="">Seleccione un rol...</option>
                                     {roles.map((r) => (
                                         <option key={r.id} value={r.name}>
                                             {r.name}
@@ -213,50 +206,52 @@ const CreateUser = () => {
                             </div>
                         </div>
 
-                        <div className="row">
+                        <div className="row g-3 mb-4 p-3 bg-light rounded border">
                             {/* Password */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Contraseña</label>
+                            <div className="col-md-6">
+                                <label className="form-label fw-bold">Contraseña <span className="text-danger">*</span></label>
                                 <input
                                     type="password"
                                     className={`form-control ${passwordError ? "is-invalid" : ""}`}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     autoComplete="new-password"
+                                    required
                                 />
                             </div>
 
                             {/* Confirm Password */}
-                            <div className="col-md-6 mb-3">
-                                <label className="form-label">Confirmar Contraseña</label>
+                            <div className="col-md-6">
+                                <label className="form-label fw-bold">Confirmar Contraseña <span className="text-danger">*</span></label>
                                 <input
                                     type="password"
                                     className={`form-control ${passwordError ? "is-invalid" : ""}`}
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     autoComplete="new-password"
+                                    required
                                 />
-                                {passwordError && <div className="invalid-feedback">{passwordError}</div>}
+                                {passwordError && <div className="invalid-feedback d-block">{passwordError}</div>}
                             </div>
                         </div>
 
-                        {/* Comments - NEW UNIFIED FIELD */}
-                        <div className="mb-3">
-                            <label className="form-label">Comentarios / Notas Internas</label>
+                        {/* Internal Comments */}
+                        <div className="mb-4">
+                            <label className="form-label fw-bold">Comentarios / Notas Internas</label>
                             <textarea
                                 className="form-control"
-                                rows="2"
+                                rows="3"
                                 value={comments}
                                 onChange={(e) => setComments(e.target.value)}
-                                placeholder="Notas adicionales sobre el usuario o residente..."
+                                placeholder="Notas adicionales sobre este registro..."
                             ></textarea>
                         </div>
 
-                        <div className="d-flex gap-2">
-                            <button type="submit" className="btn btn-success px-4">
-                                <i className="fas fa-save me-1"></i> Guardar
+                        <div className="d-flex gap-2 pt-3 border-top">
+                            <button type="submit" className="btn btn-success px-4 shadow-sm" disabled={loading}>
+                                <i className="fas fa-save me-2"></i>{loading ? "Guardando..." : "Guardar Usuario"}
                             </button>
-                            <button type="button" className="btn btn-secondary" onClick={() => navigate("/users")}>
+                            <button type="button" className="btn btn-secondary px-4" onClick={() => navigate("/users")}>
                                 Cancelar
                             </button>
                         </div>

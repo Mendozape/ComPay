@@ -4,111 +4,139 @@ import axios from "axios";
 import { MessageContext } from "./MessageContext";
 
 export default function PermisoCreate() {
-const [name, setName] = useState("");
-const [permissions, setPermissions] = useState([]);
-const [nameError, setNameError] = useState(""); // Para validación debajo del input
-const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } =
-    useContext(MessageContext);
-const navigate = useNavigate();
+    // --- STATE VARIABLES ---
+    const [name, setName] = useState("");
+    const [permissions, setPermissions] = useState([]);
+    const [nameError, setNameError] = useState(""); 
+    
+    // --- CONTEXT AND NAVIGATION ---
+    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
+    const navigate = useNavigate();
 
-const axiosOptions = {
-    withCredentials: true,
-    headers: { Accept: "application/json" },
-};
-
-// Fetch existing permissions
-useEffect(() => {
-    const fetchPermissions = async () => {
-      try {
-        const res = await axios.get("/api/permisos", axiosOptions);
-        setPermissions(res.data);
-      } catch (err) {
-        console.error("Error fetching permissions:", err);
-        setErrorMessage("Error al cargar los permisos existentes.");
-      }
+    const axiosOptions = {
+        withCredentials: true,
+        headers: { Accept: "application/json" },
     };
-    fetchPermissions();
-}, []);
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    setNameError(""); // Reset local validation error
+    /**
+     * Fetch existing permissions to prevent duplicates on the frontend
+     */
+    useEffect(() => {
+        const fetchPermissions = async () => {
+            try {
+                const res = await axios.get("/api/permisos", axiosOptions);
+                const data = res.data.data || res.data;
+                setPermissions(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error("Error fetching permissions:", err);
+            }
+        };
+        fetchPermissions();
+    }, []);
 
-    if (!name.trim()) {
-      setNameError("El nombre del permiso es obligatorio."); // Mensaje debajo del input
-      setErrorMessage("Debe ingresar un nombre de permiso."); // Mensaje global
-      return;
-    }
+    /**
+     * Handle form submission to create a new permission
+     */
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setNameError(""); 
+        setErrorMessage(null);
 
-    if (permissions.some((p) => p.name.toLowerCase() === name.toLowerCase())) {
-      setNameError("Este nombre de permiso ya existe."); // Mensaje debajo del input
-      setErrorMessage("El nombre de permiso ya existe."); // Mensaje global
-      return;
-    }
+        // Basic validation
+        if (!name.trim()) {
+            setNameError("El nombre del permiso es obligatorio.");
+            return;
+        }
 
-    try {
-      const res = await axios.post("/api/permisos", { name }, axiosOptions);
-      setSuccessMessage(res.data.message || "Permiso creado exitosamente.");
-      setErrorMessage(null);
-      navigate("/permissions");
-    } catch (error) {
-      console.error("Error creating permiso:", error);
-      setErrorMessage(error.response?.data?.message || "Error al crear el permiso.");
-      setSuccessMessage(null);
-    }
-};
+        // Duplicate check
+        if (permissions.some((p) => p.name.toLowerCase() === name.trim().toLowerCase())) {
+            setNameError("Este nombre de permiso ya existe.");
+            return;
+        }
 
-return (
-    <div className="row mb-4">
-      <div className="col-md-8 offset-md-2">
-        <div className="border rounded p-4 bg-white shadow-sm">
-          <h2 className="text-2xl font-bold mb-4 text-center">Crear Permiso</h2>
+        try {
+            const res = await axios.post("/api/permisos", { name: name.trim() }, axiosOptions);
+            setSuccessMessage(res.data.message || "Permiso creado exitosamente.");
+            navigate("/permissions");
+        } catch (error) {
+            console.error("Error creating permission:", error);
+            const errorMsg = error.response?.data?.message || "Error al crear el permiso.";
+            setErrorMessage(errorMsg);
+        }
+    };
 
-          {/* Show success/error messages */}
-          <div className="col-md-12 mb-3">
-            {successMessage && (
-              <div className="alert alert-success text-center">{successMessage}</div>
-            )}
-            {errorMessage && (
-              <div className="alert alert-danger text-center">{errorMessage}</div>
-            )}
-          </div>
+    return (
+        <div className="container mt-4">
+            <div className="row justify-content-center">
+                <div className="col-md-8">
+                    <div className="card shadow-sm border-0">
+                        {/* Standardized Success Green Header */}
+                        <div className="card-header bg-success text-white p-3">
+                            <h2 className="mb-0 h4">
+                                <i className="fas fa-plus-circle me-2"></i>Crear Nuevo Permiso
+                            </h2>
+                        </div>
 
-          {/* Input for permission name */}
-          <div className="mb-3">
-            <label className="form-label font-semibold">Nombre del Permiso</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={`form-control ${nameError ? "is-invalid" : ""}`}
-              placeholder="Ingrese el nombre del permiso"
-            />
-            {nameError && <div className="invalid-feedback">{nameError}</div>}
-          </div>
+                        <div className="card-body p-4">
+                            {/* Error Alert Display */}
+                            {errorMessage && (
+                                <div className="alert alert-danger text-center shadow-sm">
+                                    {errorMessage}
+                                </div>
+                            )}
 
-          {/* Existing permissions below input */}
-          {permissions.length > 0 && (
-            <div className="mb-3">
-              <label className="form-label font-semibold">Permisos existentes</label>
-              <ul className="list-group">
-                {permissions.map((p) => (
-                  <li key={p.id} className="list-group-item">
-                    {p.name}
-                  </li>
-                ))}
-              </ul>
+                            <form onSubmit={handleSubmit}>
+                                {/* Permission Name Input */}
+                                <div className="mb-4">
+                                    <label className="form-label fw-bold">Nombre del Permiso <span className="text-danger">*</span></label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className={`form-control ${nameError ? "is-invalid" : ""}`}
+                                        placeholder="Ej. Crear-reportes"
+                                        required
+                                    />
+                                    {nameError && <div className="invalid-feedback">{nameError}</div>}
+                                </div>
+
+                                {/* List of current permissions as reference */}
+                                {permissions.length > 0 && (
+                                    <div className="mb-4">
+                                        <label className="form-label fw-bold text-muted small">
+                                            <i className="fas fa-list me-1"></i>Permisos ya registrados:
+                                        </label>
+                                        <div 
+                                            className="border rounded bg-light p-2 overflow-auto" 
+                                            style={{ maxHeight: '150px' }}
+                                        >
+                                            {permissions.map((p) => (
+                                                <span key={p.id} className="badge bg-secondary m-1">
+                                                    {p.name}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Action Buttons */}
+                                <div className="d-flex gap-2 pt-3 border-top">
+                                    <button type="submit" className="btn btn-success px-4 shadow-sm">
+                                        <i className="fas fa-save me-2"></i>Guardar Permiso
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-secondary px-4" 
+                                        onClick={() => navigate("/permissions")}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-          )}
-
-          {/* Submit button */}
-          <div className="d-flex justify-content-end">
-            <button onClick={handleSubmit} className="btn btn-success text-white">
-              Crear
-            </button>
-          </div>
         </div>
-      </div>
-    </div>
-);
+    );
 }

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany; 
-// Importamos el modelo User para la relación
 use App\Models\User;
 
 class Address extends Model
@@ -18,12 +17,12 @@ class Address extends Model
 
     /**
      * The attributes that are mass assignable.
-     * UPDATED: Changed resident_id to user_id and removed legacy resident_user/password.
      */
     protected $fillable = [
-        'user_id',       // Links directly to the Users table
+        'user_id',       
         'street_id',
         'type',
+        'status',       
         'street_number',
         'community',
         'comments',
@@ -36,7 +35,6 @@ class Address extends Model
 
     /**
      * Relationship with the User (Resident).
-     * An Address belongs to a User who has the 'Residente' role.
      */
     public function user(): BelongsTo
     {
@@ -53,14 +51,16 @@ class Address extends Model
     
     /**
      * Relationship with AddressPayment.
+     * UPDATED: Using the naming convention for AddressPayments
      */
-    public function payments(): HasMany 
+    public function addressPayments(): HasMany 
     {
         return $this->hasMany(AddressPayment::class, 'address_id');
     }
 
-    /**
-     * Note: generateResidentCredentials was removed because residents 
-     * now use their official User email/password for authentication.
-     */
+    // Alias to maintain compatibility with existing code if needed
+    public function payments(): HasMany 
+    {
+        return $this->addressPayments();
+    }
 }

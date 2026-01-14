@@ -8,21 +8,21 @@ export default function EditRole() {
   const [name, setName] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [selectedPermissions, setSelectedPermissions] = useState([]);
-  const { setSuccessMessage, setErrorMessage } = useContext(MessageContext);
+  const [loading, setLoading] = useState(true);
+  const [selectAll, setSelectAll] = useState(false);
+
+  const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
   const navigate = useNavigate();
   const axiosOptions = { withCredentials: true, headers: { Accept: "application/json" } };
-
-  // 🚨 State for the "Select All" checkbox
-  const [selectAll, setSelectAll] = useState(false);
 
   // Fetch role and permissions on mount
   useEffect(() => {
     const fetchRole = async () => {
       try {
+        setLoading(true);
         // Fetch specific role data
         const resRole = await axios.get(`/api/roles/${id}`, axiosOptions);
         setName(resRole.data.name);
-        // Map permissions to IDs for initial selection
         setSelectedPermissions(resRole.data.permissions.map(p => p.id));
 
         // Fetch all available permissions
@@ -31,57 +31,48 @@ export default function EditRole() {
       } catch (err) {
         console.error("Error fetching role:", err);
         setErrorMessage("Fallo al cargar el rol.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchRole();
-  }, [id, setErrorMessage]);
+  }, [id]);
 
-  // 🚨 Sync "Select All" state with individual selections
+  // Sync "Select All" state
   useEffect(() => {
-    // Only run if both arrays are populated
     if (permissions.length > 0) {
-        // Check if the number of selected permissions equals the total number of permissions
-        const isAllSelected = selectedPermissions.length === permissions.length;
-        setSelectAll(isAllSelected);
+      setSelectAll(selectedPermissions.length === permissions.length);
     }
   }, [selectedPermissions, permissions]);
 
-
-  // Toggle permission selection
   const togglePermission = (id) => {
     setSelectedPermissions(prev =>
       prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
     );
   };
   
-  // 🚨 Function to handle the "Select All" checkbox change
   const toggleSelectAll = () => {
-      // If currently all selected, deselect all (set to empty array)
       if (selectAll) {
           setSelectedPermissions([]);
       } else {
-          // If not all selected, select all (map all permission IDs)
-          const allPermissionIds = permissions.map((p) => p.id);
-          setSelectedPermissions(allPermissionIds);
+          setSelectedPermissions(permissions.map((p) => p.id));
       }
       setSelectAll(!selectAll);
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!name.trim()) {
+        setErrorMessage("El nombre del rol es obligatorio.");
+        return;
+    }
     try {
-      // Send PUT request to backend
       const res = await axios.put(
         `/api/roles/${id}`,
         { name, permission: selectedPermissions },
         axiosOptions
       );
-
-      // Save backend success message in context
       setSuccessMessage(res.data.message || "Rol actualizado exitosamente.");
-
-      // Navigate back to roles list
       navigate("/roles");
     } catch (err) {
       console.error("Error updating role:", err);
@@ -89,66 +80,98 @@ export default function EditRole() {
     }
   };
 
+  if (loading) return (
+      <div className="text-center mt-5">
+          <div className="spinner-border text-success" role="status"></div>
+          <p className="mt-2">Cargando datos del rol...</p>
+      </div>
+  );
+
   return (
-    <div className="row mb-4">
-      <div className="col-md-8 offset-md-2">
-        <div className="border rounded p-4 bg-white shadow-sm">
-          <h2 className="text-center mb-4 text-2xl font-bold">Editar Role: {name}</h2>
+    <div className="container mt-4">
+      <div className="row justify-content-center">
+        <div className="col-md-8">
+          <div className="card shadow-sm">
+            {/* Header color BG-SUCCESS para uniformidad */}
+            <div className="card-header bg-success text-white p-3">
+                <h2 className="mb-0 h4">
+                    <i className="fas fa-user-tag me-2"></i>Editar Role: {name}
+                </h2>
+            </div>
+            <div className="card-body p-4">
+              {errorMessage && <div className="alert alert-danger text-center shadow-sm">{errorMessage}</div>}
 
-          {/* Role name input */}
-          <div className="mb-3">
-            <label className="form-label font-semibold">Nombre del Role</label>
-            <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              className="form-control"
-            />
-          </div>
+              <form onSubmit={handleSubmit}>
+                {/* Role name input */}
+                <div className="mb-4">
+                  <label className="form-label fw-bold">Nombre del Role <span className="text-danger">*</span></label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    className="form-control"
+                    placeholder="Ej. Administrador, Residente..."
+                    required
+                  />
+                </div>
 
-          {/* Permissions checkboxes */}
-          <div className="mb-3">
-            <label className="form-label font-semibold">Permisos:</label>
+                {/* Permissions checkboxes */}
+                <div className="mb-4">
+                  <label className="form-label fw-bold mb-2">Asignar Permisos:</label>
 
-            {/* 🚨 Select All Checkbox */}
-            {permissions.length > 0 && (
-                <div className="form-check mb-2 p-3 border rounded bg-light">
-                    <input
+                  {/* Select All Checkbox */}
+                  {permissions.length > 0 && (
+                    <div className="form-check mb-3 p-3 border rounded bg-light shadow-sm">
+                      <input
                         type="checkbox"
-                        className="form-check-input"
+                        className="form-check-input ms-0 me-2"
                         id="selectAll"
                         checked={selectAll}
                         onChange={toggleSelectAll}
-                    />
-                    <label className="form-check-label font-weight-bold" htmlFor="selectAll">
+                      />
+                      <label className="form-check-label fw-bold" htmlFor="selectAll">
                         Seleccionar Todos los Permisos ({selectedPermissions.length}/{permissions.length})
-                    </label>
+                      </label>
+                    </div>
+                  )}
+                  
+                  {/* Individual Permissions Grid */}
+                  <div className="row bg-white border rounded p-3 mx-0 overflow-auto" style={{maxHeight: '300px'}}>
+                    {permissions.map(p => (
+                      <div key={p.id} className="col-md-6 mb-2">
+                        <div className="form-check">
+                          <input
+                            type="checkbox"
+                            className="form-check-input me-2"
+                            id={`perm-${p.id}`}
+                            value={p.id}
+                            checked={selectedPermissions.includes(p.id)}
+                            onChange={() => togglePermission(p.id)}
+                          />
+                          <label className="form-check-label small" htmlFor={`perm-${p.id}`}>
+                            {p.name}
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-            )}
-            
-            {/* Individual Permissions */}
-            {permissions.map(p => (
-              <div key={p.id} className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id={`perm-${p.id}`}
-                  value={p.id}
-                  checked={selectedPermissions.includes(p.id)}
-                  onChange={() => togglePermission(p.id)}
-                />
-                <label className="form-check-label" htmlFor={`perm-${p.id}`}>
-                  {p.name}
-                </label>
-              </div>
-            ))}
-          </div>
 
-          {/* Submit button */}
-          <div className="d-flex justify-content-end">
-            <button className="btn btn-primary text-white" onClick={handleSubmit}>
-              Guardar Cambios
-            </button>
+                {/* Footer buttons */}
+                <div className="d-flex gap-2 pt-3 border-top">
+                  <button type="submit" className="btn btn-success px-4">
+                    <i className="fas fa-save me-2"></i>Guardar Cambios
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary px-4" 
+                    onClick={() => navigate("/roles")}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

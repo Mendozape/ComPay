@@ -3,7 +3,6 @@ import DataTable from 'react-data-table-component';
 import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// 🚨 Import the hook for permission management
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = '/api/addresses';
@@ -40,32 +39,6 @@ const ShowAddresses = ({ user }) => {
     const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
-    /**
-     * 🛡️ AUTO-HIDE & CLEANUP EFFECTS
-     */
-    // 1. Clear messages when the component is first loaded (Mount)
-    useEffect(() => {
-        return () => {
-            // Optional: clear on unmount if preferred
-        };
-    }, []);
-
-    // 2. Success message timer
-    useEffect(() => {
-        if (successMessage) {
-            const timer = setTimeout(() => setSuccessMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, setSuccessMessage]);
-
-    // 3. Error message timer
-    useEffect(() => {
-        if (errorMessage) {
-            const timer = setTimeout(() => setErrorMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [errorMessage, setErrorMessage]);
-
     // --- PERMISSIONS CONFIGURATION ---
     const { can } = usePermission(user);
     const canCreate = user ? can('Crear-predios') : false;
@@ -80,6 +53,9 @@ const ShowAddresses = ({ user }) => {
     const createPayment = (id) => navigate(`/addresses/payment/${id}`);
     const viewPaymentHistory = (id) => navigate(`/addresses/payments/history/${id}`);
 
+    /**
+     * Fetch addresses from the API
+     */
     const fetchAddresses = async () => {
         setLoading(true);
         try {
@@ -87,12 +63,15 @@ const ShowAddresses = ({ user }) => {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
             });
+            // Ensure we handle both standard Laravel response formats
             const data = response.data.data || response.data;
-            setAddresses(data);
-            setFilteredAddresses(data);
+            setAddresses(Array.isArray(data) ? data : []);
+            setFilteredAddresses(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching addresses:', error);
-            setErrorMessage('Fallo al cargar el catálogo de direcciones.');
+            // More descriptive error message
+            const msg = error.response?.data?.message || 'Fallo al cargar el catálogo de direcciones.';
+            setErrorMessage(msg);
         } finally {
             setLoading(false);
         }
@@ -102,10 +81,13 @@ const ShowAddresses = ({ user }) => {
         fetchAddresses();
     }, []);
 
+    /**
+     * Search and Filter logic
+     */
     useEffect(() => {
         const result = addresses.filter(addr => {
             const streetName = addr.street?.name || ''; 
-            const addressText = `${addr.community} ${streetName} ${addr.street_number} ${addr.type}`;
+            const addressText = `${addr.community} ${streetName} ${addr.street_number} ${addr.type} ${addr.status}`;
             const userName = addr.user ? `${addr.user.name}` : '';
             const searchText = search.toLowerCase();
 
@@ -115,6 +97,9 @@ const ShowAddresses = ({ user }) => {
         setFilteredAddresses(result);
     }, [search, addresses]);
 
+    /**
+     * Logical deactivation logic
+     */
     const deactivateAddress = async (id, reason) => {
         try {
             const response = await axios.delete(`${endpoint}/${id}`, {
@@ -152,6 +137,10 @@ const ShowAddresses = ({ user }) => {
         deactivateAddress(addressToDeactivate, deactivationReason);
     }
 
+    /**
+     * 🛡️ COLUMNS DEFINITION
+     * Updated to show Property Type + Occupation Status
+     */
     const columns = useMemo(() => [
         {
             name: 'Dirección',
@@ -161,7 +150,15 @@ const ShowAddresses = ({ user }) => {
             cell: row => (
                 <div style={{ lineHeight: '1.2' }}>
                     <span className="d-block"><strong>{row.street?.name || 'N/A'} #{row.street_number}</strong></span>
-                    <span className="badge bg-secondary">{row.type}</span>
+                    <div className="mt-1">
+                        <span className="badge bg-secondary me-1">{row.type}</span>
+                        {/* 🟢 NEW: Displays if house is Occupied or Empty */}
+                        {row.type === 'CASA' && (
+                            <span className={`badge ${row.status === 'Habitada' ? 'bg-primary' : 'bg-warning text-dark'}`}>
+                                {row.status}
+                            </span>
+                        )}
+                    </div>
                 </div>
             ),
         },
@@ -184,10 +181,10 @@ const ShowAddresses = ({ user }) => {
             name: 'Estado', 
             selector: row => row.deleted_at ? 'Inactivo' : 'Activo',
             sortable: true,
-            width: '100px',
+            width: '130px',
             cell: row => (
                 <span className={`badge ${row.deleted_at ? 'bg-danger' : 'bg-info'}`}>
-                    {row.deleted_at ? 'Inactivo' : 'Activo'}
+                    {row.deleted_at ? 'Eliminado' : 'Activo'}
                 </span>
             ),
         },
@@ -242,7 +239,7 @@ const ShowAddresses = ({ user }) => {
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="col-md-6">
                     {canCreate && (
-                        <button className='btn btn-success btn-sm mt-2 mb-2 text-white' onClick={createAddress}>
+                        <button className='btn btn-success btn-sm text-white' onClick={createAddress}>
                             <i className="fas fa-plus"></i> Crear Dirección
                         </button>
                     )}
@@ -250,8 +247,8 @@ const ShowAddresses = ({ user }) => {
                 <div className="col-md-6 d-flex justify-content-end align-items-center">
                     <input
                         type="text"
-                        className="form-control form-control-sm w-75 mt-2 mb-2"
-                        placeholder="Buscar por calle, número o residente..."
+                        className="form-control form-control-sm w-75"
+                        placeholder="Buscar por calle, número, residente o estado..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />

@@ -28,7 +28,6 @@ const Profile = ({ user }) => {
 
     /**
      * 🛡️ AUTO-HIDE MESSAGES EFFECT
-     * Clears status and general error messages after 5 seconds
      */
     useEffect(() => {
         if (status || errors.general) {
@@ -124,143 +123,148 @@ const Profile = ({ user }) => {
         }
     };
 
-    if (!profile) return <div>Cargando información del usuario...</div>;
+    if (!profile) return <div className="text-center mt-5">Cargando información del usuario...</div>;
 
     const finalPhotoUrl = getProfilePhotoUrl(profile);
 
     return (
-        <div className="container mt-3">
-            {status && <div className="alert alert-success text-center py-2">{status}</div>}
-            {errors.general && <div className="alert alert-danger text-center py-2">{errors.general}</div>}
+        <div className="container mt-4">
+            <div className="row justify-content-center">
+                <div className="col-md-8">
+                    {status && <div className="alert alert-success text-center py-2 shadow-sm">{status}</div>}
+                    {errors.general && <div className="alert alert-danger text-center py-2 shadow-sm">{errors.general}</div>}
 
-            {/* Profile Form */}
-            <div className="card p-4 mb-4 shadow-sm border-0">
-                <h5 className="mb-3">Actualizar Información del Perfil</h5>
+                    {/* Profile Information Card */}
+                    <div className="card shadow-sm border-0 mb-4">
+                        <div className="card-header bg-success text-white p-3">
+                            <h5 className="mb-0"><i className="fas fa-user-circle me-2"></i>Información del Perfil</h5>
+                        </div>
+                        <div className="card-body p-4">
+                            <form onSubmit={updateProfile}>
+                                <div className="text-center mb-4">
+                                    <div className="position-relative d-inline-block">
+                                        <img
+                                            src={preview || finalPhotoUrl}
+                                            alt="Profile"
+                                            className="rounded-circle border shadow-sm"
+                                            style={{
+                                                width: "140px",
+                                                height: "140px",
+                                                objectFit: "cover",
+                                                border: "4px solid #fff"
+                                            }}
+                                        />
+                                        <label
+                                            htmlFor="photo"
+                                            className="btn btn-sm btn-info text-white position-absolute bottom-0 end-0 rounded-circle shadow"
+                                            style={{ width: "35px", height: "35px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                        >
+                                            <i className="fas fa-camera"></i>
+                                        </label>
+                                    </div>
+                                    <input
+                                        id="photo"
+                                        type="file"
+                                        name="photo"
+                                        accept="image/*"
+                                        onChange={handlePhotoChange}
+                                        className="d-none"
+                                    />
+                                    {errors.photo && (
+                                        <div className="text-danger small mt-2">{errors.photo[0]}</div>
+                                    )}
+                                </div>
 
-                <form onSubmit={updateProfile}>
-                    <div className="text-center mb-3">
-                        <img
-                            src={preview || finalPhotoUrl}
-                            alt="Profile"
-                            className="rounded-circle border shadow-sm"
-                            style={{
-                                width: "130px",
-                                height: "130px",
-                                objectFit: "cover",
-                            }}
-                        />
+                                <div className="row">
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label fw-bold">Nombre Completo</label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            className={`form-control ${errors.name ? "is-invalid" : ""}`}
+                                            value={profile.name || ""}
+                                            onChange={handleProfileChange}
+                                            placeholder="Tu nombre"
+                                        />
+                                        {errors.name && <div className="invalid-feedback">{errors.name[0]}</div>}
+                                    </div>
+
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label fw-bold">Correo Electrónico</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                                            value={profile.email || ""}
+                                            onChange={handleProfileChange}
+                                            placeholder="correo@ejemplo.com"
+                                        />
+                                        {errors.email && <div className="invalid-feedback">{errors.email[0]}</div>}
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="btn btn-success w-100 py-2 mt-2 fw-bold shadow-sm">
+                                    <i className="fas fa-save me-2"></i>Guardar Cambios del Perfil
+                                </button>
+                            </form>
+                        </div>
                     </div>
 
-                    <div className="mb-4 text-center">
-                        <label
-                            htmlFor="photo"
-                            className="btn btn-outline-primary btn-sm px-4 py-2 rounded-pill"
-                            style={{ cursor: "pointer", fontWeight: "500" }}
-                        >
-                            <i className="bi bi-camera me-2"></i>
-                            {photo ? "Cambiar Foto" : "Seleccionar Foto"}
-                        </label>
-                        <input
-                            id="photo"
-                            type="file"
-                            name="photo"
-                            accept="image/*"
-                            onChange={handlePhotoChange}
-                            className="d-none"
-                        />
-                        {errors.photo && (
-                            <div className="text-danger small mt-1">{errors.photo[0]}</div>
-                        )}
+                    {/* Security Card */}
+                    <div className="card shadow-sm border-0 mb-5">
+                        <div className="card-header bg-info text-white p-3">
+                            <h5 className="mb-0"><i className="fas fa-lock me-2"></i>Seguridad y Contraseña</h5>
+                        </div>
+                        <div className="card-body p-4">
+                            <form onSubmit={updatePassword}>
+                                <div className="mb-3">
+                                    <label className="form-label fw-bold">Contraseña Actual</label>
+                                    <input
+                                        type="password"
+                                        name="current_password"
+                                        className={`form-control ${errors.current_password ? "is-invalid" : ""}`}
+                                        value={passwords.current_password}
+                                        onChange={handlePasswordChange}
+                                    />
+                                    {errors.current_password && (
+                                        <div className="invalid-feedback">{errors.current_password[0]}</div>
+                                    )}
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label fw-bold">Nueva Contraseña</label>
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                                            value={passwords.password}
+                                            onChange={handlePasswordChange}
+                                        />
+                                        {errors.password && (
+                                            <div className="invalid-feedback">{errors.password[0]}</div>
+                                        )}
+                                    </div>
+
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label fw-bold">Confirmar Nueva Contraseña</label>
+                                        <input
+                                            type="password"
+                                            name="password_confirmation"
+                                            className="form-control"
+                                            value={passwords.password_confirmation}
+                                            onChange={handlePasswordChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="btn btn-outline-info w-100 py-2 fw-bold mt-2">
+                                    <i className="fas fa-key me-2"></i>Actualizar Contraseña
+                                </button>
+                            </form>
+                        </div>
                     </div>
-
-                    <div className="form-group mb-3">
-                        <label>Nombre</label>
-                        <input
-                            type="text"
-                            name="name"
-                            className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                            value={profile.name || ""}
-                            onChange={handleProfileChange}
-                        />
-                        {errors.name && <div className="invalid-feedback">{errors.name[0]}</div>}
-                    </div>
-
-                    <div className="form-group mb-4">
-                        <label>Correo Electrónico</label>
-                        <input
-                            type="email"
-                            name="email"
-                            className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                            value={profile.email || ""}
-                            onChange={handleProfileChange}
-                        />
-                        {errors.email && <div className="invalid-feedback">{errors.email[0]}</div>}
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="btn w-100 py-2 fw-bold"
-                        style={{
-                            background: "linear-gradient(90deg, #007bff 0%, #00c6ff 100%)",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "10px",
-                            boxShadow: "0 3px 10px rgba(0, 123, 255, 0.3)",
-                        }}
-                    >
-                        <i className="bi bi-cloud-upload me-2"></i>
-                        Actualizar Perfil
-                    </button>
-                </form>
-            </div>
-
-            {/* Password Form */}
-            <div className="card p-4 shadow-sm border-0">
-                <h5 className="mb-3">Cambiar Contraseña</h5>
-                <form onSubmit={updatePassword}>
-                    <div className="form-group mb-2">
-                        <label>Contraseña Actual</label>
-                        <input
-                            type="password"
-                            name="current_password"
-                            className={`form-control ${errors.current_password ? "is-invalid" : ""}`}
-                            value={passwords.current_password}
-                            onChange={handlePasswordChange}
-                        />
-                        {errors.current_password && (
-                            <div className="invalid-feedback">{errors.current_password[0]}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group mb-2">
-                        <label>Nueva Contraseña</label>
-                        <input
-                            type="password"
-                            name="password"
-                            className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                            value={passwords.password}
-                            onChange={handlePasswordChange}
-                        />
-                        {errors.password && (
-                            <div className="invalid-feedback">{errors.password[0]}</div>
-                        )}
-                    </div>
-
-                    <div className="form-group mb-4">
-                        <label>Confirmar Nueva Contraseña</label>
-                        <input
-                            type="password"
-                            name="password_confirmation"
-                            className="form-control"
-                            value={passwords.password_confirmation}
-                            onChange={handlePasswordChange}
-                        />
-                    </div>
-
-                    <button type="submit" className="btn btn-outline-primary w-100 fw-bold">
-                        Actualizar Contraseña
-                    </button>
-                </form>
+                </div>
             </div>
         </div>
     );

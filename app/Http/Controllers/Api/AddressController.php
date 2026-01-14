@@ -11,6 +11,9 @@ use Illuminate\Validation\Rule;
 
 class AddressController extends Controller
 {
+    /**
+     * Set up middleware for permissions.
+     */
     public function __construct()
     {
         $this->middleware('permission:Ver-predios', ['only' => ['index', 'show', 'listActive']]);
@@ -19,17 +22,31 @@ class AddressController extends Controller
         $this->middleware('permission:Eliminar-predios', ['only' => ['destroy']]);
     }
 
+    /**
+     * Display a listing of all addresses including trashed ones.
+     */
     public function index()
     {
-        // UPDATED: Relationship is now 'user', not 'resident'
+        // Updated relationship to 'user' instead of 'resident'
         $addresses = Address::withTrashed()->with(['user', 'street'])->get();
         return response()->json(['data' => $addresses]);
     }
 
+    /**
+     * List only active addresses (not deleted).
+     */
+    public function listActive()
+    {
+        $addresses = Address::with(['user', 'street'])->get();
+        return response()->json(['data' => $addresses]);
+    }
+
+    /**
+     * Store a newly created address in storage.
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            // 🟢 FIXED: Changed resident_id to user_id and table to users
             'user_id' => 'required|integer|exists:users,id',
             'street_id' => 'required|integer|exists:streets,id',
             'community' => 'required|string|max:255',
@@ -45,17 +62,19 @@ class AddressController extends Controller
                         ->whereNull('deleted_at');
                 }),
             ],
-            'type' => 'required|string|max:255',
+            'type' => 'required|string|in:CASA,TERRENO',
+            // 🟢 ADDED: Status validation for Occupied/Empty logic
+            'status' => 'required|string|in:Habitada,Deshabitada',
             'comments' => 'nullable|string',
             'months_overdue' => 'required|integer|min:0', 
         ], [
             'street_number.unique' => 'La combinación de Comunidad, Calle y Número ya existe.',
             'street_number.numeric' => 'El número de calle debe contener solo dígitos.',
-            // 🟢 FIXED: Message points to user_id validation
             'user_id.required' => 'Debe seleccionar un usuario para asignar la dirección.',
             'user_id.exists' => 'El usuario seleccionado no es válido.',
             'street_id.required' => 'Debe seleccionar una calle válida.',
             'months_overdue.required' => 'El número de meses atrasados es obligatorio.',
+            'status.in' => 'El estado debe ser Habitada o Deshabitada.',
         ]);
 
         if ($validator->fails()) {
@@ -66,9 +85,8 @@ class AddressController extends Controller
         }
 
         try {
-            // Create the address using the mass assignment (user_id is now in fillable)
+            // Mass assignment: ensures 'status' is included in the create process
             $address = Address::create($request->all());
-
             return response()->json(['message' => 'Dirección creada exitosamente.', 'data' => $address], 201);
             
         } catch (\Exception $e) {
@@ -76,16 +94,20 @@ class AddressController extends Controller
         }
     }
 
+    /**
+     * Display the specified address.
+     */
     public function show(Address $address)
     {
-        // UPDATED: Relation 'user' instead of 'resident'
         return response()->json(['data' => $address->load(['street', 'user'])]);
     }
 
+    /**
+     * Update the specified address in storage.
+     */
     public function update(Request $request, Address $address)
     {
         $validator = Validator::make($request->all(), [
-            // 🟢 FIXED: user_id validation
             'user_id' => 'required|integer|exists:users,id',
             'street_id' => 'required|integer|exists:streets,id',
             'community' => 'required|string|max:255',
@@ -101,11 +123,13 @@ class AddressController extends Controller
                         ->whereNull('deleted_at');
                 }),
             ],
-            'type' => 'required|string|max:255',
+            'type' => 'required|string|in:CASA,TERRENO',
+            'status' => 'required|string|in:Habitada,Deshabitada',
             'months_overdue' => 'required|integer|min:0',
         ], [
             'user_id.required' => 'Debe seleccionar un usuario.',
             'street_id.required' => 'Debe seleccionar una calle.',
+            'status.in' => 'El estado debe ser Habitada o Deshabitada.',
         ]);
 
         if ($validator->fails()) {
@@ -116,14 +140,18 @@ class AddressController extends Controller
         }
 
         $address->update($request->all());
-
         return response()->json(['message' => 'Dirección actualizada exitosamente.', 'data' => $address], 200);
     }
 
+    /**
+     * Remove the specified address (Soft Delete).
+     */
     public function destroy(Request $request, Address $address)
     {
         $request->validate(['reason' => 'required|string|min:5']);
-        $activePaymentsCount = $address->payments()->whereNull('deleted_at')->count();
+        
+        // Checks for active payments using the addressPayments relationship (saved in memory)
+        $activePaymentsCount = $address->addressPayments()->whereNull('deleted_at')->count();
 
         if ($activePaymentsCount > 0) {
             return response()->json([

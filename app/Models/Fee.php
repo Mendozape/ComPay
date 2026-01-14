@@ -13,37 +13,35 @@ class Fee extends Model
     
     protected $fillable = [
         'name',
-        'amount_house',
-        'amount_land',
+        'amount_occupied', 
+        'amount_empty',    
+        'amount_land',     
         'description',
         'active',
         'deletion_reason',
         'deleted_by_user_id',
     ];
 
-    /**
-     * Relationship with AddressPayment.
-     * Updated to follow your instruction regarding the addressPayments model.
-     */
     public function addressPayments()
     {
         return $this->hasMany(AddressPayment::class);
     }
     
-    /**
-     * Relationship to identify the user who performed the soft delete.
-     */
     public function deleter()
     {
         return $this->belongsTo(\App\Models\User::class, 'deleted_by_user_id');
     }
 
     /**
-     * Optional: Helper to get the correct amount based on an Address type.
-     * This is useful if you want to determine the price dynamically.
+     * Helper to get amount based on property status/type.
+     * Use this in your Payment logic.
      */
-    public function getAmountByType(string $type)
+    public function getAmountByPropertyStatus(string $type, string $status)
     {
-        return $type === 'house' ? $this->amount_house : $this->amount_land;
+        if ($type === 'TERRENO') {
+            return $this->amount_land;
+        }
+        
+        return ($status === 'Habitada') ? $this->amount_occupied : $this->amount_empty;
     }
 }

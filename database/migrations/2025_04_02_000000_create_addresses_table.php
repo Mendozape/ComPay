@@ -8,7 +8,6 @@ return new class extends Migration
 {
     /**
      * Run the migrations to create the 'addresses' table.
-     * Updated to link directly to 'users' instead of 'residents'.
      */
     public function up(): void
     {
@@ -17,12 +16,11 @@ return new class extends Migration
 
             // --- FOREIGN KEYS ---
             
-            // Link to the User who is the resident (Owner of the account)
+            // Link to the User who is the resident (Account Owner)
             $table->foreignId('user_id')
                 ->nullable()
                 ->constrained('users')
-                ->onDelete('set null')
-                ->comment('Links the address to a specific user/resident account.');
+                ->onDelete('set null');
 
             // Link to the standardized street catalog
             $table->foreignId('street_id')
@@ -34,6 +32,13 @@ return new class extends Migration
             $table->string('type', 50)->nullable()->comment('CASA or TERRENO');
             $table->string('street_number', 20);
             $table->string('community', 250);
+            
+            /** * 🟢 CRITICAL FIELD: 
+             * Differentiates between 'Habitada' and 'Deshabitada' status 
+             * to apply the correct fee amount.
+             */
+            $table->string('status', 50)->default('Habitada')->comment('Habitada or Deshabitada');
+            
             $table->text('comments')->nullable();
             
             // Financial audit field
@@ -43,7 +48,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            // Unique constraint: prevent duplicate house numbers on the same street
+            // Unique constraint to prevent duplicate house numbers on the same street
             $table->unique(['community', 'street_id', 'street_number', 'deleted_at'], 'unique_full_address_v2');
         });
     }

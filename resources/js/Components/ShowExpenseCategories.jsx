@@ -3,14 +3,12 @@ import DataTable from 'react-data-table-component';
 import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// 🚨 Import the hook
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = '/api/expense_categories';
 
 /**
  * 🎨 CUSTOM STYLES FOR DATA TABLE
- * Centralized styles to avoid passing unknown props to the DOM.
  */
 const customStyles = {
     headCells: {
@@ -26,9 +24,8 @@ const customStyles = {
     },
 };
 
-// 🚨 Receive 'user' as a prop from App.jsx
 const ShowExpenseCategories = ({ user }) => {
-    // State variables for data and filtering
+    // --- STATE VARIABLES ---
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -39,15 +36,12 @@ const ShowExpenseCategories = ({ user }) => {
     const [categoryToDelete, setCategoryToDelete] = useState(null); 
     const [modalError, setModalError] = useState(''); 
     
-    // 🚨 Initialize the permission hook
+    // --- PERMISSIONS ---
     const { can } = usePermission(user);
-
-    // 🛡️ Extraction to constants for stable permission evaluation
     const canCreate = user ? can('Crear-catalogo-gastos') : false;
     const canEdit = user ? can('Editar-catalogo-gastos') : false;
     const canDelete = user ? can('Eliminar-catalogo-gastos') : false;
 
-    // Context hook for global messages
     const { setSuccessMessage, setErrorMessage, errorMessage, successMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
@@ -62,8 +56,9 @@ const ShowExpenseCategories = ({ user }) => {
                 headers: { Accept: 'application/json' },
             });
             const data = response.data.data || response.data;
-            setCategories(data);
-            setFilteredCategories(data);
+            const categoriesArray = Array.isArray(data) ? data : [];
+            setCategories(categoriesArray);
+            setFilteredCategories(categoriesArray);
         } catch (error) {
             console.error('Error fetching categories:', error);
             setErrorMessage('Fallo al cargar las categorías.');
@@ -91,8 +86,6 @@ const ShowExpenseCategories = ({ user }) => {
      */
     const deleteCategory = async (id) => {
         setModalError('');
-        setSuccessMessage('');
-
         try {
             const response = await axios.delete(`${endpoint}/${id}`, {
                 withCredentials: true,
@@ -100,7 +93,7 @@ const ShowExpenseCategories = ({ user }) => {
             });
             
             if (response.status === 204 || response.status === 200) {
-                setSuccessMessage('Categoría eliminada exitosamente.');
+                setSuccessMessage('Categoría dada de baja exitosamente.');
                 setShowModal(false);
                 fetchCategories();
             } 
@@ -113,6 +106,7 @@ const ShowExpenseCategories = ({ user }) => {
 
     const editCategory = (id) => navigate(`/expense_categories/edit/${id}`);
     const createCategory = () => navigate('/expense_categories/create');
+    
     const toggleModal = () => {
         setShowModal(!showModal);
         if (showModal) setModalError('');
@@ -132,7 +126,6 @@ const ShowExpenseCategories = ({ user }) => {
 
     /**
      * 🛡️ COLUMNS DEFINITION
-     * FIX: Replaced 'minWidth' with fixed 'width' and removed custom styling props.
      */
     const columns = useMemo(() => [
         { name: 'ID', selector: row => row.id, sortable: true, width: '80px' },
@@ -152,7 +145,6 @@ const ShowExpenseCategories = ({ user }) => {
             name: 'Acciones',
             cell: row => (
                 <div className="d-flex gap-2 justify-content-end w-100 pe-2">
-                    {/* 🛡️ Permission check for Edit button */}
                     {canEdit && (
                         <button 
                             className="btn btn-info btn-sm text-white" 
@@ -163,7 +155,6 @@ const ShowExpenseCategories = ({ user }) => {
                         </button>
                     )}
                     
-                    {/* 🛡️ Permission check for Delete/Deactivate button */}
                     {canDelete && (
                         <>
                             {row.deleted_at ? (
@@ -188,7 +179,7 @@ const ShowExpenseCategories = ({ user }) => {
 
     const NoDataComponent = () => (
         <div style={{ padding: '24px', textAlign: 'center', fontSize: '1.1em', color: '#6c757d' }}>
-            No hay registros para mostrar.
+            No hay categorías registradas.
         </div>
     );
 
@@ -202,21 +193,19 @@ const ShowExpenseCategories = ({ user }) => {
 
     return (
         <div className="container-fluid mt-4">
-            <h2 className="mb-4 text-primary">Catálogo de Categorías de Gastos</h2>
-
-            <div className="mb-4 border border-primary rounded p-3 bg-white">
+            <div className="mb-4 border border-primary rounded p-3 bg-white shadow-sm">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                    {/* 🛡️ Permission check for Create button */}
                     {canCreate ? (
+                        // 🟢 Color Success Green
                         <button className='btn btn-success btn-sm text-white' onClick={createCategory}>
-                            Crear Categoría
+                            <i className="fas fa-plus-circle me-1"></i> Crear Categoría
                         </button>
                     ) : <div />}
 
                     <input
                         type="text"
                         className="form-control form-control-sm w-25"
-                        placeholder="Buscar por nombre"
+                        placeholder="Buscar por nombre..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -226,7 +215,7 @@ const ShowExpenseCategories = ({ user }) => {
                 {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
                 <DataTable
-                    title="Lista de Categorías"
+                    title="Catálogo de Categorías de Gastos"
                     columns={columns}
                     data={filteredCategories}
                     progressPending={loading}
@@ -234,23 +223,24 @@ const ShowExpenseCategories = ({ user }) => {
                     pagination
                     highlightOnHover
                     striped
+                    responsive
                     customStyles={customStyles}
                 />
             </div>
 
-            {/* Modal for Deletion Confirmation */}
+            {/* MODAL DE CONFIRMACIÓN */}
             <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
-                            <h5 className="modal-title">Confirmar Eliminación</h5>
+                            <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
                             <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
                         </div>
                         <div className="modal-body text-center p-4">
-                            <p>¿Está seguro de que desea dar de baja la categoría?</p>
+                            <p className="mb-0">¿Está seguro de que desea dar de baja esta categoría?</p>
                             {modalError && <div className="alert alert-danger text-center mt-3 py-2">{modalError}</div>}
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-footer bg-light">
                             <button type="button" className="btn btn-secondary" onClick={toggleModal}>
                                 Cancelar
                             </button>

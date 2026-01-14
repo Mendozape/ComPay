@@ -35,6 +35,7 @@ class AddressPaymentController extends Controller
 
     /**
      * Store multiple payment records (one per month).
+     * Updated logic to handle: House (Occupied/Empty) and Land amounts.
      */
     public function store(Request $request)
     {
@@ -60,15 +61,30 @@ class AddressPaymentController extends Controller
             ->pluck('month')->toArray();
 
         $newMonths = array_diff($validated['months'], $existingPayments);
-        if (empty($newMonths)) return response()->json(['message' => 'Selected months are already registered.'], 200);
+        if (empty($newMonths)) {
+            return response()->json(['message' => 'Selected months are already registered.'], 200);
+        }
 
-        // 🔥 Dynamic amount calculation based on property type (CASA vs TERRENO)
-        // Using trim and strtolower to ensure a correct match
-        $propertyType = trim(strtolower($address->type));
-        $baseAmount = ($propertyType === 'casa') ? $fee->amount_house : $fee->amount_land;
+        /** * 🔥 DYNAMIC 3-TIER AMOUNT CALCULATION
+         * Evaluates Property Type (CASA/TERRENO) and Status (Habitada/Deshabitada)
+         */
+        $propertyType = trim(strtoupper($address->type));
+        $propertyStatus = trim($address->status); // Expected: 'Habitada' or 'Deshabitada'
+        $baseAmount = 0;
+
+        if ($propertyType === 'TERRENO') {
+            $baseAmount = $fee->amount_land;
+        } else {
+            // Logic for CASA (House): Check if it is occupied or empty
+            $baseAmount = ($propertyStatus === 'Habitada') 
+                ? $fee->amount_occupied 
+                : $fee->amount_empty;
+        }
 
         // Fallback safety: ensure amount is not null
-        if (is_null($baseAmount)) $baseAmount = 0;
+        if (is_null($baseAmount)) {
+            $baseAmount = 0;
+        }
 
         $monthsToWaive = $validated['waived_months'] ?? [];
         $payments = [];
@@ -90,7 +106,7 @@ class AddressPaymentController extends Controller
     }
 
     /**
-     * Display a single payment record.
+     * Display the specified resource.
      */
     public function show($id)
     {
@@ -98,7 +114,7 @@ class AddressPaymentController extends Controller
     }
 
     /**
-     * Update payment details (restricted for canceled payments).
+     * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
     {
@@ -112,7 +128,7 @@ class AddressPaymentController extends Controller
     }
 
     /**
-     * Block direct deletion; encourage use of cancelPayment instead.
+     * Performs a SOFT DELETE audit.
      */
     public function destroy($id)
     {
@@ -166,7 +182,6 @@ class AddressPaymentController extends Controller
 
     /**
      * Get a summary of paid months for a specific address and year.
-     * Accessible by Admins and Residents.
      */
     public function getPaidMonths($addressId, $year, Request $request)
     {
@@ -181,7 +196,6 @@ class AddressPaymentController extends Controller
                 $query->where('fee_id', $request->fee_id);
             }
 
-            // Include 'amount_paid' in the select
             $payments = $query->get(['id', 'month', 'status', 'payment_date', 'fee_id', 'amount_paid']);
 
             $formattedMonths = $payments->map(function ($p) {
@@ -190,7 +204,7 @@ class AddressPaymentController extends Controller
                     'status' => $p->status,
                     'payment_date' => $p->payment_date,
                     'fee_name' => $p->fee ? $p->fee->name : 'General',
-                    'amount_paid' => $p->amount_paid // 🟢 Added amount
+                    'amount_paid' => $p->amount_paid 
                 ];
             });
 

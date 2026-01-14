@@ -328,7 +328,7 @@ return [
             'submenu' => [
                 // 🚨 REMOVED 'Profile' from here
                 [
-                    'text' => 'Usuarios',
+                    'text' => 'Residentes',
                     'url'  => 'users',
                     'icon' => 'fas fa-fw fa-users',
                     // Permission to view the User list.

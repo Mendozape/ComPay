@@ -3,14 +3,12 @@ import DataTable from 'react-data-table-component';
 import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// 🚨 Import the hook
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = '/api/fees';
 
 /**
  * 🎨 CUSTOM STYLES FOR DATA TABLE
- * Centralized styles to avoid passing unknown props to the DOM.
  */
 const customStyles = {
     headCells: {
@@ -27,20 +25,19 @@ const customStyles = {
 };
 
 const FeesTable = ({ user }) => {
-    // State variables
+    // --- STATE VARIABLES ---
     const [fees, setFees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [filteredFees, setFilteredFees] = useState([]);
     
+    // States for deactivation modal
     const [showModal, setShowModal] = useState(false);
     const [feeToDeactivate, setFeeToDeactivate] = useState(null); 
     const [deactivationReason, setDeactivationReason] = useState(''); 
 
-    // 🚨 Initialize the permission hook
+    // --- PERMISSIONS ---
     const { can } = usePermission(user);
-
-    // 🛡️ Extraction to constants for stable permission evaluation
     const canCreate = user ? can('Crear-cuotas') : false;
     const canEdit = user ? can('Editar-cuotas') : false;
     const canDeactivate = user ? can('Eliminar-cuotas') : false;
@@ -59,11 +56,13 @@ const FeesTable = ({ user }) => {
                 headers: { Accept: 'application/json' },
             });
             const data = response.data.data || response.data;
-            setFees(data);
-            setFilteredFees(data);
+            // Ensure we are working with an array
+            const feesArray = Array.isArray(data) ? data : [];
+            setFees(feesArray);
+            setFilteredFees(feesArray);
         } catch (error) {
             console.error('Error fetching fees:', error);
-            setErrorMessage('Fallo al cargar las cuotas.');
+            setErrorMessage('Fallo al cargar el catálogo de cuotas.');
         } finally {
             setLoading(false);
         }
@@ -74,15 +73,17 @@ const FeesTable = ({ user }) => {
     }, []);
 
     /**
-     * Real-time filtering based on search
+     * Real-time filtering based on search input
      */
     useEffect(() => {
-        const result = fees.filter(fee => fee.name.toLowerCase().includes(search.toLowerCase()));
+        const result = fees.filter(fee => 
+            fee.name.toLowerCase().includes(search.toLowerCase())
+        );
         setFilteredFees(result);
     }, [search, fees]);
 
     /**
-     * Logical deactivation of a fee with a reason
+     * Logic to soft-delete/deactivate a fee
      */
     const deactivateFee = async (id, reason) => {
         try {
@@ -106,6 +107,7 @@ const FeesTable = ({ user }) => {
 
     const editFee = (id) => navigate(`/fees/edit/${id}`);
     const createFee = () => navigate('/fees/create');
+    
     const toggleModal = () => {
         setShowModal(!showModal);
         if (showModal) {
@@ -130,33 +132,38 @@ const FeesTable = ({ user }) => {
 
     /**
      * 🛡️ COLUMNS DEFINITION
-     * FIX: Replaced 'minWidth' with fixed 'width' to prevent DOM warnings.
-     * Actions column uses Bootstrap flex classes for alignment.
      */
     const columns = useMemo(() => [
         { name: 'Nombre', selector: row => row.name, sortable: true, width: '180px' },
         { 
-            name: 'Monto Casa', 
-            selector: row => row.amount_house, 
+            name: 'Casa Habitada', 
+            selector: row => row.amount_occupied, 
             sortable: true,
-            width: '130px',
-            cell: row => `$${parseFloat(row.amount_house).toLocaleString()}` 
+            width: '140px',
+            cell: row => `$${parseFloat(row.amount_occupied).toLocaleString(undefined, {minimumFractionDigits: 2})}` 
         },
         { 
-            name: 'Monto Terreno', 
+            name: 'Casa Deshabitada', 
+            selector: row => row.amount_empty, 
+            sortable: true,
+            width: '150px',
+            cell: row => `$${parseFloat(row.amount_empty).toLocaleString(undefined, {minimumFractionDigits: 2})}` 
+        },
+        { 
+            name: 'Terreno', 
             selector: row => row.amount_land, 
             sortable: true,
-            width: '130px',
-            cell: row => `$${parseFloat(row.amount_land).toLocaleString()}` 
+            width: '110px',
+            cell: row => `$${parseFloat(row.amount_land).toLocaleString(undefined, {minimumFractionDigits: 2})}` 
         },
-        { name: 'Descripción', selector: row => row.description, sortable: true, width: '200px' },
+        { name: 'Descripción', selector: row => row.description, sortable: true, width: '180px' },
         { 
             name: 'Estado', 
             selector: row => row.deleted_at ? 'Inactivo' : 'Activo', 
             sortable: true,
-            width: '110px',
+            width: '100px',
             cell: row => (
-                <span className={`badge ${row.deleted_at ? 'bg-danger' : 'bg-info'}`}> 
+                <span className={`badge ${row.deleted_at ? 'bg-danger' : 'bg-success'}`}> 
                     {row.deleted_at ? 'Inactivo' : 'Activo'}
                 </span>
             ),
@@ -186,13 +193,13 @@ const FeesTable = ({ user }) => {
                     )}
                 </div>
             ),
-            width: '200px',
+            width: '180px',
         },
     ], [canEdit, canDeactivate, navigate]);
 
     const NoDataComponent = () => (
         <div style={{ padding: '24px', textAlign: 'center', fontSize: '1.1em', color: '#6c757d' }}>
-            No hay registros para mostrar.
+            No hay cuotas registradas para mostrar.
         </div>
     );
 
@@ -208,22 +215,26 @@ const FeesTable = ({ user }) => {
         <div className="mb-4 border border-primary rounded p-3 bg-white">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 {canCreate ? (
-                    <button className='btn btn-success btn-sm text-white' onClick={createFee}>Crear Cuota</button>
+                    // 🟢 Color Success (Verde) estandarizado
+                    <button className='btn btn-success btn-sm text-white' onClick={createFee}>
+                        <i className="fas fa-plus-circle me-1"></i> Crear Cuota
+                    </button>
                 ) : <div />}
                 
                 <input
                     type="text"
                     className="form-control form-control-sm w-25"
-                    placeholder="Buscar por nombre"
+                    placeholder="Buscar cuota..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
             </div>
 
             {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
+            {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
             <DataTable
-                title="Lista de Cuotas" 
+                title="Catálogo de Cuotas Administrativas" 
                 columns={columns}
                 data={filteredFees}
                 progressPending={loading}
@@ -231,33 +242,34 @@ const FeesTable = ({ user }) => {
                 pagination
                 highlightOnHover
                 striped
+                responsive
                 customStyles={customStyles}
             />
 
-            {/* Modal for logical delete */}
+            {/* MODAL DE CONFIRMACIÓN */}
             <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
-                            <h5 className="modal-title">Confirmar Baja de Cuota</h5>
+                            <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Baja de Cuota</h5>
                             <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
                         </div>
                         <div className="modal-body p-4">
-                            <p className="text-center">¿Está seguro de que desea dar de baja esta cuota?</p>
-                            <div className="form-group mt-3">
-                                <label htmlFor="reason">Motivo de la Baja <span className="text-danger">*</span></label>
+                            <p className="text-center mb-3">¿Está seguro de que desea dar de baja esta cuota? Esto afectará los registros futuros.</p>
+                            <div className="form-group">
+                                <label htmlFor="reason" className="fw-bold mb-2">Motivo de la Baja <span className="text-danger">*</span></label>
                                 <textarea
                                     id="reason"
-                                    className="form-control mt-2"
+                                    className="form-control"
                                     rows="3"
                                     value={deactivationReason}
                                     onChange={(e) => setDeactivationReason(e.target.value)}
-                                    placeholder="Ingrese la razón de la baja"
+                                    placeholder="Ingrese la razón de la baja..."
                                 />
                             </div>
                             {errorMessage && <div className="alert alert-danger text-center mt-3 py-2">{errorMessage}</div>}
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-footer bg-light">
                             <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button>
                             <button 
                                 type="button" 

@@ -26,6 +26,7 @@ const customStyles = {
 };
 
 const ShowUsers = ({ user }) => {
+    // --- STATE VARIABLES ---
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -45,7 +46,6 @@ const ShowUsers = ({ user }) => {
 
     /**
      * 🛡️ AUTO-HIDE MESSAGES EFFECT
-     * Clears success or error messages after 5 seconds
      */
     useEffect(() => {
         if (successMessage) {
@@ -143,7 +143,7 @@ const ShowUsers = ({ user }) => {
             width: "150px",
         },
         {
-            name: "Status",
+            name: "Estado",
             selector: (u) => (u.deleted_at ? "Baja" : "Activo"),
             sortable: true,
             cell: (u) => (
@@ -166,7 +166,7 @@ const ShowUsers = ({ user }) => {
                         : <small className="text-muted">Ninguno</small>}
                 </div>
             ),
-            width: "300px",
+            width: "250px",
         },
         {
             name: "Acciones",
@@ -190,8 +190,9 @@ const ShowUsers = ({ user }) => {
         <div className="mb-4 border border-primary rounded p-3 bg-white">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 {canCreate ? (
-                    <button className="btn btn-warning btn-sm" onClick={() => navigate("/users/create")}>
-                        <i className="fas fa-user-plus"></i> Crear usuario
+                    // 🟢 Color Success (Verde) para estandarizar con el resto del sistema
+                    <button className="btn btn-success btn-sm text-white" onClick={() => navigate("/users/create")}>
+                        <i className="fas fa-user-plus me-1"></i> Crear Residente
                     </button>
                 ) : <div />}
                 <input type="text" placeholder="Buscar por nombre o correo..." className="form-control w-25 form-control-sm" value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -216,18 +217,21 @@ const ShowUsers = ({ user }) => {
                 }]}
             />
 
-            {/* MODAL */}
+            {/* MODAL DE CONFIRMACIÓN */}
             <div className={`modal fade ${showModal ? "show d-block" : "d-none"}`} style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
-                <div className="modal-dialog">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content border-0 shadow">
                         <div className={`modal-header ${modalMode === 'delete' ? 'bg-danger' : 'bg-success'} text-white`}>
-                            <h5 className="modal-title">{modalMode === 'delete' ? 'Confirmar Baja' : 'Confirmar Reactivación'}</h5>
+                            <h5 className="modal-title">
+                                <i className={`fas ${modalMode === 'delete' ? 'fa-user-slash' : 'fa-user-check'} me-2`}></i>
+                                {modalMode === 'delete' ? 'Confirmar Baja' : 'Confirmar Reactivación'}
+                            </h5>
                             <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
                         </div>
                         <div className="modal-body text-center p-4">
-                            <p>{modalMode === 'delete' ? '¿Está seguro de que desea desactivar a este usuario/residente?' : '¿Está seguro de que desea reactivar a este usuario/residente?'}</p>
+                            <p className="mb-0">{modalMode === 'delete' ? '¿Está seguro de que desea desactivar a este usuario/residente?' : '¿Está seguro de que desea reactivar a este usuario/residente?'}</p>
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-footer bg-light">
                             <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
                             <button className={`btn ${modalMode === 'delete' ? 'btn-danger' : 'btn-success'}`} onClick={handleModalAction}>
                                 {modalMode === 'delete' ? 'Confirmar Baja' : 'Confirmar Reactivación'}

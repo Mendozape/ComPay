@@ -5,18 +5,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const endpoint = '/api/fees/';
 
-const axiosOptions = {
-    withCredentials: true,
-    headers: {
-        Accept: 'application/json',
-        'Content-Type': 'multipart/form-data',
-    }
-};
-
 export default function EditFees() {
+    // --- STATE VARIABLES ---
     const [name, setName] = useState('');
-    // NEW: Separated states for house and land amounts
-    const [amountHouse, setAmountHouse] = useState('');
+    const [amountOccupied, setAmountOccupied] = useState('');
+    const [amountEmpty, setAmountEmpty] = useState('');
     const [amountLand, setAmountLand] = useState('');
     const [description, setDescription] = useState('');
     const [formValidated, setFormValidated] = useState(false);
@@ -27,25 +20,26 @@ export default function EditFees() {
     const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
-    const handleUpdate = async (e) => {
-        if (e) e.preventDefault();
-        
-        const formData = new FormData();
-        formData.append('name', name);
-        // UPDATED: Sending the new specific fields
-        formData.append('amount_house', amountHouse);
-        formData.append('amount_land', amountLand);
-        formData.append('description', description);
-        formData.append('_method', 'PUT'); // Spoofing PUT for multipart/form-data compatibility
-
+    /**
+     * Submit updated data to the API
+     */
+    const handleUpdate = async () => {
         try {
-            const response = await axios.post(`${endpoint}${id}`, formData, axiosOptions);
+            const response = await axios.put(`${endpoint}${id}`, {
+                name,
+                amount_occupied: amountOccupied,
+                amount_empty: amountEmpty,
+                amount_land: amountLand,
+                description
+            }, {
+                withCredentials: true,
+                headers: { Accept: 'application/json' }
+            });
+
             if (response.status === 200) {
                 setSuccessMessage('Cuota actualizada exitosamente.');
                 setErrorMessage('');
                 navigate('/fees');
-            } else {
-                setErrorMessage('Fallo al actualizar la cuota.');
             }
         } catch (error) {
             console.error('Error updating fee:', error);
@@ -59,120 +53,155 @@ export default function EditFees() {
         }
     };
 
-    const update = (e) => {
+    const triggerModal = (e) => {
         e.preventDefault();
         setFormValidated(true);
-        setShowModal(true);
+        const form = e.currentTarget;
+        if (form.checkValidity()) {
+            setShowModal(true);
+        }
     };
 
+    /**
+     * Fetch existing fee data to populate the form
+     */
     useEffect(() => {
         const getFeeById = async () => {
             try {
-                const response = await axios.get(`${endpoint}${id}`, axiosOptions);
-                const data = response.data;
-                // UPDATED: Mapping the specific fields from the database to state
+                const response = await axios.get(`${endpoint}${id}`, {
+                    withCredentials: true,
+                    headers: { Accept: 'application/json' }
+                });
+                const data = response.data.data || response.data;
                 setName(data.name);
-                setAmountHouse(data.amount_house);
+                setAmountOccupied(data.amount_occupied);
+                setAmountEmpty(data.amount_empty);
                 setAmountLand(data.amount_land);
                 setDescription(data.description || '');
             } catch (error) {
                 console.error('Error fetching fee:', error);
-                setErrorMessage('Fallo al cargar la cuota.');
+                setErrorMessage('Fallo al cargar los datos de la cuota.');
             }
         };
         getFeeById();
     }, [id, setErrorMessage]);
 
     return (
-        <div>
-            <h2>Editar Cuota</h2>
-            <form onSubmit={update} noValidate className={formValidated ? 'was-validated' : ''}>
-                <div className="col-md-12 mt-4">
-                    {errorMessage && (
-                        <div className="alert alert-danger text-center">
-                            {errorMessage}
+        <div className="container mt-4">
+            <div className="card shadow-sm">
+                {/* Header color BG-SUCCESS exactly as Create/Edit patterns */}
+                <div className="card-header bg-success text-white p-3">
+                    <h2 className="mb-0 h4"><i className="fas fa-edit me-2"></i>Editar Cuota Administrativa</h2>
+                </div>
+                <div className="card-body p-4">
+                    <form onSubmit={triggerModal} noValidate className={formValidated ? 'was-validated' : ''}>
+                        {errorMessage && <div className="alert alert-danger text-center shadow-sm">{errorMessage}</div>}
+
+                        {/* Name Field */}
+                        <div className='mb-4'>
+                            <label className='form-label fw-bold'>Nombre de la Cuota <span className="text-danger">*</span></label>
+                            <input 
+                                value={name} 
+                                onChange={(e) => setName(e.target.value)}
+                                type='text'
+                                className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                                placeholder="Ej. Cuota de Mantenimiento 2026"
+                                required
+                            />
+                            {errors.name && <div className="invalid-feedback">{errors.name[0]}</div>}
                         </div>
-                    )}
-                </div>
 
-                {/* Name Field */}
-                <div className='mb-3'>
-                    <label className='form-label'>Nombre</label>
-                    <input 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)}
-                        type='text'
-                        className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                        required
-                    />
-                    {errors.name && <div className="invalid-feedback">{errors.name[0]}</div>}
-                </div>
-
-                <div className="row">
-                    {/* NEW: Amount House Field */}
-                    <div className='col-md-6 mb-3'>
-                        <label className='form-label'>Monto Casa</label>
-                        <input 
-                            value={amountHouse} 
-                            onChange={(e) => setAmountHouse(e.target.value)}
-                            type='number'
-                            step="0.01"
-                            className={`form-control ${errors.amount_house ? 'is-invalid' : ''}`}
-                            required
-                        />
-                        {errors.amount_house && <div className="invalid-feedback">{errors.amount_house[0]}</div>}
-                    </div>
-
-                    {/* NEW: Amount Land Field */}
-                    <div className='col-md-6 mb-3'>
-                        <label className='form-label'>Monto Terreno</label>
-                        <input 
-                            value={amountLand} 
-                            onChange={(e) => setAmountLand(e.target.value)}
-                            type='number'
-                            step="0.01"
-                            className={`form-control ${errors.amount_land ? 'is-invalid' : ''}`}
-                            required
-                        />
-                        {errors.amount_land && <div className="invalid-feedback">{errors.amount_land[0]}</div>}
-                    </div>
-                </div>
-
-                {/* Description Field */}
-                <div className='mb-3'>
-                    <label className='form-label'>Descripción</label>
-                    <textarea
-                        value={description} 
-                        onChange={(e) => setDescription(e.target.value)}
-                        className={`form-control ${errors.description ? 'is-invalid' : ''}`}
-                        rows="3"
-                        required
-                    />
-                    {errors.description && <div className="invalid-feedback">{errors.description[0]}</div>}
-                </div>
-
-                <button type='submit' className='btn btn-success'>Actualizar</button>
-            </form>
-
-            {/* Confirmation Modal */}
-            <div className={`modal ${showModal ? 'd-block' : 'd-none'}`} tabIndex="-1" role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Confirmar Actualización</h5>
-                            <button type="button" className="btn-close" aria-label="Cerrar" onClick={() => setShowModal(false)}></button>
+                        {/* Amount Inputs Row */}
+                        <div className="row g-3 mb-4">
+                            <div className='col-md-4'>
+                                <label className='form-label fw-bold'>Casa Habitada <span className="text-danger">*</span></label>
+                                <div className="input-group">
+                                    <span className="input-group-text">$</span>
+                                    <input 
+                                        value={amountOccupied} 
+                                        onChange={(e) => setAmountOccupied(e.target.value)}
+                                        type='number'
+                                        step="0.01"
+                                        className='form-control'
+                                        placeholder="0.00"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className='col-md-4'>
+                                <label className='form-label fw-bold'>Casa Deshabitada <span className="text-danger">*</span></label>
+                                <div className="input-group">
+                                    <span className="input-group-text">$</span>
+                                    <input 
+                                        value={amountEmpty} 
+                                        onChange={(e) => setAmountEmpty(e.target.value)}
+                                        type='number'
+                                        step="0.01"
+                                        className='form-control'
+                                        placeholder="0.00"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className='col-md-4'>
+                                <label className='form-label fw-bold'>Terreno <span className="text-danger">*</span></label>
+                                <div className="input-group">
+                                    <span className="input-group-text">$</span>
+                                    <input 
+                                        value={amountLand} 
+                                        onChange={(e) => setAmountLand(e.target.value)}
+                                        type='number'
+                                        step="0.01"
+                                        className='form-control'
+                                        placeholder="0.00"
+                                        required
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <div className="modal-body">
-                            ¿Está seguro de que desea actualizar la información de esta cuota?
+
+                        {/* Description Field */}
+                        <div className='mb-4'>
+                            <label className='form-label fw-bold'>Descripción</label>
+                            <textarea
+                                value={description} 
+                                onChange={(e) => setDescription(e.target.value)}
+                                className='form-control'
+                                rows="3"
+                                placeholder="Describa brevemente qué cubre esta cuota..."
+                            />
                         </div>
-                        <div className="modal-footer">
+
+                        <div className="d-flex gap-2 pt-3 border-top">
+                            <button type='submit' className='btn btn-success px-4'>
+                                <i className="fas fa-save me-2"></i>Actualizar Cuota
+                            </button>
+                            <button type='button' className='btn btn-secondary px-4' onClick={() => navigate('/fees')}>
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* MODAL DE CONFIRMACIÓN */}
+            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content border-0 shadow">
+                        <div className="modal-header bg-success text-white">
+                            <h5 className="modal-title"><i className="fas fa-question-circle me-2"></i>Confirmar Actualización</h5>
+                            <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
+                        </div>
+                        <div className="modal-body text-center p-4">
+                            <p className="mb-0">¿Está seguro de que desea actualizar los montos y la información de esta cuota?</p>
+                        </div>
+                        <div className="modal-footer bg-light">
                             <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
-                            <button type="button" className="btn btn-primary" onClick={handleUpdate}>Actualizar</button>
+                            <button type="button" className="btn btn-success" onClick={handleUpdate}>Confirmar y Guardar</button>
                         </div>
                     </div>
                 </div>
             </div>
-            {showModal && <div className="modal-backdrop fade show"></div>}
         </div>
     );
 }

@@ -3,14 +3,12 @@ import DataTable from 'react-data-table-component';
 import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// 🚨 Import the hook
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = '/api/streets';
 
 /**
  * 🎨 CUSTOM STYLES FOR DATA TABLE
- * Used to avoid console warnings regarding unknown props.
  */
 const customStyles = {
     headCells: {
@@ -26,9 +24,8 @@ const customStyles = {
     },
 };
 
-// 🚨 Receive 'user' as a prop from App.jsx
 const StreetTable = ({ user }) => {
-    // State variables
+    // --- STATE VARIABLES ---
     const [streets, setStreets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -38,15 +35,12 @@ const StreetTable = ({ user }) => {
     const [showModal, setShowModal] = useState(false);
     const [streetToDeactivate, setStreetToDeactivate] = useState(null); 
 
-    // 🚨 Initialize the permission hook
+    // --- PERMISSIONS ---
     const { can } = usePermission(user);
-
-    // 🛡️ Extraction to constants for stable permission evaluation
     const canCreate = user ? can('Crear-calles') : false;
     const canEdit = user ? can('Editar-calles') : false;
     const canDeactivate = user ? can('Eliminar-calles') : false;
 
-    // Context hook for global messages
     const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
@@ -61,11 +55,11 @@ const StreetTable = ({ user }) => {
                 headers: { Accept: 'application/json' },
             });
             const data = response.data.data || response.data;
-            setStreets(data);
-            setFilteredStreets(data);
+            setStreets(Array.isArray(data) ? data : []);
+            setFilteredStreets(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching streets:', error);
-            setErrorMessage('Fallo al cargar las calles.');
+            setErrorMessage('Fallo al cargar el catálogo de calles.');
         } finally {
             setLoading(false);
         }
@@ -76,7 +70,7 @@ const StreetTable = ({ user }) => {
     }, []);
 
     /**
-     * Filter streets based on search input
+     * Filter logic
      */
     useEffect(() => {
         const result = streets.filter(street => 
@@ -108,9 +102,10 @@ const StreetTable = ({ user }) => {
 
     const editStreet = (id) => navigate(`/streets/edit/${id}`);
     const createStreet = () => navigate('/streets/create');
+    
     const toggleModal = () => {
         setShowModal(!showModal);
-        if (showModal) setErrorMessage(null); // Clear modal errors on close
+        if (showModal) setErrorMessage(null);
     };
     
     const confirmDeactivation = (id) => {
@@ -124,18 +119,21 @@ const StreetTable = ({ user }) => {
 
     /**
      * 🛡️ COLUMNS DEFINITION
-     * FIX: Removed 'minWidth' to prevent DOM warnings.
-     * Fixed 'width' and flex alignment used instead.
      */
     const columns = useMemo(() => [
-        { name: 'Nombre', selector: row => row.name, sortable: true, width: '250px' },
+        { 
+            name: 'Nombre de la Calle', 
+            selector: row => row.name, 
+            sortable: true, 
+            width: '300px' 
+        },
         { 
             name: 'Estado', 
             selector: row => row.deleted_at ? 'Inactivo' : 'Activo', 
             sortable: true,
             width: '120px',
             cell: row => (
-                <span className={`badge ${row.deleted_at ? 'bg-danger' : 'bg-info'}`}> 
+                <span className={`badge ${row.deleted_at ? 'bg-danger' : 'bg-success'}`}> 
                     {row.deleted_at ? 'Inactivo' : 'Activo'}
                 </span>
             ),
@@ -144,7 +142,6 @@ const StreetTable = ({ user }) => {
             name: 'Acciones',
             cell: row => (
                 <div className="d-flex gap-2 justify-content-end w-100 pe-2">
-                    {/* 🛡️ Permission check for Edit button */}
                     {canEdit && (
                         <button 
                             className="btn btn-info btn-sm text-white" 
@@ -155,7 +152,6 @@ const StreetTable = ({ user }) => {
                         </button>
                     )}
                     
-                    {/* 🛡️ Permission check for Deactivate button */}
                     {canDeactivate && (
                         <>
                             {row.deleted_at ? (
@@ -173,11 +169,11 @@ const StreetTable = ({ user }) => {
     
     const NoDataComponent = () => (
         <div style={{ padding: '24px', textAlign: 'center', fontSize: '1.1em', color: '#6c757d' }}>
-            No hay registros para mostrar.
+            No hay calles registradas para mostrar.
         </div>
     );
 
-    // Effects to clear messages
+    // Auto-clear success messages
     useEffect(() => {
         if (successMessage) {
             const timer = setTimeout(() => setSuccessMessage(null), 5000);
@@ -185,27 +181,21 @@ const StreetTable = ({ user }) => {
         }
     }, [successMessage, setSuccessMessage]);
 
-    useEffect(() => {
-        if (errorMessage && !showModal) {
-            const timer = setTimeout(() => setErrorMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [errorMessage, setErrorMessage, showModal]);
-
     return (
         <div className="mb-4 border border-primary rounded p-3 bg-white">
             <div className="d-flex justify-content-between align-items-center mb-3">
-                {/* 🛡️ Permission check for Create button */}
                 {canCreate ? (
-                    <button className='btn btn-success btn-sm text-white' onClick={createStreet}>Crear Calle</button>
+                    <button className='btn btn-success btn-sm text-white' onClick={createStreet}>
+                        <i className="fas fa-plus-circle me-1"></i> Crear Calle
+                    </button>
                 ) : (
-                    <div /> // Spacer
+                    <div /> 
                 )}
                 
                 <input
                     type="text"
                     className="form-control form-control-sm w-25"
-                    placeholder="Buscar por nombre"
+                    placeholder="Buscar por nombre..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
@@ -215,7 +205,7 @@ const StreetTable = ({ user }) => {
             {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
             <DataTable
-                title="Lista de Calles" 
+                title="Catálogo de Calles" 
                 columns={columns}
                 data={filteredStreets}
                 progressPending={loading}
@@ -223,22 +213,22 @@ const StreetTable = ({ user }) => {
                 pagination
                 highlightOnHover
                 striped
+                responsive
                 customStyles={customStyles}
             />
 
-            {/* Modal for Deactivation Confirmation */}
+            {/* MODAL DE CONFIRMACIÓN */}
             <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
+                <div className="modal-dialog modal-dialog-centered" role="document">
+                    <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
-                            <h5 className="modal-title">Confirmar Baja de Calle</h5> 
+                            <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Baja</h5> 
                             <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
                         </div>
                         <div className="modal-body text-center p-4">
-                            <p>¿Está seguro de que desea dar de baja esta calle? No podrá ser asignada a nuevas direcciones.</p>
-                            {errorMessage && <div className="alert alert-danger text-center mt-2">{errorMessage}</div>}
+                            <p className="mb-0">¿Está seguro de que desea dar de baja esta calle? No podrá ser asignada a nuevos predios.</p>
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-footer bg-light">
                             <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button> 
                             <button type="button" className="btn btn-danger" onClick={handleDeactivation}>Dar de Baja</button>
                         </div>

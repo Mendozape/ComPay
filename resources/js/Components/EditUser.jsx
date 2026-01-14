@@ -28,11 +28,12 @@ const EditUser = () => {
     // Validation and permission UI states
     const [errors, setErrors] = useState({});
     const [rolesError, setRolesError] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
 
     /**
-     * Initial data load: Fetches the user details and the roles catalog.
+     * Initial data load
      */
     useEffect(() => {
         const fetchUser = async () => {
@@ -45,10 +46,11 @@ const EditUser = () => {
                     phone: userData.phone || "",
                     comments: userData.comments || ""
                 });
-                // Assuming roles is an array, we take the ID of the first one
                 setSelectedRole(userData.roles?.[0]?.id || "");
             } catch {
                 setErrorMessage("Error al cargar los datos del usuario.");
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -78,7 +80,6 @@ const EditUser = () => {
         setErrors({});
         setErrorMessage(null);
 
-        // --- FRONTEND VALIDATIONS ---
         if (!selectedRole) {
             setErrors({ roles: ["Debes seleccionar un rol"] });
             return;
@@ -91,7 +92,6 @@ const EditUser = () => {
             return;
         }
 
-        // --- API REQUEST ---
         try {
             await axios.put(
                 `/api/usuarios/${id}`,
@@ -101,13 +101,14 @@ const EditUser = () => {
                     phone: user.phone,
                     comments: user.comments,
                     roles: [selectedRole],
-                    password: password || undefined, // Send only if filled
+                    password: password || undefined,
                     password_confirmation: password ? passwordConfirmation : undefined,
                 },
                 axiosOptions
             );
 
             setSuccessMessage("Usuario/Residente actualizado correctamente.");
+            setErrorMessage(""); 
             navigate("/users");
 
         } catch (err) {
@@ -122,22 +123,32 @@ const EditUser = () => {
         }
     };
 
+    if (loading) return (
+        <div className="text-center mt-5">
+            <div className="spinner-border text-success" role="status"></div>
+            <p className="mt-2">Cargando datos del usuario...</p>
+        </div>
+    );
+
     return (
         <div className="container mt-4">
-            <div className="card shadow-sm">
-                <div className="card-header bg-info text-white">
-                    <h2 className="mb-0 h4">Editar Usuario o Residente</h2>
+            <div className="card shadow-sm border-0">
+                {/* Header color BG-SUCCESS estandarizado */}
+                <div className="card-header bg-success text-white p-3">
+                    <h2 className="mb-0 h4">
+                        <i className="fas fa-user-edit me-2"></i>Editar Residente
+                    </h2>
                 </div>
-                <div className="card-body">
+                <div className="card-body p-4">
                     {/* Global Messages */}
-                    {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
-                    {rolesError && <div className="alert alert-warning">No tienes permisos para modificar roles.</div>}
+                    {errorMessage && <div className="alert alert-danger text-center shadow-sm">{errorMessage}</div>}
+                    {rolesError && <div className="alert alert-warning text-center shadow-sm">No tienes permisos para modificar roles.</div>}
 
                     <form onSubmit={handleSubmit}>
-                        <div className="row mb-3">
+                        <div className="row g-3 mb-4">
                             {/* Full Name */}
                             <div className="col-md-6">
-                                <label className="form-label">Nombre Completo</label>
+                                <label className="form-label fw-bold">Nombre Completo <span className="text-danger">*</span></label>
                                 <input
                                     type="text"
                                     className={`form-control ${errors.name ? "is-invalid" : ""}`}
@@ -150,7 +161,7 @@ const EditUser = () => {
 
                             {/* Email Address */}
                             <div className="col-md-6">
-                                <label className="form-label">Correo Electrónico</label>
+                                <label className="form-label fw-bold">Correo Electrónico <span className="text-danger">*</span></label>
                                 <input
                                     type="email"
                                     className={`form-control ${errors.email ? "is-invalid" : ""}`}
@@ -162,27 +173,31 @@ const EditUser = () => {
                             </div>
                         </div>
 
-                        <div className="row mb-3">
+                        <div className="row g-3 mb-4">
                             {/* Phone Number */}
                             <div className="col-md-6">
-                                <label className="form-label">Teléfono de Contacto</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={user.phone}
-                                    onChange={(e) => setUser({ ...user, phone: e.target.value.replace(/[^0-9]/g, "") })}
-                                    placeholder="10 dígitos"
-                                />
+                                <label className="form-label fw-bold">Teléfono de Contacto</label>
+                                <div className="input-group">
+                                    <span className="input-group-text"><i className="fas fa-phone"></i></span>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={user.phone}
+                                        onChange={(e) => setUser({ ...user, phone: e.target.value.replace(/[^0-9]/g, "") })}
+                                        placeholder="10 dígitos"
+                                    />
+                                </div>
                             </div>
 
                             {/* Roles Selection */}
                             <div className="col-md-6">
-                                <label className="form-label">Rol del Sistema</label>
+                                <label className="form-label fw-bold">Rol del Sistema <span className="text-danger">*</span></label>
                                 <select
-                                    className={`form-control ${errors.roles ? "is-invalid" : ""}`}
+                                    className={`form-select ${errors.roles ? "is-invalid" : ""}`}
                                     value={selectedRole}
                                     onChange={(e) => setSelectedRole(e.target.value)}
                                     disabled={rolesError}
+                                    required
                                 >
                                     <option value="">Selecciona un rol</option>
                                     {roles.map((role) => (
@@ -195,10 +210,15 @@ const EditUser = () => {
                             </div>
                         </div>
 
-                        <div className="row mb-3">
+                        <div className="row g-3 mb-4 p-3 bg-light rounded border">
+                            <div className="col-12">
+                                <small className="text-muted d-block mb-2">
+                                    <i className="fas fa-info-circle me-1"></i> Deje los campos de contraseña vacíos si no desea cambiarla.
+                                </small>
+                            </div>
                             {/* Password Update */}
                             <div className="col-md-6">
-                                <label className="form-label">Nueva Contraseña (Opcional)</label>
+                                <label className="form-label fw-bold">Nueva Contraseña</label>
                                 <input
                                     type="password"
                                     className={`form-control ${errors.password ? "is-invalid" : ""}`}
@@ -211,7 +231,7 @@ const EditUser = () => {
 
                             {/* Confirm Password */}
                             <div className="col-md-6">
-                                <label className="form-label">Confirmar Nueva Contraseña</label>
+                                <label className="form-label fw-bold">Confirmar Nueva Contraseña</label>
                                 <input
                                     type="password"
                                     className={`form-control ${errors.password_confirmation ? "is-invalid" : ""}`}
@@ -227,23 +247,23 @@ const EditUser = () => {
 
                         {/* Internal Comments */}
                         <div className="mb-4">
-                            <label className="form-label">Comentarios / Notas Internas</label>
+                            <label className="form-label fw-bold">Comentarios / Notas Internas</label>
                             <textarea
                                 className="form-control"
                                 rows="3"
                                 value={user.comments}
                                 onChange={(e) => setUser({ ...user, comments: e.target.value })}
-                                placeholder="Notas adicionales..."
+                                placeholder="Notas adicionales sobre el residente..."
                             ></textarea>
                         </div>
 
-                        <div className="d-flex gap-2">
+                        <div className="d-flex gap-2 pt-3 border-top">
                             <button
                                 type="submit"
-                                className="btn btn-primary px-5"
+                                className="btn btn-success px-5 shadow-sm"
                                 disabled={rolesError || !selectedRole}
                             >
-                                <i className="fas fa-sync-alt me-1"></i> Actualizar
+                                <i className="fas fa-save me-2"></i>Actualizar Datos
                             </button>
                             <button
                                 type="button"

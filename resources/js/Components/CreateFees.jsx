@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom';
 
 const endpoint = '/api/fees';
 
-export default function CreateResidents() {
+export default function CreateFees() {
     const [name, setName] = useState('');
-    // NEW: Separated states for house and land amounts
-    const [amountHouse, setAmountHouse] = useState('');
+    // NEW: Separated states for occupied house, empty house, and land amounts
+    const [amountOccupied, setAmountOccupied] = useState('');
+    const [amountEmpty, setAmountEmpty] = useState('');
     const [amountLand, setAmountLand] = useState('');
     const [description, setDescription] = useState('');
     const [formValidated, setFormValidated] = useState(false);
@@ -16,6 +17,9 @@ export default function CreateResidents() {
     const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
+    /**
+     * Handles form submission to create a new fee
+     */
     const store = async (e) => {
         e.preventDefault();
         const form = e.currentTarget;
@@ -24,25 +28,25 @@ export default function CreateResidents() {
             e.stopPropagation();
             setErrorMessage('Por favor, complete todos los campos obligatorios.');
         } else {
-            // UPDATED: Sending the new field names to the API
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('amount_house', amountHouse);
-            formData.append('amount_land', amountLand);
-            formData.append('description', description);
-
+            // UPDATED: Sending the 3 specific amount fields to the backend
             try {
-                await axios.post(endpoint, formData, {
+                await axios.post(endpoint, {
+                    name,
+                    amount_occupied: amountOccupied,
+                    amount_empty: amountEmpty,
+                    amount_land: amountLand,
+                    description
+                }, {
                     withCredentials: true,
-                    headers: {
-                        Accept: 'application/json',
-                    },
+                    headers: { Accept: 'application/json' },
                 });
-                setSuccessMessage('Tarifa creada exitosamente.');
+                
+                setSuccessMessage('Cuota creada exitosamente.');
                 setErrorMessage('');
                 navigate('/fees');
             } catch (error) {
-                setErrorMessage('Fallo al crear la tarifa.');
+                const msg = error.response?.data?.message || 'Error al crear la cuota.';
+                setErrorMessage(msg);
                 console.error('Error creating fee:', error);
             }
         }
@@ -50,86 +54,93 @@ export default function CreateResidents() {
     };
 
     return (
-        <div>
-            <h2>Crear Tarifa</h2>
-            <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
-                <div className="col-md-12 mt-4">
-                    {errorMessage && (
-                        <div className="alert alert-danger text-center">
-                            {errorMessage}
+        <div className="container mt-4">
+            <div className="card shadow-sm">
+                <div className="card-header bg-success text-white">
+                    <h2 className="mb-0 h4">Crear Cuota</h2>
+                </div>
+                <div className="card-body">
+                    <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
+                        {errorMessage && <div className="alert alert-danger text-center">{errorMessage}</div>}
+
+                        {/* Name Field */}
+                        <div className='mb-3'>
+                            <label className='form-label fw-bold'>Nombre de la Cuota</label>
+                            <input
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                type='text'
+                                className='form-control'
+                                placeholder="ej. Mantenimiento"
+                                required
+                            />
+                            <div className="invalid-feedback">El nombre es obligatorio.</div>
                         </div>
-                    )}
-                </div>
 
-                {/* Name Field */}
-                <div className='mb-3'>
-                    <label className='form-label'>Nombre</label>
-                    <input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        type='text'
-                        className='form-control'
-                        placeholder="Ej. Mantenimiento"
-                        required
-                    />
-                    <div className="invalid-feedback">
-                        Por favor, ingrese un nombre.
-                    </div>
-                </div>
+                        {/* 3 Amount Inputs Row */}
+                        <div className="row">
+                            <div className='col-md-4 mb-3'>
+                                <label className='form-label fw-bold'>Casa Habitada ($)</label>
+                                <input
+                                    value={amountOccupied}
+                                    onChange={(e) => setAmountOccupied(e.target.value)}
+                                    type='number'
+                                    step="0.01"
+                                    className='form-control'
+                                    placeholder="0.00"
+                                    required
+                                />
+                                <div className="invalid-feedback">Ingrese el monto para casa habitada.</div>
+                            </div>
 
-                <div className="row">
-                    {/* NEW: Amount House Field */}
-                    <div className='col-md-6 mb-3'>
-                        <label className='form-label'>Monto Casa</label>
-                        <input
-                            value={amountHouse}
-                            onChange={(e) => setAmountHouse(e.target.value)}
-                            type='number'
-                            step="0.01"
-                            className='form-control'
-                            placeholder="0.00"
-                            required
-                        />
-                        <div className="invalid-feedback">
-                            Ingrese el monto para casas.
+                            <div className='col-md-4 mb-3'>
+                                <label className='form-label fw-bold'>Casa Deshabitada ($)</label>
+                                <input
+                                    value={amountEmpty}
+                                    onChange={(e) => setAmountEmpty(e.target.value)}
+                                    type='number'
+                                    step="0.01"
+                                    className='form-control'
+                                    placeholder="0.00"
+                                    required
+                                />
+                                <div className="invalid-feedback">Ingrese el monto para casa deshabitada.</div>
+                            </div>
+
+                            <div className='col-md-4 mb-3'>
+                                <label className='form-label fw-bold'>Terreno ($)</label>
+                                <input
+                                    value={amountLand}
+                                    onChange={(e) => setAmountLand(e.target.value)}
+                                    type='number'
+                                    step="0.01"
+                                    className='form-control'
+                                    placeholder="0.00"
+                                    required
+                                />
+                                <div className="invalid-feedback">Ingrese el monto para terreno.</div>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* NEW: Amount Land Field */}
-                    <div className='col-md-6 mb-3'>
-                        <label className='form-label'>Monto Terreno</label>
-                        <input
-                            value={amountLand}
-                            onChange={(e) => setAmountLand(e.target.value)}
-                            type='number'
-                            step="0.01"
-                            className='form-control'
-                            placeholder="0.00"
-                            required
-                        />
-                        <div className="invalid-feedback">
-                            Ingrese el monto para terrenos.
+                        {/* Description Field */}
+                        <div className='mb-3'>
+                            <label className='form-label fw-bold'>Descripción</label>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className='form-control'
+                                rows="3"
+                                placeholder="Detalles sobre lo que cubre esta cuota..."
+                            />
                         </div>
-                    </div>
-                </div>
 
-                {/* Description Field */}
-                <div className='mb-3'>
-                    <label className='form-label'>Descripción</label>
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className='form-control'
-                        rows="3"
-                        required
-                    />
-                    <div className="invalid-feedback">
-                        Por favor, ingrese una descripción.
-                    </div>
+                        <div className="d-flex gap-2">
+                            <button type='submit' className='btn btn-success px-4'>Guardar Cuota</button>
+                            <button type='button' className='btn btn-secondary' onClick={() => navigate('/fees')}>Cancelar</button>
+                        </div>
+                    </form>
                 </div>
-
-                <button type='submit' className='btn btn-success'>Guardar Tarifa</button>
-            </form>
+            </div>
         </div>
     );
 }

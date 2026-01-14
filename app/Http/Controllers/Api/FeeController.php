@@ -39,12 +39,13 @@ class FeeController extends Controller
     public function store(Request $request)
     {
         try {
-            // UPDATED: Added validation for the two new amount fields
+            // UPDATED: Validation for the three specific amounts
             $validated = $request->validate([
                 'name' => 'required|string|unique:fees,name|max:255',
-                'amount_house' => 'required|numeric|min:0',
-                'amount_land' => 'required|numeric|min:0',
-                'description' => 'nullable|string|max:500',
+                'amount_occupied' => 'required|numeric|min:0', // House Occupied
+                'amount_empty'    => 'required|numeric|min:0', // House Empty
+                'amount_land'     => 'required|numeric|min:0', // Land
+                'description'     => 'nullable|string|max:500',
             ]);
 
             $fee = Fee::create($validated);
@@ -91,17 +92,19 @@ class FeeController extends Controller
                  ], 403); 
             }
             
-            // UPDATED: Replaced 'amount' with 'amount_house' and 'amount_land'
+            // UPDATED: Validation for the three specific amounts on update
             $request->validate([
                 'name' => 'required|string|max:255|unique:fees,name,' . $fee->id,
-                'amount_house' => 'required|numeric|min:0',
-                'amount_land' => 'required|numeric|min:0',
-                'description' => 'nullable|string|max:255',
+                'amount_occupied' => 'required|numeric|min:0',
+                'amount_empty'    => 'required|numeric|min:0',
+                'amount_land'     => 'required|numeric|min:0',
+                'description'     => 'nullable|string|max:255',
             ]);
             
-            // UPDATED: Direct assignment of new fields
+            // UPDATED: Direct assignment of the three fields
             $fee->name = $request->name;
-            $fee->amount_house = $request->amount_house;
+            $fee->amount_occupied = $request->amount_occupied;
+            $fee->amount_empty = $request->amount_empty;
             $fee->amount_land = $request->amount_land;
             $fee->description = $request->description;
             $fee->save();
@@ -146,7 +149,6 @@ class FeeController extends Controller
                 'reason' => 'required|string|min:1|max:255',
             ]);
             
-            // Audit logic remains the same
             $fee->deletion_reason = $request->reason;
             $fee->deleted_by_user_id = Auth::id(); 
             $fee->save(); 
@@ -163,6 +165,9 @@ class FeeController extends Controller
         }
     }
 
+    /**
+     * Returns the view for the fees index.
+     */
     public function redire2()
     {
         return view('fees.index');

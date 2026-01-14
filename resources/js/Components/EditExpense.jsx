@@ -1,19 +1,15 @@
-// src/components/EditExpense.jsx
-
 import axios from 'axios';
 import React, { useState, useEffect, useContext } from 'react';
 import { MessageContext } from './MessageContext';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const endpoint = '/api/expenses/';
-const categoriesEndpoint = '/api/expense_categories'; // Endpoint for catalog data
+const categoriesEndpoint = '/api/expense_categories';
 
-// Configuration for Axios requests (omitted)
 const axiosOptions = {
     withCredentials: true,
     headers: {
         Accept: 'application/json',
-        'Content-Type': 'multipart/form-data',
     }
 };
 
@@ -23,8 +19,7 @@ const formatDate = (dbDateString) => {
 };
 
 export default function EditExpense() {
-    // State variables
-    // const [name, setName] = useState(''); // REMOVED
+    // --- STATE VARIABLES ---
     const [amount, setAmount] = useState('');
     const [expenseDate, setExpenseDate] = useState('');
     const [expenseCategoryId, setExpenseCategoryId] = useState(''); 
@@ -39,10 +34,9 @@ export default function EditExpense() {
     const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
-    // Effect 1: Fetch Categories Catalog (omitted)
+    // Effect: Fetch Categories Catalog
     useEffect(() => {
         const fetchCategories = async () => {
-            // ... (Category fetching logic) ...
             try {
                 const res = await axios.get(categoriesEndpoint, axiosOptions);
                 const activeCategories = res.data.data.filter(cat => !cat.deleted_at);
@@ -57,15 +51,12 @@ export default function EditExpense() {
         fetchCategories();
     }, []); 
 
-    // Effect 2: Fetch specific expense data (omitted)
+    // Effect: Fetch specific expense data
     useEffect(() => {
         const getExpenseById = async () => {
             try {
                 const response = await axios.get(`${endpoint}${id}`, axiosOptions);
                 const data = response.data.data;
-                
-                // REMOVED: setName(data.name || data.category?.name || ''); 
-                
                 setAmount(data.amount);
                 setExpenseDate(formatDate(data.expense_date)); 
                 setExpenseCategoryId(data.expense_category_id?.toString() || ''); 
@@ -78,33 +69,26 @@ export default function EditExpense() {
     }, [id, setErrorMessage]);
 
 
-    const handleUpdate = async (e) => {
-        // NOTE: e.preventDefault() is called in 'update', not here.
-        
-        const formData = new FormData();
-        
-        // --- DATA SENT TO API ---
-        formData.append('expense_category_id', expenseCategoryId); 
-        // ❌ REMOVED: formData.append('name', name);
-        formData.append('amount', amount);
-        formData.append('expense_date', expenseDate);
-        formData.append('_method', 'PUT'); 
-        // --- END DATA SENT ---
+    const handleUpdate = async () => {
+        const payload = {
+            expense_category_id: expenseCategoryId,
+            amount: amount,
+            expense_date: expenseDate,
+        };
 
         try {
-            const response = await axios.post(`${endpoint}${id}`, formData, axiosOptions);
+            // Using standard PUT for update
+            const response = await axios.put(`${endpoint}${id}`, payload, axiosOptions);
             if (response.status === 200) {
                 setSuccessMessage('Gasto actualizado exitosamente.');
                 navigate('/expenses');
-            } else {
-                setErrorMessage('Fallo al actualizar el gasto.');
             }
         } catch (error) {
             console.error('Error updating expense:', error);
             if (error.response?.data?.errors) {
                 setErrors(error.response.data.errors);
             } else {
-                setErrorMessage('Fallo al actualizar el gasto.');
+                setErrorMessage(error.response?.data?.message || 'Fallo al actualizar el gasto.');
             }
         } finally {
             setShowModal(false);
@@ -112,103 +96,105 @@ export default function EditExpense() {
     };
 
     const update = (e) => {
-        e.preventDefault(); // Prevents form submission
-        
-        // ⭐ FIX: Add client-side validation check before showing modal
+        e.preventDefault(); 
         if (!amount || !expenseCategoryId || !expenseDate) {
-            setErrorMessage('Por favor, complete todos los campos obligatorios antes de actualizar.');
+            setErrorMessage('Por favor, complete todos los campos obligatorios.');
             setFormValidated(true);
             return;
         }
-
         setShowModal(true);
     };
 
     return (
         <div className="container mt-4">
-            <h2>Editar Gasto</h2>
-            {/* The onSubmit handler calls 'update' to show the modal */}
-            <form onSubmit={update} noValidate className={formValidated ? 'was-validated' : ''}>
-                {/* ... (error message display) ... */}
-                <div className="col-md-12 mt-4">
-                    {errorMessage && (
-                        <div className="alert alert-danger text-center">
-                            {errorMessage}
+            <div className="card shadow-sm">
+                <div className="card-header bg-success text-white">
+                    <h2 className="mb-0 h4"><i className="fas fa-edit me-2"></i>Editar Gasto</h2>
+                </div>
+                <div className="card-body p-4">
+                    {errorMessage && <div className="alert alert-danger text-center">{errorMessage}</div>}
+                    
+                    <form onSubmit={update} noValidate className={formValidated ? 'was-validated' : ''}>
+                        
+                        <div className="row g-3">
+                            {/* 1. Category Select */}
+                            <div className='col-md-12 mb-3'>
+                                <label className='form-label fw-bold'>Categoría <span className="text-danger">*</span></label>
+                                <select
+                                    value={expenseCategoryId}
+                                    onChange={(e) => setExpenseCategoryId(e.target.value)}
+                                    className={`form-select ${formValidated && !expenseCategoryId ? 'is-invalid' : ''}`}
+                                    required
+                                    disabled={loadingCategories}
+                                >
+                                    <option value="">-- Seleccione una Categoría --</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>
+                                            {cat.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* 2. Amount Field */}
+                            <div className='col-md-6 mb-3'>
+                                <label className='form-label fw-bold'>Monto <span className="text-danger">*</span></label>
+                                <div className="input-group">
+                                    <span className="input-group-text">$</span>
+                                    <input 
+                                        value={amount} 
+                                        onChange={(e) => setAmount(e.target.value)}
+                                        type='number'
+                                        step='0.01'
+                                        min='0.01'
+                                        className={`form-control ${errors.amount ? 'is-invalid' : ''}`}
+                                        placeholder="0.00"
+                                        required
+                                    />
+                                </div>
+                                {errors.amount && <div className="text-danger small">{errors.amount[0]}</div>}
+                            </div>
+
+                            {/* 3. Expense Date Field */}
+                            <div className='col-md-6 mb-3'>
+                                <label className='form-label fw-bold'>Fecha del Gasto <span className="text-danger">*</span></label>
+                                <input
+                                    value={expenseDate} 
+                                    onChange={(e) => setExpenseDate(e.target.value)}
+                                    type='date'
+                                    className={`form-control ${errors.expense_date ? 'is-invalid' : ''}`}
+                                    required
+                                />
+                                {errors.expense_date && <div className="text-danger small">{errors.expense_date[0]}</div>}
+                            </div>
                         </div>
-                    )}
-                </div>
-                
-                {/* 1. Category Select */}
-                <div className='mb-3'>
-                    <label className='form-label'>Categoría</label>
-                    <select
-                        value={expenseCategoryId}
-                        onChange={(e) => setExpenseCategoryId(e.target.value)}
-                        className='form-control'
-                        required
-                        disabled={loadingCategories}
-                    >
-                        <option value="">-- Seleccione una Categoría --</option>
-                        {categories.map(cat => (
-                            <option key={cat.id} value={cat.id}>
-                                {cat.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
 
-                {/* 2. Amount Field */}
-                <div className='mb-3'>
-                    <label className='form-label'>Monto</label>
-                    <input 
-                        value={amount} 
-                        onChange={(e) => setAmount(e.target.value)}
-                        type='number'
-                        step='0.01'
-                        min='0.01'
-                        className={`form-control ${errors.amount ? 'is-invalid' : ''}`}
-                        required
-                    />
-                    {errors.amount && <div className="invalid-feedback">{errors.amount[0]}</div>}
-                </div>
-
-                {/* 3. Expense Date Field */}
-                <div className='mb-3'>
-                    <label className='form-label'>Fecha del Gasto</label>
-                    <input
-                        value={expenseDate} 
-                        onChange={(e) => setExpenseDate(e.target.value)}
-                        type='date'
-                        className={`form-control ${errors.expense_date ? 'is-invalid' : ''}`}
-                        required
-                    />
-                    {errors.expense_date && <div className="invalid-feedback">{errors.expense_date[0]}</div>}
-                </div>
-
-                <button type='submit' className='btn btn-success'>Actualizar</button>
-            </form>
-
-            {/* Modal for Update Confirmation */}
-            <div className={`modal ${showModal ? 'd-block' : 'd-none'}`} tabIndex="-1" role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Confirmar Actualización</h5>
-                            <button type="button" className="close" aria-label="Cerrar" onClick={() => setShowModal(false)}>
-                                <span aria-hidden="true">&times;</span>
+                        <div className="d-flex gap-2 mt-4 pt-3 border-top">
+                            <button type='submit' className='btn btn-success px-4'>
+                                <i className="fas fa-save me-2"></i>Actualizar Gasto
                             </button>
-                        </div>
-                        <div className="modal-body">
-                            ¿Está seguro de que desea actualizar la información de este gasto?
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                            <button type='button' className='btn btn-secondary px-4' onClick={() => navigate('/expenses')}>
                                 Cancelar
                             </button>
-                            {/* This button calls the async handleUpdate function */}
-                            <button type="button" className="btn btn-danger" onClick={handleUpdate}>
-                                Actualizar
-                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {/* MODAL DE CONFIRMACIÓN */}
+            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content border-0 shadow">
+                        <div className="modal-header bg-success text-white">
+                            <h5 className="modal-title"><i className="fas fa-question-circle me-2"></i>Confirmar Actualización</h5>
+                            <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
+                        </div>
+                        <div className="modal-body text-center p-4">
+                            <p className="mb-0">¿Está seguro de que desea actualizar la información de este registro de gasto?</p>
+                        </div>
+                        <div className="modal-footer bg-light">
+                            <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
+                            <button type="button" className="btn btn-success" onClick={handleUpdate}>Confirmar y Actualizar</button>
                         </div>
                     </div>
                 </div>

@@ -6,8 +6,8 @@ import { MessageContext } from "./MessageContext";
 export default function PermisoEdit() {
     const { id } = useParams();
     const [name, setName] = useState("");
-    const [loading, setLoading] = useState(true); // 🛡️ Track loading state
-    const { setSuccessMessage, setErrorMessage } = useContext(MessageContext);
+    const [loading, setLoading] = useState(true);
+    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     const axiosOptions = {
@@ -24,7 +24,6 @@ export default function PermisoEdit() {
                 setLoading(true);
                 const res = await axios.get(`/api/permisos/${id}`, axiosOptions);
                 
-                // Safely set the name from the filtered API response
                 if (res.data && res.data.name) {
                     setName(res.data.name);
                 }
@@ -44,62 +43,84 @@ export default function PermisoEdit() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // 🛡️ Basic frontend validation
         if (!name.trim()) {
             setErrorMessage("El nombre del permiso no puede estar vacío.");
             return;
         }
 
         try {
-            // Explicitly send only the 'name' field to the backend for security
             await axios.put(`/api/permisos/${id}`, { name: name.trim() }, axiosOptions);
             setSuccessMessage("Permiso actualizado exitosamente.");
+            setErrorMessage(""); // Limpiar errores si los había
             navigate("/permissions");
         } catch (error) {
             console.error("Error updating permiso:", error);
-            // Show specific backend error message if it exists
             const errorMsg = error.response?.data?.message || "Error al actualizar el permiso.";
             setErrorMessage(errorMsg);
         }
     };
 
-    if (loading) return <div className="text-center mt-5">Cargando datos del permiso...</div>;
+    if (loading) return (
+        <div className="text-center mt-5">
+            <div className="spinner-border text-success" role="status"></div>
+            <p className="mt-2">Cargando datos del permiso...</p>
+        </div>
+    );
 
     return (
-        <div className="row mb-4">
-            <div className="col-md-8 offset-md-2">
-                <div className="border rounded p-4 bg-white shadow-sm">
-                    <h2 className="text-2xl font-bold mb-4 text-center">Editar Permiso</h2>
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label className="form-label font-semibold">Nombre del Permiso</label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="form-control"
-                                placeholder="Ingrese el nombre del permiso"
-                                required
-                            />
+        <div className="container mt-4">
+            <div className="row justify-content-center">
+                <div className="col-md-8">
+                    <div className="card shadow-sm">
+                        {/* Header color BG-SUCCESS para estandarizar */}
+                        <div className="card-header bg-success text-white p-3">
+                            <h2 className="mb-0 h4">
+                                <i className="fas fa-key me-2"></i>Editar Permiso
+                            </h2>
                         </div>
+                        <div className="card-body p-4">
+                            {errorMessage && (
+                                <div className="alert alert-danger text-center shadow-sm">
+                                    {errorMessage}
+                                </div>
+                            )}
 
-                        <div className="d-flex justify-content-between">
-                            <button 
-                                type="button" 
-                                className="btn btn-secondary" 
-                                onClick={() => navigate("/permissions")}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                type="submit"
-                                className="btn btn-primary text-white"
-                            >
-                                Actualizar Permiso
-                            </button>
+                            <form onSubmit={handleSubmit}>
+                                <div className="mb-4">
+                                    <label className="form-label fw-bold">
+                                        Nombre del Permiso <span className="text-danger">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="form-control"
+                                        placeholder="Ej. Crear-usuarios, Ver-pagos, etc."
+                                        required
+                                    />
+                                    <div className="form-text">
+                                        Use un formato descriptivo para identificar el permiso.
+                                    </div>
+                                </div>
+
+                                <div className="d-flex gap-2 pt-3 border-top">
+                                    <button
+                                        type="submit"
+                                        className="btn btn-success px-4"
+                                    >
+                                        <i className="fas fa-save me-2"></i>Actualizar Permiso
+                                    </button>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-secondary px-4" 
+                                        onClick={() => navigate("/permissions")}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

@@ -75,14 +75,14 @@ export default function Stats({ user }) {
                                         <div className="col-md-6 col-xl-6 mb-4">
                                             <div className="card bg-success text-white p-3 shadow border-0">
                                                 <div className="card-subtitle">
-                                                    <h5 className="font-weight-bold">Usuarios en Sistema</h5>
+                                                    <h5 className="font-weight-bold">Residentes en Sistema</h5>
                                                     <h2 className="text-left mt-3">
                                                         <i className="fa fa-users" />
                                                         <span style={{ float: 'right' }}>{userCount}</span>
                                                     </h2>
                                                     <div className="mt-4 text-right">
                                                         <a href="/users" className="btn btn-sm btn-light text-success font-weight-bold">
-                                                            Gestionar Usuarios <i className="fas fa-arrow-circle-right ml-1"></i>
+                                                            Gestionar Residentes <i className="fas fa-arrow-circle-right ml-1"></i>
                                                         </a>
                                                     </div>
                                                 </div>
@@ -95,7 +95,7 @@ export default function Stats({ user }) {
                                         <div className="col-md-6 col-xl-6 mb-4">
                                             <div className="card bg-info text-white p-3 shadow border-0">
                                                 <div className="card-subtitle">
-                                                    <h5 className="font-weight-bold">Roles de Usuario</h5>
+                                                    <h5 className="font-weight-bold">Roles de Residente</h5>
                                                     <h2 className="text-left mt-3">
                                                         <i className="fa fa-user-lock" />
                                                         <span style={{ float: 'right' }}>{roleCount}</span>
