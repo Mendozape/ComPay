@@ -15,14 +15,19 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'logout'], // Added login/logout
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['http://localhost:8000', 'http://localhost:3000'],
+    'allowed_origins' => [
+        'http://localhost:8000',     // Your local web
+        'http://192.168.1.16:8000',  // Your PC IP
+        'http://192.168.1.16:8081',  // Your mobile app (Expo default port)
+        'http://localhost:8081',
+    ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
     'max_age' => 0,
     'supports_credentials' => true,
-    
+
 
 ];

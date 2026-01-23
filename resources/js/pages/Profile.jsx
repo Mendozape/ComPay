@@ -2,66 +2,91 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 /**
- * FINAL LOGIC: Uses the 'profile_photo_path' field from the database 
- * and concatenates it directly after the public storage URL.
+ * Returns the correct profile photo URL or a default avatar
  */
 const getProfilePhotoUrl = (profile) => {
     const defaultUrl = "/default-avatar.png";
-    const photoPath = profile.profile_photo_path;
-    if (photoPath) {
-        return `/storage/images/${photoPath}`;
+
+    if (profile.profile_photo_path) {
+        return `/storage/images/${profile.profile_photo_path}`;
     }
+
     return defaultUrl;
 };
 
-const Profile = ({ user }) => {
-    const [profile, setProfile] = useState(user || {});
-    const [passwords, setPasswords] = useState({
-        current_password: "",
+const Profile = () => {
+    /**
+     * Unified profile state
+     * Includes optional password fields
+     */
+    const [profile, setProfile] = useState({
+        name: "",
+        email: "",
+        phone: "",
         password: "",
         password_confirmation: "",
+        profile_photo_path: null,
     });
+
     const [photo, setPhoto] = useState(null);
     const [preview, setPreview] = useState(null);
     const [status, setStatus] = useState("");
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(true);
 
     /**
-     * 🛡️ AUTO-HIDE MESSAGES EFFECT
+     * Fetch authenticated user data
+     */
+    useEffect(() => {
+        axios
+            .get("/api/user")
+            .then((res) => {
+                setProfile((prev) => ({
+                    ...prev,
+                    name: res.data.name,
+                    email: res.data.email,
+                    phone: res.data.phone || "",
+                    profile_photo_path: res.data.profile_photo_path,
+                }));
+                setLoading(false);
+            })
+            .catch(() => {
+                setErrors({ general: "No se pudo cargar la información del perfil." });
+                setLoading(false);
+            });
+    }, []);
+
+    /**
+     * Auto-hide success and error messages
      */
     useEffect(() => {
         if (status || errors.general) {
             const timer = setTimeout(() => {
                 setStatus("");
-                setErrors((prev) => ({ ...prev, general: "" }));
+                setErrors({});
             }, 5000);
+
             return () => clearTimeout(timer);
         }
-    }, [status, errors.general]);
+    }, [status, errors]);
 
-    // Fetch user info on component mount
-    useEffect(() => {
-        if (!user) {
-            axios
-                .get("/api/user")
-                .then((res) => {
-                    setProfile(res.data);
-                })
-                .catch((err) => console.error("Failed to fetch user:", err));
-        }
-    }, [user]);
-
-    const handleProfileChange = (e) => {
-        setProfile({ ...profile, [e.target.name]: e.target.value });
+    /**
+     * Handle text input changes
+     */
+    const handleChange = (e) => {
+        setProfile({
+            ...profile,
+            [e.target.name]: e.target.value,
+        });
     };
 
-    const handlePasswordChange = (e) => {
-        setPasswords({ ...passwords, [e.target.name]: e.target.value });
-    };
-
+    /**
+     * Handle profile photo selection and preview
+     */
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         setPhoto(file);
+
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => setPreview(reader.result);
@@ -71,93 +96,145 @@ const Profile = ({ user }) => {
         }
     };
 
-    const updateProfile = async (e) => {
+    /**
+     * Submit profile update
+     * Password is optional
+     */
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus("");
         setErrors({});
+
+        // Optional frontend password validation
+        if (profile.password.length > 0) {
+            if (profile.password.length < 6) {
+                setErrors({
+                    password: ["La contraseña debe tener al menos 6 caracteres."],
+                });
+                return;
+            }
+
+            if (profile.password !== profile.password_confirmation) {
+                setErrors({
+                    password_confirmation: ["Las contraseñas no coinciden."],
+                });
+                return;
+            }
+        }
 
         try {
             const formData = new FormData();
+
             formData.append("name", profile.name);
             formData.append("email", profile.email);
-            if (photo) formData.append("photo", photo);
+            formData.append("phone", profile.phone || "");
 
-            const response = await axios.post("/api/profile/update", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            // Only send password if user entered one
+            if (profile.password.length > 0) {
+                formData.append("password", profile.password);
+                formData.append(
+                    "password_confirmation",
+                    profile.password_confirmation
+                );
+            }
 
-            setStatus(response.data.message);
+            // Append photo only if selected
+            if (photo) {
+                formData.append("photo", photo);
+            }
 
-            const res = await axios.get("/api/user");
-            setProfile(res.data);
+            const response = await axios.post(
+                "/api/profile/update",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            setStatus(response.data.message || "Perfil actualizado correctamente.");
+
+            // Reset password fields after success
+            setProfile((prev) => ({
+                ...prev,
+                password: "",
+                password_confirmation: "",
+            }));
+
             setPhoto(null);
             setPreview(null);
         } catch (err) {
+            // 🔥 IMPORTANT: show real backend error
+            console.error("PROFILE UPDATE ERROR:", err);
+            console.error("BACKEND RESPONSE:", err.response);
+
             if (err.response?.data?.errors) {
                 setErrors(err.response.data.errors);
             } else {
-                setErrors({ general: "Error al actualizar el perfil." });
+                setErrors({
+                    general:
+                        err.response?.data?.message ||
+                        "Error interno del servidor",
+                });
             }
         }
     };
 
-    const updatePassword = async (e) => {
-        e.preventDefault();
-        setStatus("");
-        setErrors({});
+    if (loading) {
+        return (
+            <div className="text-center mt-5">
+                Cargando información del perfil...
+            </div>
+        );
+    }
 
-        try {
-            await axios.put("/user/password", passwords);
-            setStatus("Contraseña actualizada exitosamente.");
-            setPasswords({
-                current_password: "",
-                password: "",
-                password_confirmation: "",
-            });
-        } catch (err) {
-            if (err.response?.data?.errors) {
-                setErrors(err.response.data.errors);
-            } else {
-                setErrors({ general: "Error al actualizar la contraseña." });
-            }
-        }
-    };
-
-    if (!profile) return <div className="text-center mt-5">Cargando información del usuario...</div>;
-
-    const finalPhotoUrl = getProfilePhotoUrl(profile);
+    const finalPhotoUrl = preview || getProfilePhotoUrl(profile);
 
     return (
         <div className="container mt-4">
             <div className="row justify-content-center">
                 <div className="col-md-8">
-                    {status && <div className="alert alert-success text-center py-2 shadow-sm">{status}</div>}
-                    {errors.general && <div className="alert alert-danger text-center py-2 shadow-sm">{errors.general}</div>}
 
-                    {/* Profile Information Card */}
-                    <div className="card shadow-sm border-0 mb-4">
-                        <div className="card-header bg-success text-white p-3">
-                            <h5 className="mb-0"><i className="fas fa-user-circle me-2"></i>Información del Perfil</h5>
+                    {status && (
+                        <div className="alert alert-success text-center">
+                            {status}
                         </div>
+                    )}
+
+                    {errors.general && (
+                        <div className="alert alert-danger text-center">
+                            {errors.general}
+                        </div>
+                    )}
+
+                    <div className="card shadow-sm border-0">
+                        <div className="card-header bg-success text-white">
+                            <h5 className="mb-0">
+                                <i className="fas fa-user-circle me-2"></i>
+                                Mi Perfil
+                            </h5>
+                        </div>
+
                         <div className="card-body p-4">
-                            <form onSubmit={updateProfile}>
+                            <form onSubmit={handleSubmit}>
+
+                                {/* PROFILE PHOTO */}
                                 <div className="text-center mb-4">
                                     <div className="position-relative d-inline-block">
                                         <img
-                                            src={preview || finalPhotoUrl}
-                                            alt="Profile"
-                                            className="rounded-circle border shadow-sm"
+                                            src={finalPhotoUrl}
+                                            alt="Perfil"
+                                            className="rounded-circle border"
                                             style={{
                                                 width: "140px",
                                                 height: "140px",
                                                 objectFit: "cover",
-                                                border: "4px solid #fff"
                                             }}
                                         />
                                         <label
                                             htmlFor="photo"
-                                            className="btn btn-sm btn-info text-white position-absolute bottom-0 end-0 rounded-circle shadow"
-                                            style={{ width: "35px", height: "35px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                            className="btn btn-sm btn-info text-white position-absolute bottom-0 end-0 rounded-circle"
                                         >
                                             <i className="fas fa-camera"></i>
                                         </label>
@@ -165,102 +242,104 @@ const Profile = ({ user }) => {
                                     <input
                                         id="photo"
                                         type="file"
-                                        name="photo"
                                         accept="image/*"
                                         onChange={handlePhotoChange}
                                         className="d-none"
                                     />
-                                    {errors.photo && (
-                                        <div className="text-danger small mt-2">{errors.photo[0]}</div>
+                                </div>
+
+                                {/* BASIC INFO */}
+                                <div className="mb-3">
+                                    <label className="form-label">Nombre completo</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        className={`form-control ${errors.name ? "is-invalid" : ""}`}
+                                        value={profile.name}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.name && (
+                                        <div className="invalid-feedback">
+                                            {errors.name[0]}
+                                        </div>
                                     )}
                                 </div>
 
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Nombre Completo</label>
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                                            value={profile.name || ""}
-                                            onChange={handleProfileChange}
-                                            placeholder="Tu nombre"
-                                        />
-                                        {errors.name && <div className="invalid-feedback">{errors.name[0]}</div>}
-                                    </div>
-
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Correo Electrónico</label>
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                                            value={profile.email || ""}
-                                            onChange={handleProfileChange}
-                                            placeholder="correo@ejemplo.com"
-                                        />
-                                        {errors.email && <div className="invalid-feedback">{errors.email[0]}</div>}
-                                    </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Correo electrónico</label>
+                                    <input
+                                        type="email"
+                                        className="form-control bg-light"
+                                        value={profile.email}
+                                        readOnly
+                                    />
                                 </div>
 
-                                <button type="submit" className="btn btn-success w-100 py-2 mt-2 fw-bold shadow-sm">
-                                    <i className="fas fa-save me-2"></i>Guardar Cambios del Perfil
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    {/* Security Card */}
-                    <div className="card shadow-sm border-0 mb-5">
-                        <div className="card-header bg-info text-white p-3">
-                            <h5 className="mb-0"><i className="fas fa-lock me-2"></i>Seguridad y Contraseña</h5>
-                        </div>
-                        <div className="card-body p-4">
-                            <form onSubmit={updatePassword}>
                                 <div className="mb-3">
-                                    <label className="form-label fw-bold">Contraseña Actual</label>
+                                    <label className="form-label">Teléfono</label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        className={`form-control ${errors.phone ? "is-invalid" : ""}`}
+                                        value={profile.phone}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.phone && (
+                                        <div className="invalid-feedback">
+                                            {errors.phone[0]}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* SECURITY SECTION */}
+                                <hr />
+                                <h6 className="text-muted">Seguridad</h6>
+
+                                <div className="mb-3">
+                                    <label className="form-label">
+                                        Nueva contraseña (opcional)
+                                    </label>
                                     <input
                                         type="password"
-                                        name="current_password"
-                                        className={`form-control ${errors.current_password ? "is-invalid" : ""}`}
-                                        value={passwords.current_password}
-                                        onChange={handlePasswordChange}
+                                        name="password"
+                                        className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                                        value={profile.password}
+                                        onChange={handleChange}
+                                        placeholder="Déjalo vacío para mantener la actual"
                                     />
-                                    {errors.current_password && (
-                                        <div className="invalid-feedback">{errors.current_password[0]}</div>
+                                    {errors.password && (
+                                        <div className="invalid-feedback">
+                                            {errors.password[0]}
+                                        </div>
                                     )}
                                 </div>
 
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Nueva Contraseña</label>
-                                        <input
-                                            type="password"
-                                            name="password"
-                                            className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                                            value={passwords.password}
-                                            onChange={handlePasswordChange}
-                                        />
-                                        {errors.password && (
-                                            <div className="invalid-feedback">{errors.password[0]}</div>
-                                        )}
-                                    </div>
-
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Confirmar Nueva Contraseña</label>
-                                        <input
-                                            type="password"
-                                            name="password_confirmation"
-                                            className="form-control"
-                                            value={passwords.password_confirmation}
-                                            onChange={handlePasswordChange}
-                                        />
-                                    </div>
+                                <div className="mb-3">
+                                    <label className="form-label">
+                                        Confirmar nueva contraseña
+                                    </label>
+                                    <input
+                                        type="password"
+                                        name="password_confirmation"
+                                        className={`form-control ${errors.password_confirmation ? "is-invalid" : ""}`}
+                                        value={profile.password_confirmation}
+                                        onChange={handleChange}
+                                    />
+                                    {errors.password_confirmation && (
+                                        <div className="invalid-feedback">
+                                            {errors.password_confirmation[0]}
+                                        </div>
+                                    )}
                                 </div>
 
-                                <button type="submit" className="btn btn-outline-info w-100 py-2 fw-bold mt-2">
-                                    <i className="fas fa-key me-2"></i>Actualizar Contraseña
+                                <button
+                                    type="submit"
+                                    className="btn btn-success w-100 fw-bold mt-3"
+                                >
+                                    <i className="fas fa-save me-2"></i>
+                                    Guardar cambios
                                 </button>
+
                             </form>
                         </div>
                     </div>

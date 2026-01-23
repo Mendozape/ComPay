@@ -42,7 +42,7 @@ Route::middleware('auth:sanctum')->get('/get-token', function (Request $request)
 Route::middleware('auth:sanctum')->group(function () {
     
     // --- GENERAL RESOURCES ---
-    Route::post('/profile/update', [ProfileController::class, 'updateProfileInformation']);
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile']);
     
     //Route::apiResource('/articles', ArticleController::class);
     Route::get('/users', [ApiController::class, 'users']);
