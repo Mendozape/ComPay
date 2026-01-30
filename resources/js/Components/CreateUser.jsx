@@ -188,7 +188,7 @@ const CreateUser = () => {
 
                             {/* Role Selection */}
                             <div className="col-md-6">
-                                <label className="form-label fw-bold">Rol del Sistema <span className="text-danger">*</span></label>
+                                <label className="form-label fw-bold">Role del Sistema <span className="text-danger">*</span></label>
                                 <select
                                     className={`form-select ${roleError ? "is-invalid" : ""}`}
                                     value={selectedRole}
