@@ -29,7 +29,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.defaults.withCredentials = true;
 
 /**
- * Laravel Echo + Pusher (USED ONLY FOR REAL-TIME FEATURES LIKE CHAT)
+ * Laravel Echo + Pusher (USED FOR REAL-TIME CHAT)
  */
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
@@ -44,4 +44,13 @@ window.Echo = new Echo({
     key: import.meta.env.VITE_PUSHER_APP_KEY,
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
     forceTLS: true,
+    // 🔥 CRITICAL FIX: Point to the manual API route we created in api.php
+    // This allows the Web client to authorize private channels using the same logic as the App.
+    authEndpoint: '/api/broadcasting/auth',
+    auth: {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+        }
+    }
 });

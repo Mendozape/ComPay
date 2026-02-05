@@ -89,19 +89,31 @@ export default function ShowRoles({ user }) {
       fetchRoles();
     } catch (err) {
       console.error(err);
-      setErrorMessage("Error al eliminar el rol.");
+      setErrorMessage("Error al eliminar el role.");
     }
   };
 
   /**
-   * Columns definition with standardized colors
+   * Columns definition with standardized colors and Total Permissions
    */
   const columns = useMemo(() => [
     { 
-        name: "Rol", 
+        name: "Role", 
         selector: (r) => r.name, 
         sortable: true,
         width: "250px" 
+    },
+    {
+        name: "Permisos Totales",
+        selector: (r) => r.permissions?.length || 0,
+        sortable: true,
+        center: true,
+        width: "150px",
+        cell: (r) => (
+            <span className="badge bg-secondary">
+                {r.permissions?.length || 0} asignados
+            </span>
+        )
     },
     {
       name: "Acciones",
@@ -199,7 +211,7 @@ export default function ShowRoles({ user }) {
               ></button>
             </div>
             <div className="modal-body text-center p-4">
-              <p className="mb-0">¿Está seguro de que desea eliminar este rol? Esta acción no se puede deshacer.</p>
+              <p className="mb-0">¿Está seguro de que desea eliminar este role? Esta acción no se puede deshacer.</p>
             </div>
             <div className="modal-footer bg-light">
               <button

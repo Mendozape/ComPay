@@ -10,7 +10,7 @@ const ChatPage = ({ user }) => {
     // 👈 NEW STATES for Search and Pagination
     const [searchTerm, setSearchTerm] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1); 
-    const contactsPerPage = 2; 
+    const contactsPerPage = 10; 
 
     // Initial Contacts Fetch
     useEffect(() => {
