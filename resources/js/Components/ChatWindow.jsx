@@ -10,20 +10,14 @@ const ChatWindow = ({ currentUserId, receiver }) => {
     const messagesEndRef = useRef(null);
 
     const getChannelName = (id1, id2) => {
-        const ids = [id1, id2];
+        const ids = [Number(id1), Number(id2)];
         ids.sort((a, b) => a - b);
         return `chat.${ids.join('.')}`;
     };
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-    // 👇 Scroll to bottom when typing indicator appears
-    useEffect(() => {
-        if (typingUser) {
-            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        }
-    }, [typingUser]);
+    }, [messages, typingUser]);
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -31,9 +25,8 @@ const ChatWindow = ({ currentUserId, receiver }) => {
                 const response = await axios.get(`/api/chat/messages/${receiver.id}`);
                 setMessages(response.data.messages);
 
-                // 👇 NEW: Mark as read when chat is opened
                 const hasUnread = response.data.messages.some(
-                    msg => msg.receiver_id === currentUserId && !msg.read_at
+                    msg => Number(msg.receiver_id) === Number(currentUserId) && !msg.read_at
                 );
                 if (hasUnread) {
                     await axios.post(`/api/chat/mark-as-read`, { sender_id: receiver.id });
@@ -46,17 +39,17 @@ const ChatWindow = ({ currentUserId, receiver }) => {
 
         fetchMessages();
 
-        if (!window.Echo) {
-            console.error("Laravel Echo not initialized.");
-            return;
-        }
+        if (!window.Echo) return;
 
         const channelName = getChannelName(currentUserId, receiver.id);
 
         window.Echo.private(channelName)
             .listen('.MessageSent', async (e) => {
-                if (e.message.sender_id === receiver.id) {
-                    setMessages(prev => [...prev, e.message]);
+                if (Number(e.message.sender_id) === Number(receiver.id)) {
+                    setMessages(prev => {
+                        const exists = prev.some(m => m.id === e.message.id);
+                        return exists ? prev : [...prev, e.message];
+                    });
                     try {
                         await axios.post(`/api/chat/mark-as-read`, { sender_id: receiver.id });
                         window.dispatchEvent(new CustomEvent('chat-messages-read'));
@@ -66,7 +59,7 @@ const ChatWindow = ({ currentUserId, receiver }) => {
                 }
             })
             .listen('.UserTyping', (e) => {
-                if (e.sender_id === receiver.id) {
+                if (Number(e.sender_id) === Number(receiver.id)) {
                     setTypingUser(receiver.name);
                     clearTimeout(typingTimeoutRef.current);
                     typingTimeoutRef.current = setTimeout(() => {
@@ -75,26 +68,22 @@ const ChatWindow = ({ currentUserId, receiver }) => {
                 }
             })
             .listen('.MessageRead', (e) => {
-                const senderId = e.sender_id;
-                const readerId = e.reader_id;
-                if (senderId === currentUserId && readerId === receiver.id) {
+                // Check if the other person read OUR messages
+                if (Number(e.reader_id) === Number(receiver.id)) {
                     setMessages(prev =>
-                        prev.map(msg =>
-                            msg.receiver_id === readerId
-                                ? { ...msg, read_at: new Date().toISOString() }
-                                : msg
-                        )
+                        prev.map(msg => ({
+                            ...msg,
+                            read_at: msg.read_at || new Date().toISOString()
+                        }))
                     );
                 }
-            })
-            .error(err => console.error("Echo error:", err));
+            });
 
         return () => {
             window.Echo.leave(channelName);
             clearTimeout(typingTimeoutRef.current);
         };
     }, [currentUserId, receiver.id]);
-
 
     const handleSend = async (e) => {
         e.preventDefault();
@@ -106,6 +95,7 @@ const ChatWindow = ({ currentUserId, receiver }) => {
             receiver_id: receiver.id,
             content: newMessage.trim(),
             created_at: new Date().toISOString(),
+            read_at: null,
             sender: { name: 'You' },
         };
 
@@ -135,9 +125,7 @@ const ChatWindow = ({ currentUserId, receiver }) => {
             setIsTyping(true);
             try {
                 await axios.post('/api/chat/typing', { receiver_id: receiver.id });
-            } catch (err) {
-                console.error("Typing event failed:", err);
-            }
+            } catch (err) {}
             setTimeout(() => setIsTyping(false), 2000);
         }
     };
@@ -145,18 +133,17 @@ const ChatWindow = ({ currentUserId, receiver }) => {
     return (
         <div className="card card-primary card-outline direct-chat direct-chat-primary">
             <div className="card-header">
-                <h3 className="card-title">Chat with {receiver.name}</h3>
+                <h3 className="card-title">Chat con {receiver.name}</h3>
             </div>
 
             <div className="card-body">
                 <div className="direct-chat-messages" style={{ height: '50vh', overflowY: 'scroll' }}>
                     {messages.map(msg => {
-                        const isSender = msg.sender_id === currentUserId;
+                        const isMe = Number(msg.sender_id) === Number(currentUserId);
                         const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                        // WhatsApp-style bubble colors
                         const bubbleStyle = {
-                            backgroundColor: isSender ? '#dcf8c6' : '#f1f0f0',
+                            backgroundColor: isMe ? '#dcf8c6' : '#f1f0f0',
                             color: '#000',
                             borderRadius: '10px',
                             padding: '8px 10px',
@@ -165,24 +152,24 @@ const ChatWindow = ({ currentUserId, receiver }) => {
                         };
 
                         return (
-                            <div key={msg.id} className={`direct-chat-msg ${isSender ? 'right' : ''}`}>
+                            <div key={msg.id} className={`direct-chat-msg ${isMe ? 'right' : ''}`}>
                                 <div className="direct-chat-infos clearfix">
-                                    <span className={`direct-chat-name ${isSender ? 'float-right' : 'float-left'}`}>
-                                        {msg.sender?.name || 'Unknown'}
+                                    <span className={`direct-chat-name ${isMe ? 'float-right' : 'float-left'}`}>
+                                        {isMe ? 'You' : msg.sender?.name}
                                     </span>
-                                    <span className={`direct-chat-timestamp ${isSender ? 'float-left' : 'float-right'}`}>
+                                    <span className={`direct-chat-timestamp ${isMe ? 'float-left' : 'float-right'}`}>
                                         {time}
                                     </span>
                                 </div>
                                 <i className="direct-chat-img fas fa-user-circle"></i>
                                 <div className="direct-chat-text" style={bubbleStyle}>
                                     {msg.content}
-                                    {isSender && (
+                                    {isMe && (
                                         <span className="ml-2" style={{ fontSize: '13px' }}>
                                             {msg.read_at ? (
-                                                <span style={{ color: '#34B7F1' }}>✓✓</span> // blue double check (read)
+                                                <span style={{ color: '#34B7F1' }}>✓✓</span>
                                             ) : (
-                                                <span style={{ color: 'gray' }}>✓</span> // gray single check (sent)
+                                                <span style={{ color: 'gray' }}>✓</span>
                                             )}
                                         </span>
                                     )}
@@ -192,7 +179,7 @@ const ChatWindow = ({ currentUserId, receiver }) => {
                     })}
                     {typingUser && (
                         <div className="text-muted small ml-3">
-                            <i>{typingUser} is typing...</i>
+                            <i>{typingUser} está escribiendo...</i>
                         </div>
                     )}
                     <div ref={messagesEndRef} />
@@ -204,7 +191,7 @@ const ChatWindow = ({ currentUserId, receiver }) => {
                     <div className="input-group">
                         <input
                             type="text"
-                            placeholder="Type your message..."
+                            placeholder="Escribe un mensaje..."
                             className="form-control"
                             value={newMessage}
                             onChange={handleTyping}
@@ -212,7 +199,7 @@ const ChatWindow = ({ currentUserId, receiver }) => {
                         />
                         <span className="input-group-append">
                             <button type="submit" className="btn btn-primary" disabled={!newMessage.trim()}>
-                                Send
+                                Enviar
                             </button>
                         </span>
                     </div>

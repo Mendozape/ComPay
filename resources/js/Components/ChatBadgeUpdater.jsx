@@ -6,75 +6,87 @@ const ChatBadgeUpdater = () => {
     const userId = window.Laravel?.user?.id;
     const badgeElement = document.getElementById('unread-chat-count');
 
+    /**
+     * Updates the DOM element for the global navigation badge
+     */
     const updateBadge = (count) => {
-        if (badgeElement) {
-            if (count > 0) {
-                badgeElement.textContent = count;
-                badgeElement.classList.remove('d-none');
-            } else {
-                badgeElement.textContent = '';
-                badgeElement.classList.add('d-none');
-            }
+      if (badgeElement) {
+        if (count > 0) {
+          badgeElement.textContent = count;
+          badgeElement.classList.remove('d-none');
+        } else {
+          badgeElement.textContent = '';
+          badgeElement.classList.add('d-none');
         }
+      }
     };
 
-    // Reusable function to refresh the counter
+    /**
+     * Fetches current unread count from the API
+     */
     const refreshCount = async () => {
-        try {
-            const response = await axios.get('/api/chat/unread-count');
-            const count = response.data.count;
-            setUnreadCount(count);
-            updateBadge(count);
-        } catch (error) {
-            console.error("Error fetching chat count:", error);
-        }
+      try {
+        const response = await axios.get('/api/chat/unread-count');
+        const count = response.data.count;
+        setUnreadCount(count);
+        updateBadge(count);
+      } catch (error) {
+        console.error("Error fetching chat count:", error);
+      }
     };
 
-    // 1. Initial Fetch
+    // 1. Initial Fetch on Load
     useEffect(() => {
-        if (!userId) return;
-        refreshCount();
+      if (!userId) return;
+      refreshCount();
     }, [userId]);
 
-    // 2. Real-Time Listener
+    /**
+     * 2. Real-Time Global Listener.
+     * Listens on the User's private channel to increment the global badge.
+     */
     useEffect(() => {
-        if (!userId || !window.Echo) return;
+      if (!userId || !window.Echo) return;
 
-        const userChannel = `App.Models.User.${userId}`;
+      const userChannel = `App.Models.User.${userId}`;
 
-        window.Echo.private(userChannel)
-            .listen('.MessageSent', (e) => {
-                if (e.message.receiver_id === userId) {
-                    setUnreadCount(prevCount => {
-                        const newCount = prevCount + 1;
-                        updateBadge(newCount);
-                        return newCount;
-                    });
-                }
-            })
-            .error((error) => {
-                console.error('Pusher global channel error:', error);
+      window.Echo.private(userChannel)
+        .listen('.MessageSent', (e) => {
+          // Verify the message is actually for this user
+          if (e.message.receiver_id === userId) {
+            setUnreadCount(prevCount => {
+              const newCount = prevCount + 1;
+              updateBadge(newCount);
+              return newCount;
             });
+          }
+        })
+        .error((error) => {
+          console.error('Echo global channel error:', error);
+        });
 
-        return () => {
-            window.Echo.leave(userChannel);
-        };
+      return () => {
+        window.Echo.leave(userChannel);
+      };
     }, [userId]); 
 
-    // 3. Listener for custom event (when messages are read)
+    /**
+     * 3. UI Synchronization Listener.
+     * Listens for a custom 'chat-messages-read' event to re-sync with server.
+     */
     useEffect(() => {
-        if (!userId) return;
+      if (!userId) return;
 
-        const handleMessagesRead = () => {
-            console.log('Event chat-messages-read received, refreshing count...');
-            refreshCount();
-        };
+      const handleMessagesRead = () => {
+        console.log('Syncing global badge after reading messages...');
+        refreshCount();
+      };
 
-        window.addEventListener('chat-messages-read', handleMessagesRead);
+      window.addEventListener('chat-messages-read', handleMessagesRead);
 
-        return () => {
-            window.removeEventListener('chat-messages-read', handleMessagesRead);
-        };
+      return () => {
+        window.removeEventListener('chat-messages-read', handleMessagesRead);
+      };
     }, [userId]);
     
     return null;

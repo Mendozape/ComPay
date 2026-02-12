@@ -7,51 +7,67 @@ const ChatPage = ({ user }) => {
     const [contacts, setContacts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     
-    // 👈 NEW STATES for Search and Pagination
     const [searchTerm, setSearchTerm] = useState(''); 
     const [currentPage, setCurrentPage] = useState(1); 
     const contactsPerPage = 10; 
 
-    // Initial Contacts Fetch
-    useEffect(() => {
-        const fetchContacts = async () => {
-            try {
-                // NOTE: If the list is too large, this route should be updated to include pagination in Laravel.
-                const response = await axios.get('/api/chat/contacts');
-                setContacts(response.data.users);
-            } catch (error) {
-                console.error("Error fetching chat contacts:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+    /**
+     * Fetch the contact list from the server
+     */
+    const fetchContacts = async () => {
+        try {
+            const response = await axios.get('/api/chat/contacts');
+            setContacts(response.data.users);
+        } catch (error) {
+            console.error("Error fetching chat contacts:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
+    // Initial Fetch
+    useEffect(() => {
         fetchContacts();
     }, []);
 
-    // Real-time listener to update contact badges (KEEP THIS BLOCK AS IS)
+    /**
+     * Real-time listener on the USER'S notification channel.
+     * This ensures the list updates even if the user is browsing the contact list
+     * but not looking at the specific chat that received a message.
+     */
     useEffect(() => {
         if (!user?.id || !window.Echo) return;
 
+        // Using the same global channel as ChatBadgeUpdater
         const userChannel = `App.Models.User.${user.id}`;
 
         window.Echo.private(userChannel)
             .listen('.MessageSent', (e) => {
                 if (e.message.receiver_id === user.id) {
-                    const isViewingThisChat = activeContact && activeContact.id === e.message.sender_id;
+                    const senderId = e.message.sender_id;
+                    const isViewingThisChat = activeContact && activeContact.id === senderId;
                     
                     if (!isViewingThisChat) {
-                        setContacts(prevContacts => 
-                            prevContacts.map(contact => {
-                                if (contact.id === e.message.sender_id) {
-                                    return {
-                                        ...contact,
-                                        unread_count: (contact.unread_count || 0) + 1
-                                    };
-                                }
-                                return contact;
-                            })
-                        );
+                        setContacts(prevContacts => {
+                            const contactExists = prevContacts.some(c => c.id === senderId);
+                            
+                            // If contact exists in current list, increment unread count locally
+                            if (contactExists) {
+                                return prevContacts.map(contact => {
+                                    if (contact.id === senderId) {
+                                        return {
+                                          ...contact,
+                                          unread_count: (contact.unread_count || 0) + 1
+                                        };
+                                    }
+                                    return contact;
+                                });
+                            } else {
+                                // If contact is not in the list (e.g. filtered or new), refresh from server
+                                fetchContacts();
+                                return prevContacts;
+                            }
+                        });
                     }
                 }
             });
@@ -61,27 +77,25 @@ const ChatPage = ({ user }) => {
         };
     }, [user?.id, activeContact]); 
 
-    // Function to handle when a contact is selected
+    /**
+     * Handles contact selection and resets their unread count locally
+     */
     const handleSelectContact = (contact) => {
         setActiveContact(contact);
         
-        // Reset the selected contact's counter immediately (optimistic UI)
+        // Optimistic UI update: clear badge immediately
         setContacts(prevContacts => 
             prevContacts.map(c => 
                 c.id === contact.id ? { ...c, unread_count: 0 } : c
             )
         );
 
-        console.log('Dispatching chat-messages-read event...');
+        // Notify ChatBadgeUpdater and other components to sync global count
         window.dispatchEvent(new CustomEvent('chat-messages-read'));
     };
     
-    // -----------------------------------------------------------
-    // FILTERING AND PAGINATION LOGIC (using useMemo for efficiency)
-    // -----------------------------------------------------------
-    
+    // Filtering and Pagination Logic
     const filteredContacts = useMemo(() => {
-        // Filter contacts based on search term
         return contacts.filter(contact =>
             contact.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -90,11 +104,10 @@ const ChatPage = ({ user }) => {
     const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
 
     const currentContacts = useMemo(() => {
-        // Calculate which contacts to show on the current page
         const indexOfLastContact = currentPage * contactsPerPage;
         const indexOfFirstContact = indexOfLastContact - contactsPerPage;
         return filteredContacts.slice(indexOfFirstContact, indexOfLastContact);
-    }, [filteredContacts, currentPage, contactsPerPage]);
+    }, [filteredContacts, currentPage]);
 
 
     return (
@@ -102,14 +115,13 @@ const ChatPage = ({ user }) => {
             <section className="content pt-3">
                 <div className="row">
                     
-                    {/* Contacts Column (Sidebar with Search and Pagination) */}
+                    {/* Contacts Column */}
                     <div className="col-md-4">
                         <div className="card card-primary card-outline">
                             <div className="card-header">
                                 <h3 className="card-title">👥 Contactos</h3>
                             </div>
                             
-                            {/* SEARCH FIELD */}
                             <div className="card-body p-2">
                                 <input
                                     type="text"
@@ -118,22 +130,19 @@ const ChatPage = ({ user }) => {
                                     value={searchTerm}
                                     onChange={(e) => {
                                         setSearchTerm(e.target.value);
-                                        setCurrentPage(1); // Reset to page 1 when searching
+                                        setCurrentPage(1);
                                     }}
                                 />
                             </div>
 
-                            {/* PAGINATED CONTACT LIST */}
                             <div className="card-body p-0" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
                                 {isLoading && <p className="text-center p-3">Cargando usuarios...</p>}
                                 
-                                {/* Show message if no results */}
-                                {(!isLoading && currentContacts.length === 0) && (
+                                {!isLoading && currentContacts.length === 0 && (
                                     <p className="text-center p-3 text-muted">No se encontraron contactos.</p>
                                 )}
 
                                 <ul className="nav nav-pills flex-column">
-                                    {/* Map ONLY the contacts from the current page */}
                                     {currentContacts.map(contact => (
                                         <li 
                                             className="nav-item" 
@@ -149,7 +158,6 @@ const ChatPage = ({ user }) => {
                                                 <i className="fas fa-user mr-2"></i> 
                                                 {contact.name}
                                                 
-                                                {/* Unread message badge per contact */}
                                                 {contact.unread_count > 0 && (
                                                     <span className="badge badge-danger float-right">
                                                         {contact.unread_count}
@@ -161,33 +169,26 @@ const ChatPage = ({ user }) => {
                                 </ul>
                             </div>
                             
-                            {/* PAGINATION CONTROLS */}
-                            {(totalPages > 1 && filteredContacts.length > 0) && (
+                            {/* Pagination */}
+                            {totalPages > 1 && filteredContacts.length > 0 && (
                                 <div className="card-footer clearfix">
                                     <ul className="pagination pagination-sm m-0 float-right">
-                                        
-                                        {/* Previous Button */}
                                         <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                                             <a className="page-link" href="#" onClick={(e) => {e.preventDefault(); setCurrentPage(prev => Math.max(prev - 1, 1));}}>«</a>
                                         </li>
-                                        
-                                        {/* Page Indicator */}
                                         <li className="page-item disabled">
                                             <span className="page-link text-muted">Página {currentPage} de {totalPages}</span>
                                         </li>
-
-                                        {/* Next Button */}
                                         <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                                             <a className="page-link" href="#" onClick={(e) => {e.preventDefault(); setCurrentPage(prev => Math.min(prev + 1, totalPages));}}>»</a>
                                         </li>
                                     </ul>
                                 </div>
                             )}
-                            
                         </div>
                     </div>
 
-                    {/* Conversation Column (Main Window) */}
+                    {/* Chat Window Column */}
                     <div className="col-md-8">
                         {activeContact ? (
                             <ChatWindow 

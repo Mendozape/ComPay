@@ -7,10 +7,15 @@ use Illuminate\Http\Request;
 use App\Models\Message;
 use App\Models\User;
 use App\Events\MessageSent;
+use App\Events\MessageRead;
+use App\Events\UserTyping;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * MessageController
+ * Handles all chat-related operations including real-time event broadcasting.
+ */
 class MessageController extends Controller
 {
     /**
@@ -99,10 +104,15 @@ class MessageController extends Controller
             ->get();
 
         // Mark messages as read immediately upon retrieval
-        Message::where('sender_id', $receiverId)
+        $unread = Message::where('sender_id', $receiverId)
             ->where('receiver_id', $currentUserId)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+            ->whereNull('read_at');
+
+        if ($unread->count() > 0) {
+            $unread->update(['read_at' => now()]);
+            // 🔥 Notify the sender that messages were read
+            broadcast(new MessageRead($receiverId, $currentUserId));
+        }
 
         return response()->json([
             'status' => 'success',
@@ -114,26 +124,28 @@ class MessageController extends Controller
      * Store and broadcast a new chat message.
      */
     public function sendMessage(Request $request)
-{
-    // ... validación (se mantiene igual)
+    {
+        $request->validate([
+            'receiver_id' => 'required|integer|exists:users,id',
+            'content' => 'required|string',
+        ]);
 
-    $message = Message::create([
-        'sender_id' => Auth::id(),
-        'receiver_id' => $request->receiver_id,
-        'content' => $request->content,
-    ]);
+        $message = Message::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $request->receiver_id,
+            'content' => $request->content,
+        ]);
 
-    $message->load('sender');
+        $message->load('sender');
 
-    // 🔥 CAMBIO SEGURO: Eliminamos ->toOthers()
-    // Esto garantiza que el mensaje llegue a la Web aunque lo mandes desde la App.
-    broadcast(new MessageSent($message)); 
+        // Broadcast event to chat channel and receiver notification channel
+        broadcast(new MessageSent($message)); 
 
-    return response()->json([
-        'status' => 'success',
-        'message' => $message
-    ], 201);
-}
+        return response()->json([
+            'status' => 'success',
+            'message' => $message
+        ], 201);
+    }
 
     /**
      * Mark unread messages from a specific contact as read.
@@ -145,14 +157,19 @@ class MessageController extends Controller
         ]);
 
         $receiverId = Auth::id();
+        $senderId = $data['sender_id'];
 
-        Message::where('sender_id', $data['sender_id'])
+        $unread = Message::where('sender_id', $senderId)
             ->where('receiver_id', $receiverId)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+            ->whereNull('read_at');
 
-        // Broadcast event to notify the sender that their messages were read
-        broadcast(new \App\Events\MessageRead($data['sender_id'], $receiverId))->toOthers();
+        if ($unread->count() > 0) {
+            $unread->update(['read_at' => now()]);
+            
+            // 🔥 Broadcast to notify the sender that their messages were read (Web/App)
+            // No .toOthers() to ensure all instances sync blue ticks
+            broadcast(new MessageRead($senderId, $receiverId));
+        }
 
         return response()->json(['status' => 'success']);
     }
@@ -166,7 +183,9 @@ class MessageController extends Controller
             'receiver_id' => 'required|integer|exists:users,id',
         ]);
 
-        broadcast(new \App\Events\UserTyping($data['receiver_id']))->toOthers();
+        // 🔥 FIX: Pasamos explícitamente el ID del que escribe (Auth::id())
+        // Usamos toOthers() para que el emisor no reciba su propio evento
+        broadcast(new UserTyping($data['receiver_id'], Auth::id()))->toOthers();
 
         return response()->json(['status' => 'ok']);
     }
