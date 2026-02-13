@@ -30,13 +30,14 @@ export default function ShowRoles({ user }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
+  // Modal and deletion states
   const [showModal, setShowModal] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState(null);
 
   // Initialize permission hook
   const { can } = usePermission(user);
 
-  // Permission constants
+  // Permission constants based on user roles/permissions
   const canCreate = user ? can('Crear-roles') : false;
   const canEdit = user ? can('Editar-roles') : false;
   const canDelete = user ? can('Eliminar-roles') : false;
@@ -48,7 +49,7 @@ export default function ShowRoles({ user }) {
   const axiosOptions = { withCredentials: true, headers: { Accept: "application/json" } };
 
   /**
-   * Fetch roles from the API
+   * Fetch roles list from the backend API
    */
   const fetchRoles = async () => {
     setLoading(true);
@@ -65,12 +66,15 @@ export default function ShowRoles({ user }) {
     }
   };
 
+  /**
+   * Initial load effect
+   */
   useEffect(() => {
     fetchRoles();
   }, []);
 
   /**
-   * Filter roles based on search
+   * Client-side filtering logic for search bar
    */
   useEffect(() => {
     const result = roles.filter((r) =>
@@ -80,21 +84,28 @@ export default function ShowRoles({ user }) {
   }, [search, roles]);
 
   /**
-   * Delete a specific role
+   * Handles the actual deletion after user confirmation in Modal
    */
-  const deleteRole = async (id) => {
+  const handleDeleteConfirm = async () => {
+    if (!roleToDelete) return;
+
     try {
-      await axios.delete(`${endpoint}/${id}`, axiosOptions);
+      await axios.delete(`${endpoint}/${roleToDelete}`, axiosOptions);
       setSuccessMessage("Role eliminado exitosamente.");
+      
+      // Reset modal states and refresh table
+      setShowModal(false);
+      setRoleToDelete(null);
       fetchRoles();
     } catch (err) {
-      console.error(err);
+      console.error("Delete error:", err);
       setErrorMessage("Error al eliminar el role.");
+      setShowModal(false);
     }
   };
 
   /**
-   * Columns definition with standardized colors and Total Permissions
+   * DataTable Columns Configuration
    */
   const columns = useMemo(() => [
     { 
@@ -119,7 +130,7 @@ export default function ShowRoles({ user }) {
       name: "Acciones",
       cell: (r) => (
         <div className="d-flex gap-2 justify-content-end w-100 pe-2">
-          {/* 🛡️ canEdit - Standard Info Blue */}
+          {/* Edit Button */}
           {canEdit && (
             <button
               className="btn btn-info btn-sm text-white"
@@ -129,7 +140,7 @@ export default function ShowRoles({ user }) {
             </button>
           )}
           
-          {/* 🛡️ canDelete - Standard Danger Red */}
+          {/* Delete Button - Triggers Confirmation Modal */}
           {canDelete && (
             <button
               className="btn btn-danger btn-sm"
@@ -147,7 +158,9 @@ export default function ShowRoles({ user }) {
     },
   ], [canEdit, canDelete, navigate]);
 
-  // Auto-clear messages
+  /**
+   * Effect to automatically hide success messages after 5 seconds
+   */
   useEffect(() => {
     if (successMessage) {
       const timer = setTimeout(() => setSuccessMessage(null), 5000);
@@ -157,9 +170,9 @@ export default function ShowRoles({ user }) {
 
   return (
     <div className="mb-4 border border-primary rounded p-3 bg-white">
+      {/* Header section: Create button and Search input */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         {canCreate ? (
-          // 🟢 Standard Success Green
           <button
             className="btn btn-success btn-sm text-white"
             onClick={() => navigate("/roles/create")}
@@ -179,9 +192,11 @@ export default function ShowRoles({ user }) {
         />
       </div>
 
+      {/* Feedback Alerts */}
       {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
       {errorMessage && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
+      {/* Main Data Table */}
       <DataTable
         title="Gestión de Roles del Sistema"
         columns={columns}
@@ -194,47 +209,49 @@ export default function ShowRoles({ user }) {
         customStyles={customStyles}
       />
 
-      {/* MODAL DE CONFIRMACIÓN */}
-      <div
-        className={`modal fade ${showModal ? "show d-block" : "d-none"}`}
-        style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-        tabIndex="-1"
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content border-0 shadow">
-            <div className="modal-header bg-danger text-white">
-              <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
-              <button
-                type="button"
-                className="btn-close btn-close-white"
-                onClick={() => setShowModal(false)}
-              ></button>
+      {/* CONFIRMATION MODAL - Conditional Rendering */}
+      {showModal && (
+        <div
+            className="modal fade show d-block"
+            style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+            tabIndex="-1"
+        >
+            <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg">
+                <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">
+                    <i className="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={() => setShowModal(false)}
+                ></button>
+                </div>
+                <div className="modal-body text-center p-4">
+                <p className="fs-5 mb-1">¿Está seguro de que desea eliminar este role?</p>
+                <p className="text-muted small">Esta acción no se puede deshacer y afectará los permisos de los usuarios vinculados.</p>
+                </div>
+                <div className="modal-footer bg-light justify-content-center">
+                <button
+                    type="button"
+                    className="btn btn-secondary px-4"
+                    onClick={() => setShowModal(false)}
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-danger px-4"
+                    onClick={handleDeleteConfirm}
+                >
+                    Eliminar Permanentemente
+                </button>
+                </div>
             </div>
-            <div className="modal-body text-center p-4">
-              <p className="mb-0">¿Está seguro de que desea eliminar este role? Esta acción no se puede deshacer.</p>
             </div>
-            <div className="modal-footer bg-light">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setShowModal(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={() => {
-                  deleteRole(roleToDelete);
-                  setShowModal(false);
-                }}
-              >
-                Eliminar Permanentemente
-              </button>
-            </div>
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

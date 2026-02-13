@@ -107,7 +107,7 @@ export default function CreateRole() {
                 { name: name.trim(), permission: selectedPermissions },
                 axiosOptions
             );
-            setSuccessMessage("Rol creado exitosamente.");
+            setSuccessMessage("Role creado exitosamente.");
             navigate("/roles");
         } catch (err) {
             console.error("Error creating role:", err);

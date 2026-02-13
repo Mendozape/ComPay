@@ -322,6 +322,13 @@ return [
         // --- CONFIGURATION MENU (USERS, ROLES, PERMISSIONS) ---
         // The submenu will only be visible if the user has AT LEAST ONE permission required by its children.
         [
+            // 🚨 NEW TOP LEVEL ITEM: PROFILE
+            [
+                'text' => 'Profile',
+                'url'  => 'profile',
+                'icon' => 'fas fa-fw fa-id-card',
+                // Assuming profile is visible to all authenticated users (no 'can' required).
+            ],
             'text'    => 'CONFIG',
             'icon'    => 'fas fa-fw fa-share',
             'can'     => ['Ver-usuarios', 'Ver-roles', 'Ver-permisos'],
@@ -350,35 +357,12 @@ return [
                 ],
             ],
         ],
-        // 🚨 NEW TOP LEVEL ITEM: PROFILE
-        [
-            'text' => 'Profile',
-            'url'  => 'profile',
-            'icon' => 'fas fa-fw fa-id-card',
-            // Assuming profile is visible to all authenticated users (no 'can' required).
-        ],
 
-        // --- STREETS MODULE ---
-        [
-            'text' => 'CALLES',
-            'url'  => 'streets',
-            'icon' => 'fas fa-road',
-            // Permission to view the Street list.
-            'can'  => 'Ver-calles',
-        ],
-
-        // --- FEES MODULE ---
-        [
-            'text' => 'CUOTAS',
-            'url'  => 'fees',
-            'icon' => 'fas fa-cash-register',
-            // Permission to view the Fee list.
-            'can'  => 'Ver-cuotas',
-        ],
+        
 
         // --- EXPENSE CATEGORIES MODULE ---
         [
-            'text' => 'CATALOGO GASTOS',
+            'text' => 'CATÁLOGO GASTOS',
             'url'  => 'expense_categories',
             'icon' => 'fas fa-fw fa-receipt',
             // Permission to view the Expense Categories catalog.
@@ -392,6 +376,22 @@ return [
             'icon' => 'fas fa-fw fa-money-bill',
             // Permission to view the Expenses list/transactions.
             'can'  => 'Ver-gastos',
+        ],
+        // --- FEES MODULE ---
+        [
+            'text' => 'CATÁLOGO DE CUOTAS',
+            'url'  => 'fees',
+            'icon' => 'fas fa-cash-register',
+            // Permission to view the Fee list.
+            'can'  => 'Ver-cuotas',
+        ],
+        // --- STREETS MODULE ---
+        [
+            'text' => 'CATÁLOGO DE CALLES',
+            'url'  => 'streets',
+            'icon' => 'fas fa-road',
+            // Permission to view the Street list.
+            'can'  => 'Ver-calles',
         ],
 
         // --- ADDRESSES/PAYMENTS MODULE ---
@@ -414,9 +414,9 @@ return [
         // ---
         [
             'text' => 'ESTADO DE CUENTA',
-            'url'  => 'resident-access', 
+            'url'  => 'resident-access',
             'icon' => 'fas fa-fw fa-user-check',
-           'can'  => 'Ver-estado-cuenta',
+            'can'  => 'Ver-estado-cuenta',
         ],
     ],
 

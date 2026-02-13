@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { MessageContext } from "./MessageContext";
 
 const axiosOptions = { withCredentials: true };
 
@@ -17,20 +16,15 @@ const EditUser = () => {
         comments: ""
     });
 
-    // Roles and selection
     const [roles, setRoles] = useState([]);
     const [selectedRole, setSelectedRole] = useState("");
 
-    // Password fields
     const [password, setPassword] = useState("");
     const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
-    // Validation and permission UI states
     const [errors, setErrors] = useState({});
     const [rolesError, setRolesError] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
 
     /**
      * Initial data load
@@ -40,15 +34,19 @@ const EditUser = () => {
             try {
                 const res = await axios.get(`/api/usuarios/${id}`, axiosOptions);
                 const userData = res.data;
+
                 setUser({
                     name: userData.name || "",
                     email: userData.email || "",
                     phone: userData.phone || "",
                     comments: userData.comments || ""
                 });
+
                 setSelectedRole(userData.roles?.[0]?.id || "");
-            } catch {
-                setErrorMessage("Error al cargar los datos del usuario.");
+
+            } catch (err) {
+                console.error(err);
+                toastr.error("Error al cargar los datos del usuario.", "Error");
             } finally {
                 setLoading(false);
             }
@@ -59,18 +57,20 @@ const EditUser = () => {
                 const res = await axios.get("/api/roles", axiosOptions);
                 setRoles(res.data);
                 setRolesError(false);
+
             } catch (err) {
                 if (err.response?.status === 403) {
                     setRolesError(true);
+                    toastr.warning("No tienes permisos para modificar roles.", "Permisos");
                 } else {
-                    setErrorMessage("Error al cargar los roles.");
+                    toastr.error("Error al cargar los roles.", "Error");
                 }
             }
         };
 
         fetchUser();
         fetchRoles();
-    }, [id, setErrorMessage]);
+    }, [id]);
 
     /**
      * Form submission handler
@@ -78,10 +78,10 @@ const EditUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
-        setErrorMessage(null);
 
         if (!selectedRole) {
             setErrors({ roles: ["Debes seleccionar un rol"] });
+            toastr.warning("Debes seleccionar un rol.");
             return;
         }
 
@@ -89,6 +89,7 @@ const EditUser = () => {
             setErrors({
                 password_confirmation: ["La confirmación de la contraseña no coincide."]
             });
+            toastr.warning("Las contraseñas no coinciden.");
             return;
         }
 
@@ -107,18 +108,19 @@ const EditUser = () => {
                 axiosOptions
             );
 
-            setSuccessMessage("Usuario/Residente actualizado correctamente.");
-            setErrorMessage(""); 
+            toastr.success("Usuario/Residente actualizado correctamente.", "Éxito");
             navigate("/users");
 
         } catch (err) {
             console.error(err);
+
             if (err.response?.status === 403) {
-                setErrorMessage(err.response.data?.error || "No tienes permisos.");
+                toastr.error(err.response.data?.error || "No tienes permisos.", "Error");
             } else if (err.response?.status === 422) {
                 setErrors(err.response.data.errors);
+                toastr.warning("Hay errores en el formulario.");
             } else {
-                setErrorMessage("Error al actualizar el usuario.");
+                toastr.error("Error al actualizar el usuario.", "Error");
             }
         }
     };
@@ -133,20 +135,15 @@ const EditUser = () => {
     return (
         <div className="container mt-4">
             <div className="card shadow-sm border-0">
-                {/* Header color BG-SUCCESS estandarizado */}
                 <div className="card-header bg-success text-white p-3">
                     <h2 className="mb-0 h4">
                         <i className="fas fa-user-edit me-2"></i>Editar Residente
                     </h2>
                 </div>
                 <div className="card-body p-4">
-                    {/* Global Messages */}
-                    {errorMessage && <div className="alert alert-danger text-center shadow-sm">{errorMessage}</div>}
-                    {rolesError && <div className="alert alert-warning text-center shadow-sm">No tienes permisos para modificar roles.</div>}
 
                     <form onSubmit={handleSubmit}>
                         <div className="row g-3 mb-4">
-                            {/* Full Name */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Nombre Completo <span className="text-danger">*</span></label>
                                 <input
@@ -159,7 +156,6 @@ const EditUser = () => {
                                 {errors.name && <div className="invalid-feedback">{errors.name[0]}</div>}
                             </div>
 
-                            {/* Email Address */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Correo Electrónico <span className="text-danger">*</span></label>
                                 <input
@@ -174,7 +170,6 @@ const EditUser = () => {
                         </div>
 
                         <div className="row g-3 mb-4">
-                            {/* Phone Number */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Teléfono de Contacto</label>
                                 <div className="input-group">
@@ -189,7 +184,6 @@ const EditUser = () => {
                                 </div>
                             </div>
 
-                            {/* Roles Selection */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Rol del Sistema <span className="text-danger">*</span></label>
                                 <select
@@ -216,7 +210,7 @@ const EditUser = () => {
                                     <i className="fas fa-info-circle me-1"></i> Deje los campos de contraseña vacíos si no desea cambiarla.
                                 </small>
                             </div>
-                            {/* Password Update */}
+
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Nueva Contraseña</label>
                                 <input
@@ -229,7 +223,6 @@ const EditUser = () => {
                                 {errors.password && <div className="invalid-feedback">{errors.password[0]}</div>}
                             </div>
 
-                            {/* Confirm Password */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Confirmar Nueva Contraseña</label>
                                 <input
@@ -245,7 +238,6 @@ const EditUser = () => {
                             </div>
                         </div>
 
-                        {/* Internal Comments */}
                         <div className="mb-4">
                             <label className="form-label fw-bold">Comentarios / Notas Internas</label>
                             <textarea
@@ -274,6 +266,7 @@ const EditUser = () => {
                             </button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>

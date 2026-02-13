@@ -83,7 +83,7 @@ export default function EditRole() {
   if (loading) return (
       <div className="text-center mt-5">
           <div className="spinner-border text-success" role="status"></div>
-          <p className="mt-2">Cargando datos del rol...</p>
+          <p className="mt-2">Cargando datos del role...</p>
       </div>
   );
 

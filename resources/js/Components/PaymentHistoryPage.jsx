@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
@@ -47,6 +47,20 @@ const PaymentHistoryPage = ({ user }) => {
     // --- PERMISSIONS ---
     const { can } = usePermission(user);
     const canCancelPayment = user ? can('Eliminar-pagos') : false;
+
+    /**
+     * 🔥 NEW: AUTO-HIDE MESSAGES
+     * Clears success and error messages after 5 seconds
+     */
+    useEffect(() => {
+        if (successMessage || errorMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage(null);
+                setErrorMessage(null);
+            }, 5000);
+            return () => clearTimeout(timer); // Cleanup timer if component unmounts
+        }
+    }, [successMessage, errorMessage, setSuccessMessage, setErrorMessage]);
 
     /**
      * Fetch payment history and address details on mount
@@ -108,7 +122,7 @@ const PaymentHistoryPage = ({ user }) => {
     };
 
     /**
-     * 🔥 Helper to format the address header with Type and Occupation Status
+     * Helper to format the address header with Type and Occupation Status
      */
     const getFormattedHeader = () => {
         if (!addressDetails) return 'Cargando...';
@@ -140,17 +154,16 @@ const PaymentHistoryPage = ({ user }) => {
             name: 'Estado', 
             width: '120px',
             cell: row => {
-                // 🎨 COLOR LOGIC: PAGADO = SUCCESS (GREEN)
-                let badgeClass = "bg-warning text-dark"; // Default: Pending
+                let badgeClass = "bg-warning text-dark";
                 let statusText = row.status;
 
                 if (row.deleted_at) {
-                    badgeClass = "bg-danger"; // Red for Cancelled/Deleted
+                    badgeClass = "bg-danger";
                     statusText = "Anulado";
                 } else if (row.status === 'Pagado') {
-                    badgeClass = "bg-success"; // ✅ GREEN FOR PAID
+                    badgeClass = "bg-success"; 
                 } else if (row.status === 'Condonado') {
-                    badgeClass = "bg-info text-white"; // Blue for Condoned
+                    badgeClass = "bg-info text-white";
                 }
 
                 return <span className={`badge ${badgeClass} shadow-sm px-3`}>{statusText}</span>;
@@ -191,9 +204,11 @@ const PaymentHistoryPage = ({ user }) => {
                     />
                 </div>
 
-                {/* Status messages */}
-                {successMessage && <div className="alert alert-success text-center py-2 shadow-sm">{successMessage}</div>}
-                {errorMessage && <div className="alert alert-danger text-center py-2 shadow-sm">{errorMessage}</div>}
+                {/* Status messages with improved visibility */}
+                <div className="my-2">
+                    {successMessage && <div className="alert alert-success text-center py-2 shadow-sm">{successMessage}</div>}
+                    {errorMessage && <div className="alert alert-danger text-center py-2 shadow-sm">{errorMessage}</div>}
+                </div>
 
                 <DataTable
                     columns={columns}
@@ -214,40 +229,41 @@ const PaymentHistoryPage = ({ user }) => {
             </div>
             
             {/* CANCELLATION MODAL */}
-            <div className={`modal fade ${showCancelModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
-                <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content border-0 shadow">
-                        <div className="modal-header bg-danger text-white">
-                            <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Anulación</h5>
-                            <button type="button" className="btn-close btn-close-white" onClick={() => setShowCancelModal(false)}></button>
-                        </div>
-                        <div className="modal-body p-4">
-                            <p className="text-center">¿Confirma la anulación del pago de <strong>{paymentToCancel?.fee?.name}</strong>?</p>
-                            <div className="form-group">
-                                <label className="fw-bold mb-2">Motivo de la Anulación *</label>
-                                <textarea 
-                                    className="form-control" 
-                                    rows="3" 
-                                    value={cancellationReason} 
-                                    onChange={(e) => setCancellationReason(e.target.value)} 
-                                    placeholder="Explique por qué se anula este pago..." 
-                                    required
-                                ></textarea>
+            {showCancelModal && (
+                <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} tabIndex="-1">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content border-0 shadow-lg">
+                            <div className="modal-header bg-danger text-white">
+                                <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Anulación</h5>
+                                <button type="button" className="btn-close btn-close-white" onClick={() => setShowCancelModal(false)}></button>
                             </div>
-                        </div>
-                        <div className="modal-footer bg-light">
-                            <button className="btn btn-secondary" onClick={() => setShowCancelModal(false)}>Cerrar</button>
-                            <button 
-                                className="btn btn-danger shadow-sm" 
-                                onClick={handleCancellation} 
-                                disabled={!cancellationReason.trim()}
-                            >
-                                Confirmar Anulación
-                            </button>
+                            <div className="modal-body p-4">
+                                <p className="text-center fs-5">¿Confirma la anulación del pago de <strong>{paymentToCancel?.fee?.name}</strong>?</p>
+                                <div className="form-group mt-3">
+                                    <label className="fw-bold mb-2">Motivo de la Anulación <span className="text-danger">*</span></label>
+                                    <textarea 
+                                        className="form-control" 
+                                        rows="3" 
+                                        value={cancellationReason} 
+                                        onChange={(e) => setCancellationReason(e.target.value)} 
+                                        placeholder="Explique por qué se anula este pago..." 
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <div className="modal-footer bg-light justify-content-center">
+                                <button className="btn btn-secondary px-4" onClick={() => setShowCancelModal(false)}>Cerrar</button>
+                                <button 
+                                    className="btn btn-danger px-4 shadow-sm" 
+                                    onClick={handleCancellation} 
+                                    disabled={!cancellationReason.trim()}
+                                >
+                                    Confirmar Anulación
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

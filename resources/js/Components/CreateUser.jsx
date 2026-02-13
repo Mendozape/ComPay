@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { MessageContext } from "./MessageContext";
 
 const CreateUser = () => {
     // --- STATE FOR FORM DATA ---
@@ -23,35 +22,16 @@ const CreateUser = () => {
     const [roleError, setRoleError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // --- CONTEXT AND NAVIGATION ---
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
-
     const axiosOptions = { withCredentials: true, headers: { Accept: "application/json" } };
-
-    /**
-     * Clear context messages on mount
-     */
-    useEffect(() => {
-        setSuccessMessage("");
-        setErrorMessage("");
-    }, [setSuccessMessage, setErrorMessage]);
 
     /**
      * Reset local states
      */
     const resetForm = () => {
-        setName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        setPhone("");
-        setComments("");
-        setSelectedRole("");
-        setNameError("");
-        setEmailError("");
-        setPasswordError("");
-        setRoleError("");
+        setName(""); setEmail(""); setPassword(""); setConfirmPassword("");
+        setPhone(""); setComments(""); setSelectedRole("");
+        setNameError(""); setEmailError(""); setPasswordError(""); setRoleError("");
     };
 
     /**
@@ -64,7 +44,7 @@ const CreateUser = () => {
                 setRoles(res.data);
             } catch (err) {
                 console.error("Error fetching roles:", err);
-                setErrorMessage("Error al cargar los roles.");
+                toastr.error("Error al cargar los roles.", "Fallo");
             }
         };
         fetchRoles();
@@ -78,49 +58,30 @@ const CreateUser = () => {
         setLoading(true);
 
         // Reset error messages
-        setErrorMessage("");
-        setNameError("");
-        setEmailError("");
-        setPasswordError("");
-        setRoleError("");
+        setNameError(""); setEmailError(""); setPasswordError(""); setRoleError("");
 
         // --- FRONTEND VALIDATIONS ---
-        if (!name.trim()) { setNameError("El Nombre es obligatorio"); setLoading(false); return; }
-        if (!email.trim()) { setEmailError("El Correo Electrónico es obligatorio"); setLoading(false); return; }
-        if (!password) { setPasswordError("La Contraseña es obligatoria"); setLoading(false); return; }
-        if (password !== confirmPassword) { setPasswordError("Las Contraseñas no coinciden"); setLoading(false); return; }
-        if (!selectedRole) { setRoleError("Por favor, seleccione un rol"); setLoading(false); return; }
+        if (!name.trim()) { setNameError("El Nombre es obligatorio"); toastr.warning("Nombre obligatorio"); setLoading(false); return; }
+        if (!email.trim()) { setEmailError("El Correo Electrónico es obligatorio"); toastr.warning("Correo obligatorio"); setLoading(false); return; }
+        if (!password) { setPasswordError("La Contraseña es obligatoria"); toastr.warning("Password obligatorio"); setLoading(false); return; }
+        if (password !== confirmPassword) { setPasswordError("Las Contraseñas no coinciden"); toastr.warning("Las contraseñas no coinciden"); setLoading(false); return; }
+        if (!selectedRole) { setRoleError("Por favor, seleccione un rol"); toastr.warning("Seleccione un rol"); setLoading(false); return; }
 
         try {
             await axios.post(
                 "/api/usuarios",
-                {
-                    name,
-                    email,
-                    password,
-                    password_confirmation: confirmPassword,
-                    phone,
-                    comments,
-                    roles: [selectedRole],
-                },
+                { name, email, password, password_confirmation: confirmPassword, phone, comments, roles: [selectedRole] },
                 axiosOptions
             );
 
-            setSuccessMessage("Usuario/Residente creado exitosamente.");
+            toastr.success("Usuario/Residente creado exitosamente.", "Éxito");
             resetForm();
             navigate("/users");
 
         } catch (err) {
             console.error(err);
-            let errorMsg = "Error al crear el usuario.";
-            if (err.response?.data?.errors) {
-                // Mapping Laravel validation errors if present
-                const firstError = Object.values(err.response.data.errors)[0][0];
-                errorMsg = firstError || errorMsg;
-            } else if (err.response?.data?.message) {
-                errorMsg = err.response.data.message;
-            }
-            setErrorMessage(errorMsg);
+            let errorMsg = err.response?.data?.message || "Error al crear el usuario.";
+            toastr.error(errorMsg, "Operación Fallida");
         } finally {
             setLoading(false);
         }
@@ -129,19 +90,14 @@ const CreateUser = () => {
     return (
         <div className="container mt-4">
             <div className="card shadow-sm border-0">
-                {/* Standardized Success Green Header */}
                 <div className="card-header bg-success text-white p-3">
                     <h2 className="mb-0 h4">
                         <i className="fas fa-user-plus me-2"></i>Crear Nuevo Usuario o Residente
                     </h2>
                 </div>
                 <div className="card-body p-4">
-                    {/* Error Alerts */}
-                    {errorMessage && <div className="alert alert-danger text-center shadow-sm">{errorMessage}</div>}
-
                     <form onSubmit={handleSubmit}>
                         <div className="row g-3 mb-4">
-                            {/* Full Name */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Nombre Completo <span className="text-danger">*</span></label>
                                 <input
@@ -155,7 +111,6 @@ const CreateUser = () => {
                                 {nameError && <div className="invalid-feedback">{nameError}</div>}
                             </div>
 
-                            {/* Email Address */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Correo Electrónico <span className="text-danger">*</span></label>
                                 <input
@@ -171,7 +126,6 @@ const CreateUser = () => {
                         </div>
 
                         <div className="row g-3 mb-4">
-                            {/* Phone Number */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Teléfono de Contacto</label>
                                 <div className="input-group">
@@ -186,7 +140,6 @@ const CreateUser = () => {
                                 </div>
                             </div>
 
-                            {/* Role Selection */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Role del Sistema <span className="text-danger">*</span></label>
                                 <select
@@ -197,9 +150,7 @@ const CreateUser = () => {
                                 >
                                     <option value="">Seleccione un rol...</option>
                                     {roles.map((r) => (
-                                        <option key={r.id} value={r.name}>
-                                            {r.name}
-                                        </option>
+                                        <option key={r.id} value={r.name}>{r.name}</option>
                                     ))}
                                 </select>
                                 {roleError && <div className="invalid-feedback">{roleError}</div>}
@@ -207,7 +158,6 @@ const CreateUser = () => {
                         </div>
 
                         <div className="row g-3 mb-4 p-3 bg-light rounded border">
-                            {/* Password */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Contraseña <span className="text-danger">*</span></label>
                                 <input
@@ -220,7 +170,6 @@ const CreateUser = () => {
                                 />
                             </div>
 
-                            {/* Confirm Password */}
                             <div className="col-md-6">
                                 <label className="form-label fw-bold">Confirmar Contraseña <span className="text-danger">*</span></label>
                                 <input
@@ -235,7 +184,6 @@ const CreateUser = () => {
                             </div>
                         </div>
 
-                        {/* Internal Comments */}
                         <div className="mb-4">
                             <label className="form-label fw-bold">Comentarios / Notas Internas</label>
                             <textarea

@@ -54,6 +54,19 @@ const ShowAddresses = ({ user }) => {
     const viewPaymentHistory = (id) => navigate(`/addresses/payments/history/${id}`);
 
     /**
+     * Auto-clear success and error messages after 5 seconds
+     */
+    useEffect(() => {
+        if (successMessage || errorMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage(null);
+                setErrorMessage(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, errorMessage, setSuccessMessage, setErrorMessage]);
+
+    /**
      * Fetch addresses from the API
      */
     const fetchAddresses = async () => {
@@ -63,13 +76,11 @@ const ShowAddresses = ({ user }) => {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
             });
-            // Ensure we handle both standard Laravel response formats
             const data = response.data.data || response.data;
             setAddresses(Array.isArray(data) ? data : []);
             setFilteredAddresses(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching addresses:', error);
-            // More descriptive error message
             const msg = error.response?.data?.message || 'Fallo al cargar el catálogo de direcciones.';
             setErrorMessage(msg);
         } finally {
@@ -82,7 +93,7 @@ const ShowAddresses = ({ user }) => {
     }, []);
 
     /**
-     * Search and Filter logic
+     * Search and Filter logic (client-side)
      */
     useEffect(() => {
         const result = addresses.filter(addr => {
@@ -98,7 +109,7 @@ const ShowAddresses = ({ user }) => {
     }, [search, addresses]);
 
     /**
-     * Logical deactivation logic
+     * Logical deactivation (Soft Delete)
      */
     const deactivateAddress = async (id, reason) => {
         try {
@@ -138,8 +149,7 @@ const ShowAddresses = ({ user }) => {
     }
 
     /**
-     * 🛡️ COLUMNS DEFINITION
-     * Updated to show Property Type + Occupation Status
+     * 🛡️ DATA TABLE COLUMNS DEFINITION
      */
     const columns = useMemo(() => [
         {
@@ -152,7 +162,6 @@ const ShowAddresses = ({ user }) => {
                     <span className="d-block"><strong>{row.street?.name || 'N/A'} #{row.street_number}</strong></span>
                     <div className="mt-1">
                         <span className="badge bg-secondary me-1">{row.type}</span>
-                        {/* 🟢 NEW: Displays if house is Occupied or Empty */}
                         {row.type === 'CASA' && (
                             <span className={`badge ${row.status === 'Habitada' ? 'bg-primary' : 'bg-warning text-dark'}`}>
                                 {row.status}
@@ -236,6 +245,7 @@ const ShowAddresses = ({ user }) => {
 
     return (
         <div className="mb-4 border border-primary rounded p-3 bg-white">
+            {/* Header section: Create Button & Search Bar */}
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="col-md-6">
                     {canCreate && (
@@ -255,11 +265,13 @@ const ShowAddresses = ({ user }) => {
                 </div>
             </div>
 
+            {/* Feedback Messages (Success/Error Alerts) */}
             <div className="col-md-12 mt-2">
-                {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-                {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
+                {successMessage && <div className="alert alert-success text-center py-2 shadow-sm">{successMessage}</div>}
+                {errorMessage && !showModal && <div className="alert alert-danger text-center py-2 shadow-sm">{errorMessage}</div>}
             </div>
 
+            {/* Data Table */}
             <div className="col-md-12 mt-2">
                 <DataTable
                     title="Catálogo de Predios"
@@ -275,43 +287,46 @@ const ShowAddresses = ({ user }) => {
                 />
             </div>
 
-            {/* Modal for Deactivation */}
-            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{backgroundColor: 'rgba(0,0,0,0.5)'}} tabIndex="-1">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header bg-danger text-white">
-                            <h5 className="modal-title">Confirmar Baja de Catálogo</h5>
-                            <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
-                        </div>
-                        <div className="modal-body text-center p-4">
-                            <p>¿Está seguro de que desea dar de baja esta dirección? Esta acción es irreversible.</p>
-                            <div className="form-group mt-3 text-start">
-                                <label htmlFor="reason">Motivo de la Baja <span className="text-danger">*</span></label>
-                                <textarea
-                                    id="reason"
-                                    className="form-control mt-2"
-                                    rows="3"
-                                    value={deactivationReason}
-                                    onChange={(e) => setDeactivationReason(e.target.value)}
-                                    placeholder="Ingrese la razón detallada..."
-                                />
+            {/* Deactivation Confirmation Modal */}
+            {showModal && (
+                <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.6)'}} tabIndex="-1">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content border-0 shadow-lg">
+                            <div className="modal-header bg-danger text-white">
+                                <h5 className="modal-title">Confirmar Baja de Catálogo</h5>
+                                <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
                             </div>
-                            {errorMessage && <div className="alert alert-danger text-center mt-3 py-2">{errorMessage}</div>}
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button>
-                            <button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={handleDeactivation}
-                                disabled={!deactivationReason.trim()}
-                            >
-                                Confirmar Baja
-                            </button>
+                            <div className="modal-body text-center p-4">
+                                <p className="fs-5">¿Está seguro de que desea dar de baja esta dirección?</p>
+                                <p className="text-muted small">Esta acción es irreversible y quedará registrada en el historial.</p>
+                                <div className="form-group mt-3 text-start">
+                                    <label htmlFor="reason" className="fw-bold">Motivo de la Baja <span className="text-danger">*</span></label>
+                                    <textarea
+                                        id="reason"
+                                        className="form-control mt-2"
+                                        rows="3"
+                                        value={deactivationReason}
+                                        onChange={(e) => setDeactivationReason(e.target.value)}
+                                        placeholder="Ingrese la razón detallada..."
+                                    />
+                                </div>
+                                {errorMessage && <div className="alert alert-danger text-center mt-3 py-2">{errorMessage}</div>}
+                            </div>
+                            <div className="modal-footer bg-light justify-content-center">
+                                <button type="button" className="btn btn-secondary px-4" onClick={toggleModal}>Cancelar</button>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger px-4"
+                                    onClick={handleDeactivation}
+                                    disabled={!deactivationReason.trim()}
+                                >
+                                    Confirmar Baja
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

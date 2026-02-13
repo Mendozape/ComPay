@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MessageContext } from "./MessageContext";
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = "/api/usuarios";
@@ -41,25 +40,7 @@ const ShowUsers = ({ user }) => {
     const canEdit = can('Editar-usuarios');
     const canDelete = can('Eliminar-usuarios');
 
-    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
-
-    /**
-     * 🛡️ AUTO-HIDE MESSAGES EFFECT
-     */
-    useEffect(() => {
-        if (successMessage) {
-            const timer = setTimeout(() => setSuccessMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, setSuccessMessage]);
-
-    useEffect(() => {
-        if (errorMessage) {
-            const timer = setTimeout(() => setErrorMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [errorMessage, setErrorMessage]);
 
     /**
      * Fetch users from the API
@@ -73,7 +54,7 @@ const ShowUsers = ({ user }) => {
             setFilteredUsers(data);
         } catch (err) {
             console.error("Error fetching users:", err);
-            setErrorMessage("Fallo al cargar los usuarios");
+            toastr.error("Fallo al cargar los usuarios", "Error");
         } finally {
             setLoading(false);
         }
@@ -108,9 +89,9 @@ const ShowUsers = ({ user }) => {
             await axios.delete(`${endpoint}/${selectedUserId}`, axiosOptions);
             setShowModal(false);
             fetchUsers(); 
-            setSuccessMessage("Usuario dado de baja exitosamente");
+            toastr.success("Usuario dado de baja exitosamente", "Éxito");
         } catch (err) {
-            setErrorMessage(err.response?.data?.error || "Error al eliminar");
+            toastr.error(err.response?.data?.error || "Error al eliminar");
             setShowModal(false);
         }
     };
@@ -119,10 +100,10 @@ const ShowUsers = ({ user }) => {
         try {
             await axios.post(`${endpoint}/restore/${selectedUserId}`, {}, axiosOptions);
             setShowModal(false);
-            setSuccessMessage("Usuario reactivado exitosamente");
+            toastr.success("Usuario reactivado exitosamente", "Éxito");
             fetchUsers();
         } catch (err) {
-            setErrorMessage("Fallo al reactivar.");
+            toastr.error("Fallo al reactivar.");
             setShowModal(false);
         }
     };
@@ -190,16 +171,12 @@ const ShowUsers = ({ user }) => {
         <div className="mb-4 border border-primary rounded p-3 bg-white">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 {canCreate ? (
-                    // 🟢 Color Success (Verde) para estandarizar con el resto del sistema
                     <button className="btn btn-success btn-sm text-white" onClick={() => navigate("/users/create")}>
                         <i className="fas fa-user-plus me-1"></i> Crear Residente
                     </button>
                 ) : <div />}
                 <input type="text" placeholder="Buscar por nombre o correo..." className="form-control w-25 form-control-sm" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
-
-            {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-            {errorMessage && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
             <DataTable
                 title="Gestión de Usuarios y Residentes"
@@ -217,7 +194,6 @@ const ShowUsers = ({ user }) => {
                 }]}
             />
 
-            {/* MODAL DE CONFIRMACIÓN */}
             <div className={`modal fade ${showModal ? "show d-block" : "d-none"}`} style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content border-0 shadow">
