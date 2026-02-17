@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
-import { MessageContext } from './MessageContext';
 import usePermission from "../hooks/usePermission"; 
 
 const axiosOptions = {
@@ -27,10 +26,14 @@ const customStyles = {
     },
 };
 
+/**
+ * PaymentHistoryPage Component
+ * Displays the list of payments and waivers for a specific property.
+ * Allows administrative cancellation of records with a required reason.
+ */
 const PaymentHistoryPage = ({ user }) => {
     const { id: addressId } = useParams(); 
     const navigate = useNavigate();
-    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     
     // --- STATE MANAGEMENT ---
     const [payments, setPayments] = useState([]);
@@ -43,24 +46,11 @@ const PaymentHistoryPage = ({ user }) => {
     const [paymentToCancel, setPaymentToCancel] = useState(null);
     const [cancellationReason, setCancellationReason] = useState('');
     const [streetName, setStreetName] = useState('Cargando...'); 
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // --- PERMISSIONS ---
     const { can } = usePermission(user);
     const canCancelPayment = user ? can('Eliminar-pagos') : false;
-
-    /**
-     * 🔥 NEW: AUTO-HIDE MESSAGES
-     * Clears success and error messages after 5 seconds
-     */
-    useEffect(() => {
-        if (successMessage || errorMessage) {
-            const timer = setTimeout(() => {
-                setSuccessMessage(null);
-                setErrorMessage(null);
-            }, 5000);
-            return () => clearTimeout(timer); // Cleanup timer if component unmounts
-        }
-    }, [successMessage, errorMessage, setSuccessMessage, setErrorMessage]);
 
     /**
      * Fetch payment history and address details on mount
@@ -72,31 +62,30 @@ const PaymentHistoryPage = ({ user }) => {
     const fetchPaymentHistory = async () => {
         setLoading(true);
         try {
-            // Fetch the specific address details
+            // Fetch property details to populate the header
             const addressResponse = await axios.get(`/api/addresses/${addressId}`, axiosOptions);
             const addressData = addressResponse.data.data || addressResponse.data;
             setAddressDetails(addressData);
 
-            // Fetch street name if street_id is present
             if (addressData && addressData.street_id) {
                 const streetResponse = await axios.get(`/api/streets/${addressData.street_id}`, axiosOptions);
                 setStreetName(streetResponse.data.name || 'Calle Desconocida');
             }
             
-            // Fetch payment records for this specific address
+            // Fetch full payment history for this address
             const paymentsResponse = await axios.get(`/api/address_payments/history/${addressId}`, axiosOptions);
             const data = paymentsResponse.data?.data || paymentsResponse.data || [];
             setPayments(data);
         } catch (error) {
             console.error("Error fetching history:", error);
-            setErrorMessage('Error al cargar el historial de pagos.'); 
+            toastr.error('Error al cargar el historial de pagos.', 'Fallo'); 
         } finally {
             setLoading(false);
         }
     };
 
     /**
-     * Handle search filtering logic
+     * Client-side search filtering
      */
     useEffect(() => {
         const result = payments.filter(p => 
@@ -110,19 +99,27 @@ const PaymentHistoryPage = ({ user }) => {
      * Send cancellation request to the API
      */
     const handleCancellation = async () => {
-        if (!cancellationReason.trim()) return;
+        if (!cancellationReason.trim()) {
+            toastr.warning('Debe proporcionar un motivo para la anulación.', 'Atención');
+            return;
+        }
+
+        setIsProcessing(true);
         try {
             await axios.post(`/api/address_payments/cancel/${paymentToCancel.id}`, { reason: cancellationReason }, axiosOptions);
-            setSuccessMessage('Pago anulado exitosamente.');
+            toastr.success('Pago anulado exitosamente.', 'Éxito');
             setShowCancelModal(false); 
             fetchPaymentHistory(); 
         } catch (error) {
-            setErrorMessage('Fallo al anular el pago.');
+            const msg = error.response?.data?.message || 'Fallo al anular el pago.';
+            toastr.error(msg, 'Error');
+        } finally {
+            setIsProcessing(false);
         }
     };
 
     /**
-     * Helper to format the address header with Type and Occupation Status
+     * Formats the property header based on type and status
      */
     const getFormattedHeader = () => {
         if (!addressDetails) return 'Cargando...';
@@ -132,7 +129,7 @@ const PaymentHistoryPage = ({ user }) => {
     };
 
     /**
-     * Table columns configuration
+     * Table columns definition
      */
     const columns = useMemo(() => [
         { name: 'Cuota', selector: row => row.fee?.name || 'N/A', sortable: true, width: '180px' }, 
@@ -169,7 +166,7 @@ const PaymentHistoryPage = ({ user }) => {
                 return <span className={`badge ${badgeClass} shadow-sm px-3`}>{statusText}</span>;
             }
         },
-        { name: 'Motivo', selector: row => row.deletion_reason || '', wrap: true, width: '200px' },
+        { name: 'Motivo Anulación', selector: row => row.deletion_reason || '', wrap: true, width: '200px' },
         {
             name: 'Acción',
             width: '120px',
@@ -204,12 +201,6 @@ const PaymentHistoryPage = ({ user }) => {
                     />
                 </div>
 
-                {/* Status messages with improved visibility */}
-                <div className="my-2">
-                    {successMessage && <div className="alert alert-success text-center py-2 shadow-sm">{successMessage}</div>}
-                    {errorMessage && <div className="alert alert-danger text-center py-2 shadow-sm">{errorMessage}</div>}
-                </div>
-
                 <DataTable
                     columns={columns}
                     data={filteredPayments}
@@ -217,6 +208,7 @@ const PaymentHistoryPage = ({ user }) => {
                     pagination
                     highlightOnHover
                     striped
+                    responsive
                     customStyles={customStyles}
                     noDataComponent={<div className="p-4">No hay pagos registrados para este predio.</div>}
                 />
@@ -247,7 +239,7 @@ const PaymentHistoryPage = ({ user }) => {
                                         value={cancellationReason} 
                                         onChange={(e) => setCancellationReason(e.target.value)} 
                                         placeholder="Explique por qué se anula este pago..." 
-                                    ></textarea>
+                                    />
                                 </div>
                             </div>
                             <div className="modal-footer bg-light justify-content-center">
@@ -255,9 +247,9 @@ const PaymentHistoryPage = ({ user }) => {
                                 <button 
                                     className="btn btn-danger px-4 shadow-sm" 
                                     onClick={handleCancellation} 
-                                    disabled={!cancellationReason.trim()}
+                                    disabled={isProcessing || !cancellationReason.trim()}
                                 >
-                                    Confirmar Anulación
+                                    {isProcessing ? 'Procesando...' : 'Confirmar Anulación'}
                                 </button>
                             </div>
                         </div>

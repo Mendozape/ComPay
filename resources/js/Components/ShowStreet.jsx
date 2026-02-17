@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import DataTable from 'react-data-table-component';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import usePermission from "../hooks/usePermission"; 
@@ -24,6 +23,10 @@ const customStyles = {
     },
 };
 
+/**
+ * StreetTable Component
+ * Displays street catalog with permissions-based actions and toastr alerts.
+ */
 const StreetTable = ({ user }) => {
     // --- STATE VARIABLES ---
     const [streets, setStreets] = useState([]);
@@ -34,6 +37,7 @@ const StreetTable = ({ user }) => {
     // States for soft deletion modal
     const [showModal, setShowModal] = useState(false);
     const [streetToDeactivate, setStreetToDeactivate] = useState(null); 
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // --- PERMISSIONS ---
     const { can } = usePermission(user);
@@ -41,7 +45,6 @@ const StreetTable = ({ user }) => {
     const canEdit = user ? can('Editar-calles') : false;
     const canDeactivate = user ? can('Eliminar-calles') : false;
 
-    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     /**
@@ -55,11 +58,12 @@ const StreetTable = ({ user }) => {
                 headers: { Accept: 'application/json' },
             });
             const data = response.data.data || response.data;
-            setStreets(Array.isArray(data) ? data : []);
-            setFilteredStreets(Array.isArray(data) ? data : []);
+            const streetsArray = Array.isArray(data) ? data : [];
+            setStreets(streetsArray);
+            setFilteredStreets(streetsArray);
         } catch (error) {
             console.error('Error fetching streets:', error);
-            setErrorMessage('Fallo al cargar el catálogo de calles.');
+            toastr.error('Fallo al cargar el catálogo de calles.', 'Error');
         } finally {
             setLoading(false);
         }
@@ -70,7 +74,7 @@ const StreetTable = ({ user }) => {
     }, []);
 
     /**
-     * Filter logic
+     * Filter logic for search bar
      */
     useEffect(() => {
         const result = streets.filter(street => 
@@ -80,42 +84,38 @@ const StreetTable = ({ user }) => {
     }, [search, streets]);
 
     /**
-     * Logic to soft-delete/deactivate a street
+     * Logic to soft-delete/deactivate a street record
      */
-    const deactivateStreet = async (id) => {
+    const handleDeactivation = async () => {
+        if (!streetToDeactivate) return;
+        setIsProcessing(true);
         try {
-            const response = await axios.delete(`${endpoint}/${id}`, {
+            const response = await axios.delete(`${endpoint}/${streetToDeactivate}`, {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
             });
             
             if (response.status === 200) {
-                setSuccessMessage('Calle dada de baja exitosamente.');
+                toastr.success('Calle dada de baja exitosamente.', 'Éxito');
                 setShowModal(false); 
                 fetchStreets();
             } 
         } catch (error) {
+            console.error('Deactivation error:', error);
             const msg = error.response?.data?.message || 'Fallo al dar de baja la calle.';
-            setErrorMessage(msg);
+            toastr.error(msg, 'Operación Fallida');
+        } finally {
+            setIsProcessing(false);
         }
     };
 
     const editStreet = (id) => navigate(`/streets/edit/${id}`);
     const createStreet = () => navigate('/streets/create');
     
-    const toggleModal = () => {
-        setShowModal(!showModal);
-        if (showModal) setErrorMessage(null);
-    };
-    
     const confirmDeactivation = (id) => {
         setStreetToDeactivate(id);
         setShowModal(true);
     };
-    
-    const handleDeactivation = () => {
-        deactivateStreet(streetToDeactivate);
-    }
 
     /**
      * 🛡️ COLUMNS DEFINITION
@@ -173,16 +173,8 @@ const StreetTable = ({ user }) => {
         </div>
     );
 
-    // Auto-clear success messages
-    useEffect(() => {
-        if (successMessage) {
-            const timer = setTimeout(() => setSuccessMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, setSuccessMessage]);
-
     return (
-        <div className="mb-4 border border-primary rounded p-3 bg-white">
+        <div className="mb-4 border border-primary rounded p-3 bg-white shadow-sm">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 {canCreate ? (
                     <button className='btn btn-success btn-sm text-white' onClick={createStreet}>
@@ -201,9 +193,6 @@ const StreetTable = ({ user }) => {
                 />
             </div>
 
-            {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-            {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
-
             <DataTable
                 title="Catálogo de Calles" 
                 columns={columns}
@@ -217,24 +206,32 @@ const StreetTable = ({ user }) => {
                 customStyles={customStyles}
             />
 
-            {/* MODAL DE CONFIRMACIÓN */}
+            {/* CONFIRMATION MODAL */}
             <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
                             <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Baja</h5> 
-                            <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
+                            <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
                         </div>
                         <div className="modal-body text-center p-4">
                             <p className="mb-0">¿Está seguro de que desea dar de baja esta calle? No podrá ser asignada a nuevos predios.</p>
                         </div>
-                        <div className="modal-footer bg-light">
-                            <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button> 
-                            <button type="button" className="btn btn-danger" onClick={handleDeactivation}>Dar de Baja</button>
+                        <div className="modal-footer bg-light justify-content-center">
+                            <button type="button" className="btn btn-secondary px-4" onClick={() => setShowModal(false)}>Cancelar</button> 
+                            <button 
+                                type="button" 
+                                className="btn btn-danger px-4" 
+                                onClick={handleDeactivation}
+                                disabled={isProcessing}
+                            >
+                                {isProcessing ? 'Procesando...' : 'Confirmar Baja'}
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+            {showModal && <div className="modal-backdrop fade show"></div>}
         </div>
     );
 };

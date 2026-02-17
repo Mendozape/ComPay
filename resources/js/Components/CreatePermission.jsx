@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MessageContext } from "./MessageContext";
 
+/**
+ * PermisoCreate Component
+ * Handles the creation of new system permissions.
+ */
 export default function PermisoCreate() {
     // --- STATE VARIABLES ---
     const [name, setName] = useState("");
     const [permissions, setPermissions] = useState([]);
     const [nameError, setNameError] = useState(""); 
+    const [isSaving, setIsSaving] = useState(false);
     
-    // --- CONTEXT AND NAVIGATION ---
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
+    // --- NAVIGATION ---
     const navigate = useNavigate();
 
     const axiosOptions = {
@@ -29,6 +32,7 @@ export default function PermisoCreate() {
                 setPermissions(Array.isArray(data) ? data : []);
             } catch (err) {
                 console.error("Error fetching permissions:", err);
+                toastr.error("Error al cargar los permisos existentes.", "Fallo");
             }
         };
         fetchPermissions();
@@ -40,28 +44,34 @@ export default function PermisoCreate() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setNameError(""); 
-        setErrorMessage(null);
+        setIsSaving(true);
 
         // Basic validation
         if (!name.trim()) {
             setNameError("El nombre del permiso es obligatorio.");
+            toastr.warning("Nombre de permiso obligatorio");
+            setIsSaving(false);
             return;
         }
 
         // Duplicate check
         if (permissions.some((p) => p.name.toLowerCase() === name.trim().toLowerCase())) {
             setNameError("Este nombre de permiso ya existe.");
+            toastr.warning("El permiso ya está registrado");
+            setIsSaving(false);
             return;
         }
 
         try {
             const res = await axios.post("/api/permisos", { name: name.trim() }, axiosOptions);
-            setSuccessMessage(res.data.message || "Permiso creado exitosamente.");
+            toastr.success(res.data.message || "Permiso creado exitosamente.", "Éxito");
             navigate("/permissions");
         } catch (error) {
             console.error("Error creating permission:", error);
             const errorMsg = error.response?.data?.message || "Error al crear el permiso.";
-            setErrorMessage(errorMsg);
+            toastr.error(errorMsg, "Operación Fallida");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -78,13 +88,6 @@ export default function PermisoCreate() {
                         </div>
 
                         <div className="card-body p-4">
-                            {/* Error Alert Display */}
-                            {errorMessage && (
-                                <div className="alert alert-danger text-center shadow-sm">
-                                    {errorMessage}
-                                </div>
-                            )}
-
                             <form onSubmit={handleSubmit}>
                                 {/* Permission Name Input */}
                                 <div className="mb-4">
@@ -121,8 +124,8 @@ export default function PermisoCreate() {
 
                                 {/* Action Buttons */}
                                 <div className="d-flex gap-2 pt-3 border-top">
-                                    <button type="submit" className="btn btn-success px-4 shadow-sm">
-                                        <i className="fas fa-save me-2"></i>Guardar Permiso
+                                    <button type="submit" className="btn btn-success px-4 shadow-sm" disabled={isSaving}>
+                                        <i className="fas fa-save me-2"></i>{isSaving ? "Guardando..." : "Guardar Permiso"}
                                     </button>
                                     <button 
                                         type="button" 

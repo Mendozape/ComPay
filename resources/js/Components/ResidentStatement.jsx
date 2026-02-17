@@ -1,7 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { MessageContext } from './MessageContext';
 
+/**
+ * ResidentStatement Component
+ * Allows residents to view their payment history and account status 
+ * for their assigned properties across different years.
+ */
 const ResidentStatement = ({ user }) => {
     // --- STATE MANAGEMENT ---
     const [allAddresses, setAllAddresses] = useState([]); 
@@ -10,7 +14,6 @@ const ResidentStatement = ({ user }) => {
     const [paidMonths, setPaidMonths] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isAuthorized, setIsAuthorized] = useState(true); 
-    const { setErrorMessage } = useContext(MessageContext);
 
     const axiosOptions = {
         withCredentials: true,
@@ -28,7 +31,7 @@ const ResidentStatement = ({ user }) => {
     const availableYears = [currentYear - 1, currentYear, currentYear + 1];
 
     /**
-     * Initial Effect: Load user information and properties on mount
+     * Initial Effect: Load user info and property links on mount
      */
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -36,7 +39,7 @@ const ResidentStatement = ({ user }) => {
                 const response = await axios.get('/api/user', axiosOptions);
                 const freshUser = response.data;
 
-                // Check permissions across roles and direct permissions
+                // Permission check: check both direct and role-based permissions
                 const perms = [...(freshUser.permissions || []), ...(freshUser.roles?.flatMap(r => r.permissions || []) || [])]
                                 .map(p => p.name.toLowerCase());
                 
@@ -45,7 +48,7 @@ const ResidentStatement = ({ user }) => {
                     return;
                 }
 
-                // Handle plural address relationship
+                // Identify properties linked to the account (plural or singular relation)
                 const userProperties = freshUser.addresses || [];
                 
                 if (userProperties.length > 0) {
@@ -55,11 +58,11 @@ const ResidentStatement = ({ user }) => {
                     setAllAddresses([freshUser.address]);
                     setAddressDetails(freshUser.address);
                 } else {
-                    setErrorMessage("No se encontraron propiedades vinculadas a esta cuenta.");
+                    toastr.info("No se encontraron propiedades vinculadas a esta cuenta.", "Información");
                 }
             } catch (error) {
                 console.error("Error during initial data fetch:", error);
-                setErrorMessage("Error al conectar con el servidor.");
+                toastr.error("Error al conectar con el servidor.", "Error");
             } finally {
                 setLoading(false);
             }
@@ -68,7 +71,7 @@ const ResidentStatement = ({ user }) => {
     }, []);
 
     /**
-     * Effect: Fetch payment details for the selected year and address
+     * Fetch payment details when property or year selection changes
      */
     useEffect(() => {
         const fetchStatement = async () => {
@@ -94,11 +97,10 @@ const ResidentStatement = ({ user }) => {
     }, [year, addressDetails]);
 
     /**
-     * Finds payment information for a specific month number
+     * Retrieves specific month payment metadata
      */
     const getMonthStatus = (monthNum) => paidMonths.find(item => item.month === monthNum);
 
-    // 1. Loading State UI
     if (loading) return (
         <div className="text-center mt-5">
             <div className="spinner-border text-success" role="status"></div>
@@ -106,7 +108,6 @@ const ResidentStatement = ({ user }) => {
         </div>
     );
 
-    // 2. Unauthorized Access UI
     if (!isAuthorized) return (
         <div className="container mt-5">
             <div className="alert alert-danger shadow-sm border-danger text-center">
@@ -119,7 +120,7 @@ const ResidentStatement = ({ user }) => {
     return (
         <div className="container mt-4">
             <div className="card shadow-sm border-primary">
-                {/* Header with success green theme */}
+                {/* Standardized success green header */}
                 <div className="card-header bg-success text-white d-flex justify-content-between align-items-center p-3">
                     <h3 className="mb-0 h5"><i className="fas fa-file-invoice-dollar me-2"></i>Estado de Cuenta</h3>
                     <span className="badge bg-light text-success fw-bold">{addressDetails?.community || 'Residencial'}</span>
@@ -147,7 +148,6 @@ const ResidentStatement = ({ user }) => {
                                         <h4 className="fw-bold mb-0 text-dark">
                                             {addressDetails.street?.name || 'Calle'} #{addressDetails.street_number}
                                             <br/>
-                                            {/* 🔥 DYNAMIC LABEL: Displays type and occupation status */}
                                             <span className="badge bg-secondary fs-6 mt-1 me-1">{addressDetails.type}</span>
                                             {addressDetails.type === 'CASA' && (
                                                 <span className={`badge fs-6 mt-1 ${addressDetails.status === 'Habitada' ? 'bg-primary' : 'bg-warning text-dark'}`}>
@@ -174,7 +174,7 @@ const ResidentStatement = ({ user }) => {
                                 </div>
                             </div>
 
-                            {/* Table showing monthly status */}
+                            {/* Monthly Statement Table */}
                             <div className="table-responsive">
                                 <table className="table table-hover text-center align-middle border shadow-sm">
                                     <thead className="table-dark">

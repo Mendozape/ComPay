@@ -1,36 +1,35 @@
-import React, { useState, useContext, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import axios from 'axios';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 
 const endpoint = '/api/addresses';
 const userSearchEndpoint = '/api/usuarios'; 
 const streetsEndpoint = '/api/streets'; 
 
+/**
+ * CreateAddresses Component
+ * Handles the registration of new properties (CASA or TERRENO) 
+ * and assigns them to a resident.
+ */
 export default function CreateAddresses() {
     // --- STATE FOR ADDRESS FORM ---
-    const [community, setCommunity] = useState('PRADOS DE LA HUERTA'); 
+    const [community] = useState('PRADOS DE LA HUERTA'); 
     const [streetId, setStreetId] = useState(''); 
     const [streetNumber, setStreetNumber] = useState('');
     const [type, setType] = useState(''); 
-    
-    /** * 🔥 IMPROVEMENT: Initialized as empty string.
-     * This forces the user to pick "Habitada" or "Deshabitada" manually
-     * if the property type is "CASA".
-     */
     const [status, setStatus] = useState(''); 
-    
     const [comments, setComments] = useState('');
     const [formValidated, setFormValidated] = useState(false);
     const [monthsOverdue, setMonthsOverdue] = useState(0); 
     const [streets, setStreets] = useState([]); 
+    const [isSaving, setIsSaving] = useState(false);
 
     // --- STATES FOR USER (RESIDENT) ASSIGNMENT ---
     const [userQuery, setUserQuery] = useState('');
     const [userId, setUserId] = useState(null); 
     const [userSuggestions, setUserSuggestions] = useState([]);
+    const [noResults, setNoResults] = useState(false); // Flag for empty search results
 
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     const axiosOptions = {
@@ -39,12 +38,15 @@ export default function CreateAddresses() {
     };
 
     /**
-     * Input restrictions for numbers
+     * Restrict input to numbers only
      */
     const handleNumberInput = (e) => {
         if (!/\d/.test(e.key)) e.preventDefault();
     };
     
+    /**
+     * Sync months overdue with a limit of 100
+     */
     const handleMonthsOverdueChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');
         const num = parseInt(value) || 0; 
@@ -52,37 +54,46 @@ export default function CreateAddresses() {
     };
     
     /**
-     * Fetch Streets Catalog from API
+     * Fetch Streets Catalog from API on mount
      */
-    const fetchStreets = async () => {
-        try {
-            const response = await axios.get(streetsEndpoint, axiosOptions);
-            const data = response.data.data || response.data;
-            const activeStreets = data.filter(s => !s.deleted_at); 
-            setStreets(activeStreets || []);
-        } catch (error) {
-            console.error('Error fetching streets:', error);
-            setErrorMessage('Fallo al cargar el catálogo de calles.');
-        }
-    };
-
     useEffect(() => {
+        const fetchStreets = async () => {
+            try {
+                const response = await axios.get(streetsEndpoint, axiosOptions);
+                const data = response.data.data || response.data;
+                const activeStreets = data.filter(s => !s.deleted_at); 
+                setStreets(activeStreets || []);
+            } catch (error) {
+                console.error('Error fetching streets:', error);
+                toastr.error('Fallo al cargar el catálogo de calles.', 'Fallo');
+            }
+        };
         fetchStreets();
     }, []);
 
     /**
-     * User Autocomplete Search (Debounce logic)
+     * User Autocomplete Search Logic (Debounced)
      */
     useEffect(() => {
+        // Reset results flag on every query change
+        setNoResults(false);
+
         if (!userQuery || userId) { 
             setUserSuggestions([]);
             return;
         }
+
         const delayDebounceFn = setTimeout(async () => {
             try {
                 const response = await axios.get(`${userSearchEndpoint}?search=${userQuery}`, axiosOptions);
                 const data = response.data.data || response.data;
-                setUserSuggestions(Array.isArray(data) ? data : []);
+                const results = Array.isArray(data) ? data : [];
+                
+                setUserSuggestions(results);
+                // Trigger message if user is typing and no results are returned
+                if (userQuery.length > 0 && results.length === 0) {
+                    setNoResults(true);
+                }
             } catch (error) {
                 console.error('Error searching users:', error);
                 setUserSuggestions([]);
@@ -91,10 +102,14 @@ export default function CreateAddresses() {
         return () => clearTimeout(delayDebounceFn);
     }, [userQuery, userId]);
 
+    /**
+     * Select user from autocomplete list
+     */
     const handleSelectUser = (user) => {
         setUserId(user.id);
         setUserQuery(user.name); 
         setUserSuggestions([]); 
+        setNoResults(false);
     };
 
     /**
@@ -104,48 +119,46 @@ export default function CreateAddresses() {
         e.preventDefault();
         const form = e.currentTarget;
 
-        // Validation: Ensure User, Street, and Status (if CASA) are selected
         const isStatusMissing = type === 'CASA' && !status;
 
         if (form.checkValidity() === false || !userId || !streetId || isStatusMissing) {
             e.stopPropagation();
-            setErrorMessage('Por favor, complete todos los campos obligatorios, incluyendo el estado de la casa.'); 
             setFormValidated(true);
+            toastr.warning('Por favor, complete todos los campos obligatorios, incluyendo el residente y el estado de ocupación.', 'Atención');
             return;
         }
 
+        setIsSaving(true);
         try {
             await axios.post(endpoint, {
                 community,
                 street_id: streetId,
                 street_number: streetNumber,
                 type,
-                // If type is LAND, it defaults to Deshabitada for DB consistency
                 status: type === 'CASA' ? status : 'Deshabitada',
                 comments,
                 user_id: userId,
                 months_overdue: monthsOverdue
             }, axiosOptions);
 
-            setSuccessMessage('Predio registrado exitosamente.');
+            toastr.success('Predio registrado exitosamente.', 'Éxito');
             navigate('/addresses');
         } catch (error) {
             const errorMsg = error.response?.data?.message || 'Fallo al crear el predio.';
-            setErrorMessage(errorMsg);
+            toastr.error(errorMsg, 'Operación Fallida');
+        } finally {
+            setIsSaving(false);
+            setFormValidated(true);
         }
-        setFormValidated(true);
     };
 
     return (
         <div className="container mt-4">
             <div className="card shadow-sm border-0">
-                {/* Standardized Success Green Header */}
                 <div className="card-header bg-success text-white p-3">
                     <h2 className="mb-0 h4"><i className="fas fa-home me-2"></i>Registrar Nuevo Predio</h2>
                 </div>
                 <div className="card-body p-4">
-                    {errorMessage && <div className="alert alert-danger text-center shadow-sm">{errorMessage}</div>}
-                    
                     <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
                         
                         {/* ROW 1: USER ASSIGNMENT */}
@@ -166,6 +179,14 @@ export default function CreateAddresses() {
                                     autoComplete="off"
                                 />
                             </div>
+                            
+                            {/* Empty Result Message */}
+                            {noResults && (
+                                <div className="text-danger small mt-1 fw-bold">
+                                    <i className="fas fa-exclamation-circle me-1"></i>No se encontraron residentes con el texto ingresado
+                                </div>
+                            )}
+
                             {userSuggestions.length > 0 && (
                                 <ul className="list-group position-absolute w-100 shadow-lg" style={{ zIndex: 1000 }}>
                                     {userSuggestions.map((u) => (
@@ -229,7 +250,7 @@ export default function CreateAddresses() {
                                     value={type}
                                     onChange={(e) => {
                                         setType(e.target.value);
-                                        if(e.target.value !== 'CASA') setStatus(''); // Reset status if changed to Land
+                                        if(e.target.value !== 'CASA') setStatus('');
                                     }}
                                     className='form-select'
                                     required 
@@ -240,7 +261,6 @@ export default function CreateAddresses() {
                                 </select>
                             </div>
                             
-                            {/* DYNAMIC FIELD: Shown only if type is CASA */}
                             {type === 'CASA' && (
                                 <div className='col-md-4'>
                                     <label className='form-label fw-bold text-primary'>Estado de Ocupación <span className="text-danger">*</span></label>
@@ -273,8 +293,8 @@ export default function CreateAddresses() {
 
                         {/* ACTION BUTTONS */}
                         <div className="d-flex gap-2 pt-3 border-top">
-                            <button type='submit' className='btn btn-success px-4 shadow-sm'>
-                                <i className="fas fa-save me-2"></i>Registrar Predio
+                            <button type='submit' className='btn btn-success px-4 shadow-sm' disabled={isSaving}>
+                                <i className="fas fa-save me-2"></i>{isSaving ? 'Registrando...' : 'Registrar Predio'}
                             </button>
                             <button type='button' className='btn btn-secondary px-4' onClick={() => navigate('/addresses')}>
                                 Cancelar

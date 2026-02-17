@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import DataTable from 'react-data-table-component';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import usePermission from "../hooks/usePermission"; 
@@ -24,6 +23,10 @@ const customStyles = {
     },
 };
 
+/**
+ * ShowAddresses Component
+ * Manages the display, filtering, and deactivation of property addresses.
+ */
 const ShowAddresses = ({ user }) => {
     // --- STATE VARIABLES ---
     const [addresses, setAddresses] = useState([]);
@@ -35,8 +38,8 @@ const ShowAddresses = ({ user }) => {
     const [showModal, setShowModal] = useState(false);
     const [addressToDeactivate, setAddressToDeactivate] = useState(null);
     const [deactivationReason, setDeactivationReason] = useState('');
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     // --- PERMISSIONS CONFIGURATION ---
@@ -54,19 +57,6 @@ const ShowAddresses = ({ user }) => {
     const viewPaymentHistory = (id) => navigate(`/addresses/payments/history/${id}`);
 
     /**
-     * Auto-clear success and error messages after 5 seconds
-     */
-    useEffect(() => {
-        if (successMessage || errorMessage) {
-            const timer = setTimeout(() => {
-                setSuccessMessage(null);
-                setErrorMessage(null);
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, errorMessage, setSuccessMessage, setErrorMessage]);
-
-    /**
      * Fetch addresses from the API
      */
     const fetchAddresses = async () => {
@@ -77,12 +67,12 @@ const ShowAddresses = ({ user }) => {
                 headers: { Accept: 'application/json' },
             });
             const data = response.data.data || response.data;
-            setAddresses(Array.isArray(data) ? data : []);
-            setFilteredAddresses(Array.isArray(data) ? data : []);
+            const addressesArray = Array.isArray(data) ? data : [];
+            setAddresses(addressesArray);
+            setFilteredAddresses(addressesArray);
         } catch (error) {
             console.error('Error fetching addresses:', error);
-            const msg = error.response?.data?.message || 'Fallo al cargar el catálogo de direcciones.';
-            setErrorMessage(msg);
+            toastr.error('Fallo al cargar el catálogo de direcciones.', 'Error');
         } finally {
             setLoading(false);
         }
@@ -96,14 +86,14 @@ const ShowAddresses = ({ user }) => {
      * Search and Filter logic (client-side)
      */
     useEffect(() => {
+        const lowerSearch = search.toLowerCase();
         const result = addresses.filter(addr => {
             const streetName = addr.street?.name || ''; 
             const addressText = `${addr.community} ${streetName} ${addr.street_number} ${addr.type} ${addr.status}`;
             const userName = addr.user ? `${addr.user.name}` : '';
-            const searchText = search.toLowerCase();
 
-            return addressText.toLowerCase().includes(searchText) ||
-                userName.toLowerCase().includes(searchText);
+            return addressText.toLowerCase().includes(lowerSearch) ||
+                userName.toLowerCase().includes(lowerSearch);
         });
         setFilteredAddresses(result);
     }, [search, addresses]);
@@ -111,42 +101,44 @@ const ShowAddresses = ({ user }) => {
     /**
      * Logical deactivation (Soft Delete)
      */
-    const deactivateAddress = async (id, reason) => {
+    const handleDeactivation = async () => {
+        if (!deactivationReason.trim()) {
+            toastr.warning('Debe proporcionar un motivo para dar de baja.', 'Atención');
+            return;
+        }
+
+        setIsProcessing(true);
         try {
-            const response = await axios.delete(`${endpoint}/${id}`, {
+            const response = await axios.delete(`${endpoint}/${addressToDeactivate}`, {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
-                data: { reason: reason } 
+                data: { reason: deactivationReason } 
             });
 
             if (response.status === 200) {
-                setSuccessMessage('Predio dado de baja exitosamente.');
+                toastr.success('Predio dado de baja exitosamente.', 'Éxito');
+                setShowModal(false);
+                setDeactivationReason('');
                 fetchAddresses(); 
             }
         } catch (error) {
-            console.error('Deactivation error:', error);
-            setErrorMessage(error.response?.data?.message || 'Error al desactivar predio.');
+            const msg = error.response?.data?.message || 'Error al desactivar predio.';
+            toastr.error(msg, 'Operación Fallida');
         } finally {
-            setShowModal(false);
-            setDeactivationReason('');
+            setIsProcessing(false);
         }
     };
 
-    const toggleModal = () => setShowModal(!showModal);
+    const toggleModal = () => {
+        setShowModal(!showModal);
+        if (showModal) setDeactivationReason('');
+    };
 
     const confirmDeactivation = (id) => {
         setAddressToDeactivate(id);
         setDeactivationReason('');
-        toggleModal();
+        setShowModal(true);
     };
-
-    const handleDeactivation = () => {
-        if (!deactivationReason.trim()) {
-            setErrorMessage('Debe proporcionar un motivo para dar de baja.');
-            return;
-        }
-        deactivateAddress(addressToDeactivate, deactivationReason);
-    }
 
     /**
      * 🛡️ DATA TABLE COLUMNS DEFINITION
@@ -265,12 +257,6 @@ const ShowAddresses = ({ user }) => {
                 </div>
             </div>
 
-            {/* Feedback Messages (Success/Error Alerts) */}
-            <div className="col-md-12 mt-2">
-                {successMessage && <div className="alert alert-success text-center py-2 shadow-sm">{successMessage}</div>}
-                {errorMessage && !showModal && <div className="alert alert-danger text-center py-2 shadow-sm">{errorMessage}</div>}
-            </div>
-
             {/* Data Table */}
             <div className="col-md-12 mt-2">
                 <DataTable
@@ -310,7 +296,6 @@ const ShowAddresses = ({ user }) => {
                                         placeholder="Ingrese la razón detallada..."
                                     />
                                 </div>
-                                {errorMessage && <div className="alert alert-danger text-center mt-3 py-2">{errorMessage}</div>}
                             </div>
                             <div className="modal-footer bg-light justify-content-center">
                                 <button type="button" className="btn btn-secondary px-4" onClick={toggleModal}>Cancelar</button>
@@ -318,9 +303,9 @@ const ShowAddresses = ({ user }) => {
                                     type="button"
                                     className="btn btn-danger px-4"
                                     onClick={handleDeactivation}
-                                    disabled={!deactivationReason.trim()}
+                                    disabled={isProcessing || !deactivationReason.trim()}
                                 >
-                                    Confirmar Baja
+                                    {isProcessing ? 'Procesando...' : 'Confirmar Baja'}
                                 </button>
                             </div>
                         </div>

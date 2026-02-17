@@ -1,20 +1,24 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 
 const endpoint = '/api/fees';
 
+/**
+ * CreateFees Component
+ * Handles the creation of new administrative fees with categorized amounts.
+ */
 export default function CreateFees() {
+    // --- STATE VARIABLES ---
     const [name, setName] = useState('');
-    // NEW: Separated states for occupied house, empty house, and land amounts
     const [amountOccupied, setAmountOccupied] = useState('');
     const [amountEmpty, setAmountEmpty] = useState('');
     const [amountLand, setAmountLand] = useState('');
     const [description, setDescription] = useState('');
     const [formValidated, setFormValidated] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
+    // --- NAVIGATION ---
     const navigate = useNavigate();
 
     /**
@@ -24,30 +28,33 @@ export default function CreateFees() {
         e.preventDefault();
         const form = e.currentTarget;
 
+        // Frontend validation check
         if (form.checkValidity() === false) {
             e.stopPropagation();
-            setErrorMessage('Por favor, complete todos los campos obligatorios.');
+            toastr.warning('Por favor, complete todos los campos obligatorios.', 'Atención');
         } else {
-            // UPDATED: Sending the 3 specific amount fields to the backend
+            setIsSaving(true);
             try {
+                // Sending categorization specific amounts to backend
                 await axios.post(endpoint, {
-                    name,
+                    name: name.trim(),
                     amount_occupied: amountOccupied,
                     amount_empty: amountEmpty,
                     amount_land: amountLand,
-                    description
+                    description: description.trim()
                 }, {
                     withCredentials: true,
                     headers: { Accept: 'application/json' },
                 });
                 
-                setSuccessMessage('Cuota creada exitosamente.');
-                setErrorMessage('');
+                toastr.success('Cuota creada exitosamente.', 'Éxito');
                 navigate('/fees');
             } catch (error) {
                 const msg = error.response?.data?.message || 'Error al crear la cuota.';
-                setErrorMessage(msg);
+                toastr.error(msg, 'Operación Fallida');
                 console.error('Error creating fee:', error);
+            } finally {
+                setIsSaving(false);
             }
         }
         setFormValidated(true);
@@ -55,32 +62,33 @@ export default function CreateFees() {
 
     return (
         <div className="container mt-4">
-            <div className="card shadow-sm">
-                <div className="card-header bg-success text-white">
-                    <h2 className="mb-0 h4">Crear Cuota</h2>
+            <div className="card shadow-sm border-0">
+                <div className="card-header bg-success text-white p-3">
+                    <h2 className="mb-0 h4">
+                        <i className="fas fa-plus-circle me-2"></i>Crear Nueva Cuota
+                    </h2>
                 </div>
-                <div className="card-body">
+                <div className="card-body p-4">
                     <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
-                        {errorMessage && <div className="alert alert-danger text-center">{errorMessage}</div>}
-
+                        
                         {/* Name Field */}
-                        <div className='mb-3'>
-                            <label className='form-label fw-bold'>Nombre de la Cuota</label>
+                        <div className='mb-4'>
+                            <label className='form-label fw-bold'>Nombre de la Cuota <span className="text-danger">*</span></label>
                             <input
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 type='text'
                                 className='form-control'
-                                placeholder="ej. Mantenimiento"
+                                placeholder="ej. Mantenimiento General"
                                 required
                             />
                             <div className="invalid-feedback">El nombre es obligatorio.</div>
                         </div>
 
-                        {/* 3 Amount Inputs Row */}
-                        <div className="row">
-                            <div className='col-md-4 mb-3'>
-                                <label className='form-label fw-bold'>Casa Habitada ($)</label>
+                        {/* Categorized Amount Inputs Row */}
+                        <div className="row g-3 mb-4">
+                            <div className='col-md-4'>
+                                <label className='form-label fw-bold'>Casa Habitada ($) <span className="text-danger">*</span></label>
                                 <input
                                     value={amountOccupied}
                                     onChange={(e) => setAmountOccupied(e.target.value)}
@@ -90,11 +98,11 @@ export default function CreateFees() {
                                     placeholder="0.00"
                                     required
                                 />
-                                <div className="invalid-feedback">Ingrese el monto para casa habitada.</div>
+                                <div className="invalid-feedback">Monto requerido.</div>
                             </div>
 
-                            <div className='col-md-4 mb-3'>
-                                <label className='form-label fw-bold'>Casa Deshabitada ($)</label>
+                            <div className='col-md-4'>
+                                <label className='form-label fw-bold'>Casa Deshabitada ($) <span className="text-danger">*</span></label>
                                 <input
                                     value={amountEmpty}
                                     onChange={(e) => setAmountEmpty(e.target.value)}
@@ -104,11 +112,11 @@ export default function CreateFees() {
                                     placeholder="0.00"
                                     required
                                 />
-                                <div className="invalid-feedback">Ingrese el monto para casa deshabitada.</div>
+                                <div className="invalid-feedback">Monto requerido.</div>
                             </div>
 
-                            <div className='col-md-4 mb-3'>
-                                <label className='form-label fw-bold'>Terreno ($)</label>
+                            <div className='col-md-4'>
+                                <label className='form-label fw-bold'>Terreno ($) <span className="text-danger">*</span></label>
                                 <input
                                     value={amountLand}
                                     onChange={(e) => setAmountLand(e.target.value)}
@@ -118,12 +126,12 @@ export default function CreateFees() {
                                     placeholder="0.00"
                                     required
                                 />
-                                <div className="invalid-feedback">Ingrese el monto para terreno.</div>
+                                <div className="invalid-feedback">Monto requerido.</div>
                             </div>
                         </div>
 
                         {/* Description Field */}
-                        <div className='mb-3'>
+                        <div className='mb-4'>
                             <label className='form-label fw-bold'>Descripción</label>
                             <textarea
                                 value={description}
@@ -134,9 +142,13 @@ export default function CreateFees() {
                             />
                         </div>
 
-                        <div className="d-flex gap-2">
-                            <button type='submit' className='btn btn-success px-4'>Guardar Cuota</button>
-                            <button type='button' className='btn btn-secondary' onClick={() => navigate('/fees')}>Cancelar</button>
+                        <div className="d-flex gap-2 pt-3 border-top">
+                            <button type='submit' className='btn btn-success px-4 shadow-sm' disabled={isSaving}>
+                                <i className="fas fa-save me-2"></i>{isSaving ? 'Guardando...' : 'Guardar Cuota'}
+                            </button>
+                            <button type='button' className='btn btn-secondary px-4' onClick={() => navigate('/fees')}>
+                                Cancelar
+                            </button>
                         </div>
                     </form>
                 </div>

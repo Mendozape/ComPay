@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MessageContext } from "./MessageContext";
 
+/**
+ * CreateRole Component
+ * Handles the creation of new system roles and permission assignment
+ */
 export default function CreateRole() {
     // --- STATE VARIABLES ---
     const [name, setName] = useState("");
@@ -13,11 +16,10 @@ export default function CreateRole() {
     const [permissionError, setPermissionError] = useState(""); 
     const [selectAll, setSelectAll] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
-    // --- CONTEXT AND NAVIGATION ---
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
+    // --- NAVIGATION AND OPTIONS ---
     const navigate = useNavigate();
-
     const axiosOptions = {
         withCredentials: true,
         headers: { Accept: "application/json" },
@@ -38,7 +40,7 @@ export default function CreateRole() {
                 setPermissions(resPerms.data);
             } catch (err) {
                 console.error("Error fetching data:", err);
-                setErrorMessage("Error al cargar el catálogo de roles y permisos.");
+                toastr.error("Error al cargar el catálogo de roles y permisos.", "Fallo");
             } finally {
                 setLoading(false);
             }
@@ -83,21 +85,27 @@ export default function CreateRole() {
         e.preventDefault();
         setNameError("");
         setPermissionError("");
-        setErrorMessage(null);
+        setIsSaving(true);
 
-        // Validation logic
+        // --- FRONTEND VALIDATIONS ---
         if (!name.trim()) {
             setNameError("El nombre del rol es obligatorio.");
+            toastr.warning("Nombre de rol obligatorio");
+            setIsSaving(false);
             return;
         }
 
         if (roles.some((r) => r.name.toLowerCase() === name.trim().toLowerCase())) {
             setNameError("Este nombre de rol ya existe.");
+            toastr.warning("El nombre del rol ya está en uso");
+            setIsSaving(false);
             return;
         }
 
         if (selectedPermissions.length === 0) {
             setPermissionError("Debe seleccionar al menos un permiso.");
+            toastr.warning("Seleccione al menos un permiso");
+            setIsSaving(false);
             return;
         }
 
@@ -107,11 +115,15 @@ export default function CreateRole() {
                 { name: name.trim(), permission: selectedPermissions },
                 axiosOptions
             );
-            setSuccessMessage("Role creado exitosamente.");
+            
+            toastr.success("Role creado exitosamente.", "Éxito");
             navigate("/roles");
         } catch (err) {
             console.error("Error creating role:", err);
-            setErrorMessage(err.response?.data?.message || "Error al crear el rol.");
+            let errorMsg = err.response?.data?.message || "Error al crear el rol.";
+            toastr.error(errorMsg, "Operación Fallida");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -135,13 +147,6 @@ export default function CreateRole() {
                         </div>
 
                         <div className="card-body p-4">
-                            {/* Error Alert Display */}
-                            {errorMessage && (
-                                <div className="alert alert-danger text-center shadow-sm">
-                                    {errorMessage}
-                                </div>
-                            )}
-
                             <form onSubmit={handleSubmit}>
                                 {/* Role Name Input */}
                                 <div className="mb-4">
@@ -202,8 +207,8 @@ export default function CreateRole() {
 
                                 {/* Action Buttons */}
                                 <div className="d-flex gap-2 pt-3 border-top">
-                                    <button type="submit" className="btn btn-success px-4 shadow-sm">
-                                        <i className="fas fa-save me-2"></i>Guardar Rol
+                                    <button type="submit" className="btn btn-success px-4 shadow-sm" disabled={isSaving}>
+                                        <i className="fas fa-save me-2"></i>{isSaving ? "Guardando..." : "Guardar Rol"}
                                     </button>
                                     <button 
                                         type="button" 

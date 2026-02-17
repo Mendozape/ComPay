@@ -1,17 +1,20 @@
 import axios from 'axios';
-import React, { useState, useContext } from 'react';
-import { MessageContext } from './MessageContext';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const endpoint = '/api/streets';
 
+/**
+ * CreateStreet Component
+ * Handles the creation of new street records using toastr for notifications.
+ */
 export default function CreateStreet() {
     // --- STATE VARIABLES ---
     const [name, setName] = useState('');
     const [formValidated, setFormValidated] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    // --- CONTEXT AND NAVIGATION ---
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
+    // --- NAVIGATION ---
     const navigate = useNavigate();
 
     /**
@@ -24,23 +27,23 @@ export default function CreateStreet() {
         // Basic HTML5 validation check
         if (form.checkValidity() === false) {
             e.stopPropagation();
-            setErrorMessage('Por favor, complete todos los campos obligatorios.');
+            toastr.warning('Por favor, complete todos los campos obligatorios.', 'Atención');
         } else {
-            // Using standard JSON payload for simple text data
+            setIsSaving(true);
             try {
                 await axios.post(endpoint, { name: name.trim() }, {
                     withCredentials: true,
                     headers: { Accept: 'application/json' },
                 });
 
-                // Success feedback and redirecting to the catalog
-                setSuccessMessage('Calle creada exitosamente.');
-                setErrorMessage('');
+                toastr.success('Calle creada exitosamente.', 'Éxito');
                 navigate('/streets');
             } catch (error) {
                 console.error('Error creating street:', error);
                 const msg = error.response?.data?.message || 'Fallo al crear la calle.';
-                setErrorMessage(msg);
+                toastr.error(msg, 'Operación Fallida');
+            } finally {
+                setIsSaving(false);
             }
         }
         setFormValidated(true);
@@ -58,13 +61,6 @@ export default function CreateStreet() {
                             </h2>
                         </div>
                         <div className="card-body p-4">
-                            {/* Error Alert Display */}
-                            {errorMessage && (
-                                <div className="alert alert-danger text-center shadow-sm">
-                                    {errorMessage}
-                                </div>
-                            )}
-
                             <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
                                 
                                 {/* Street Name Input */}
@@ -85,8 +81,8 @@ export default function CreateStreet() {
 
                                 {/* Action Buttons */}
                                 <div className="d-flex gap-2 pt-3 border-top">
-                                    <button type='submit' className='btn btn-success px-4 shadow-sm'>
-                                        <i className="fas fa-save me-2"></i>Guardar Calle
+                                    <button type='submit' className='btn btn-success px-4 shadow-sm' disabled={isSaving}>
+                                        <i className="fas fa-save me-2"></i>{isSaving ? 'Guardando...' : 'Guardar Calle'}
                                     </button>
                                     <button 
                                         type='button' 

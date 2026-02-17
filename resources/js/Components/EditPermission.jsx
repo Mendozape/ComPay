@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MessageContext } from "./MessageContext";
 
+/**
+ * PermisoEdit Component
+ * Allows modification of an existing system permission.
+ */
 export default function PermisoEdit() {
     const { id } = useParams();
     const [name, setName] = useState("");
     const [loading, setLoading] = useState(true);
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
+    const [isSaving, setIsSaving] = useState(false);
     const navigate = useNavigate();
 
     const axiosOptions = {
@@ -29,7 +32,7 @@ export default function PermisoEdit() {
                 }
             } catch (error) {
                 console.error("Error fetching permiso:", error);
-                setErrorMessage("No se pudo cargar la información del permiso.");
+                toastr.error("No se pudo cargar la información del permiso.", "Error");
             } finally {
                 setLoading(false);
             }
@@ -44,19 +47,21 @@ export default function PermisoEdit() {
         e.preventDefault();
         
         if (!name.trim()) {
-            setErrorMessage("El nombre del permiso no puede estar vacío.");
+            toastr.warning("El nombre del permiso no puede estar vacío.");
             return;
         }
 
         try {
+            setIsSaving(true);
             await axios.put(`/api/permisos/${id}`, { name: name.trim() }, axiosOptions);
-            setSuccessMessage("Permiso actualizado exitosamente.");
-            setErrorMessage(""); // Limpiar errores si los había
+            toastr.success("Permiso actualizado exitosamente.", "Éxito");
             navigate("/permissions");
         } catch (error) {
             console.error("Error updating permiso:", error);
             const errorMsg = error.response?.data?.message || "Error al actualizar el permiso.";
-            setErrorMessage(errorMsg);
+            toastr.error(errorMsg, "Operación Fallida");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -71,20 +76,14 @@ export default function PermisoEdit() {
         <div className="container mt-4">
             <div className="row justify-content-center">
                 <div className="col-md-8">
-                    <div className="card shadow-sm">
-                        {/* Header color BG-SUCCESS para estandarizar */}
+                    <div className="card shadow-sm border-0">
+                        {/* Standardized Success Green Header */}
                         <div className="card-header bg-success text-white p-3">
                             <h2 className="mb-0 h4">
                                 <i className="fas fa-key me-2"></i>Editar Permiso
                             </h2>
                         </div>
                         <div className="card-body p-4">
-                            {errorMessage && (
-                                <div className="alert alert-danger text-center shadow-sm">
-                                    {errorMessage}
-                                </div>
-                            )}
-
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-4">
                                     <label className="form-label fw-bold">
@@ -106,9 +105,10 @@ export default function PermisoEdit() {
                                 <div className="d-flex gap-2 pt-3 border-top">
                                     <button
                                         type="submit"
-                                        className="btn btn-success px-4"
+                                        className="btn btn-success px-4 shadow-sm"
+                                        disabled={isSaving}
                                     >
-                                        <i className="fas fa-save me-2"></i>Actualizar Permiso
+                                        <i className="fas fa-save me-2"></i>{isSaving ? "Guardando..." : "Actualizar Permiso"}
                                     </button>
                                     <button 
                                         type="button" 

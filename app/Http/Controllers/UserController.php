@@ -21,18 +21,27 @@ class UserController extends Controller
     public function index(Request $request)
     {
         try {
-            // 🟢 FIXED: Use 'addresses' (plural)
             $query = User::withTrashed()->with(['roles', 'addresses']);
 
-            if ($request->has('search')) {
-                $search = $request->query('search');
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'LIKE', "%{$search}%")
-                        ->orWhere('email', 'LIKE', "%{$search}%");
-                });
+            if ($request->filled('search')) {
+                $search = trim($request->query('search'));
+
+                if (mb_strlen($search) >= 1) {
+                    $query->where(function ($q) use ($search) {
+                        /**
+                         * We use COLLATE utf8mb4_bin to force a binary comparison.
+                         * This ensures that characters like 'ñ' are not confused with 'n'.
+                         * It also makes the search case-sensitive for maximum precision.
+                         */
+                        $q->where(DB::raw("name COLLATE utf8mb4_bin"), 'LIKE', "%{$search}%")
+                            ->orWhere(DB::raw("email COLLATE utf8mb4_bin"), 'LIKE', "%{$search}%");
+                    });
+                }
+            } elseif ($request->has('search')) {
+                return response()->json(['data' => [], 'total' => 0]);
             }
 
-            $perPage = $request->has('search') ? 50 : 10;
+            $perPage = $request->filled('search') ? 50 : 10;
             $usuarios = $query->paginate($perPage);
 
             $usuarios->getCollection()->transform(function ($user) {
@@ -45,7 +54,6 @@ class UserController extends Controller
                     'roles' => $user->roles,
                     'permissions' => $user->getAllPermissions(),
                     'addresses' => $user->addresses,
-                    // Compatibility for frontend validation
                     'address' => $user->addresses->first(),
                     'deleted_at' => $user->deleted_at,
                 ];
@@ -63,11 +71,11 @@ class UserController extends Controller
         try {
             // 🟢 FIX: Changed 'address' to 'addresses' to avoid the 500 error when loading the edit form
             $user = User::withTrashed()->with(['roles', 'addresses'])->findOrFail($id);
-            
+
             // Add a virtual property for frontend compatibility if needed
             $user->address = $user->addresses->first();
             $user->all_permissions = $user->getAllPermissions();
-            
+
             return response()->json($user);
         } catch (\Exception $e) {
             // This is what was causing your "Error al cargar los datos" message

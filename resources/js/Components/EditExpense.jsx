@@ -1,6 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect, useContext } from 'react';
-import { MessageContext } from './MessageContext';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const endpoint = '/api/expenses/';
@@ -13,6 +12,9 @@ const axiosOptions = {
     }
 };
 
+/**
+ * Format database timestamp to YYYY-MM-DD for date input
+ */
 const formatDate = (dbDateString) => {
     if (!dbDateString) return '';
     return dbDateString.split(' ')[0];
@@ -24,17 +26,19 @@ export default function EditExpense() {
     const [expenseDate, setExpenseDate] = useState('');
     const [expenseCategoryId, setExpenseCategoryId] = useState(''); 
     const [categories, setCategories] = useState([]); 
+    const [loading, setLoading] = useState(true);
     const [loadingCategories, setLoadingCategories] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     const [formValidated, setFormValidated] = useState(false);
-    const [errors, setErrors] = useState({});
     const [showModal, setShowModal] = useState(false);
 
     const { id } = useParams();
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
-    // Effect: Fetch Categories Catalog
+    /**
+     * Fetch Categories Catalog on component mount
+     */
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -42,8 +46,7 @@ export default function EditExpense() {
                 const activeCategories = res.data.data.filter(cat => !cat.deleted_at);
                 setCategories(activeCategories);
             } catch (error) {
-                console.error("Error fetching categories:", error);
-                setErrorMessage("Fallo al cargar el catálogo de categorías.");
+                toastr.error("Fallo al cargar el catálogo de categorías.", "Error");
             } finally {
                 setLoadingCategories(false);
             }
@@ -51,7 +54,9 @@ export default function EditExpense() {
         fetchCategories();
     }, []); 
 
-    // Effect: Fetch specific expense data
+    /**
+     * Fetch specific expense data by ID
+     */
     useEffect(() => {
         const getExpenseById = async () => {
             try {
@@ -61,15 +66,19 @@ export default function EditExpense() {
                 setExpenseDate(formatDate(data.expense_date)); 
                 setExpenseCategoryId(data.expense_category_id?.toString() || ''); 
             } catch (error) {
-                console.error('Error fetching expense:', error);
-                setErrorMessage('Fallo al cargar el gasto.'); 
+                toastr.error('Fallo al cargar los datos del gasto.', 'Error'); 
+            } finally {
+                setLoading(false);
             }
         };
         getExpenseById();
-    }, [id, setErrorMessage]);
+    }, [id]);
 
-
+    /**
+     * Final update submission handler
+     */
     const handleUpdate = async () => {
+        setIsSaving(true);
         const payload = {
             expense_category_id: expenseCategoryId,
             amount: amount,
@@ -77,43 +86,45 @@ export default function EditExpense() {
         };
 
         try {
-            // Using standard PUT for update
-            const response = await axios.put(`${endpoint}${id}`, payload, axiosOptions);
-            if (response.status === 200) {
-                setSuccessMessage('Gasto actualizado exitosamente.');
-                navigate('/expenses');
-            }
+            await axios.put(`${endpoint}${id}`, payload, axiosOptions);
+            toastr.success('Gasto actualizado exitosamente.', 'Éxito');
+            navigate('/expenses');
         } catch (error) {
-            console.error('Error updating expense:', error);
-            if (error.response?.data?.errors) {
-                setErrors(error.response.data.errors);
-            } else {
-                setErrorMessage(error.response?.data?.message || 'Fallo al actualizar el gasto.');
-            }
+            const msg = error.response?.data?.message || 'Fallo al actualizar el gasto.';
+            toastr.error(msg, 'Operación Fallida');
         } finally {
+            setIsSaving(false);
             setShowModal(false);
         }
     };
 
+    /**
+     * Trigger confirmation modal
+     */
     const update = (e) => {
         e.preventDefault(); 
         if (!amount || !expenseCategoryId || !expenseDate) {
-            setErrorMessage('Por favor, complete todos los campos obligatorios.');
+            toastr.warning('Por favor, complete todos los campos obligatorios.', 'Atención');
             setFormValidated(true);
             return;
         }
         setShowModal(true);
     };
 
+    if (loading) return (
+        <div className="text-center mt-5">
+            <div className="spinner-border text-success" role="status"></div>
+            <p className="mt-2">Cargando datos del gasto...</p>
+        </div>
+    );
+
     return (
         <div className="container mt-4">
-            <div className="card shadow-sm">
-                <div className="card-header bg-success text-white">
+            <div className="card shadow-sm border-0">
+                <div className="card-header bg-success text-white p-3">
                     <h2 className="mb-0 h4"><i className="fas fa-edit me-2"></i>Editar Gasto</h2>
                 </div>
                 <div className="card-body p-4">
-                    {errorMessage && <div className="alert alert-danger text-center">{errorMessage}</div>}
-                    
                     <form onSubmit={update} noValidate className={formValidated ? 'was-validated' : ''}>
                         
                         <div className="row g-3">
@@ -147,12 +158,11 @@ export default function EditExpense() {
                                         type='number'
                                         step='0.01'
                                         min='0.01'
-                                        className={`form-control ${errors.amount ? 'is-invalid' : ''}`}
+                                        className="form-control"
                                         placeholder="0.00"
                                         required
                                     />
                                 </div>
-                                {errors.amount && <div className="text-danger small">{errors.amount[0]}</div>}
                             </div>
 
                             {/* 3. Expense Date Field */}
@@ -162,16 +172,15 @@ export default function EditExpense() {
                                     value={expenseDate} 
                                     onChange={(e) => setExpenseDate(e.target.value)}
                                     type='date'
-                                    className={`form-control ${errors.expense_date ? 'is-invalid' : ''}`}
+                                    className="form-control"
                                     required
                                 />
-                                {errors.expense_date && <div className="text-danger small">{errors.expense_date[0]}</div>}
                             </div>
                         </div>
 
                         <div className="d-flex gap-2 mt-4 pt-3 border-top">
-                            <button type='submit' className='btn btn-success px-4'>
-                                <i className="fas fa-save me-2"></i>Actualizar Gasto
+                            <button type='submit' className='btn btn-success px-4 shadow-sm' disabled={isSaving}>
+                                <i className="fas fa-save me-2"></i>{isSaving ? 'Actualizando...' : 'Actualizar Gasto'}
                             </button>
                             <button type='button' className='btn btn-secondary px-4' onClick={() => navigate('/expenses')}>
                                 Cancelar
@@ -181,7 +190,7 @@ export default function EditExpense() {
                 </div>
             </div>
 
-            {/* MODAL DE CONFIRMACIÓN */}
+            {/* CONFIRMATION MODAL */}
             <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content border-0 shadow">
@@ -192,9 +201,11 @@ export default function EditExpense() {
                         <div className="modal-body text-center p-4">
                             <p className="mb-0">¿Está seguro de que desea actualizar la información de este registro de gasto?</p>
                         </div>
-                        <div className="modal-footer bg-light">
-                            <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
-                            <button type="button" className="btn btn-success" onClick={handleUpdate}>Confirmar y Actualizar</button>
+                        <div className="modal-footer bg-light justify-content-center">
+                            <button type="button" className="btn btn-secondary px-4" onClick={() => setShowModal(false)}>Cancelar</button>
+                            <button type="button" className="btn btn-success px-4" onClick={handleUpdate} disabled={isSaving}>
+                                {isSaving ? 'Procesando...' : 'Confirmar y Actualizar'}
+                            </button>
                         </div>
                     </div>
                 </div>

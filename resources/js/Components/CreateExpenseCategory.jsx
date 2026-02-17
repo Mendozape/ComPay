@@ -1,18 +1,21 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 
 const endpoint = '/api/expense_categories';
 
+/**
+ * CreateExpenseCategory Component
+ * Handles the creation of new expense categories with toastr notifications.
+ */
 export default function CreateExpenseCategory() {
     // --- STATE VARIABLES ---
     const [name, setName] = useState('');
     const [formValidated, setFormValidated] = useState(false);
     const [errors, setErrors] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
 
-    // --- CONTEXT AND NAVIGATION ---
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
+    // --- NAVIGATION ---
     const navigate = useNavigate();
 
     /**
@@ -27,29 +30,28 @@ export default function CreateExpenseCategory() {
         // Check if the form is valid according to HTML5 constraints
         if (form.checkValidity() === false) {
             e.stopPropagation();
-            setErrorMessage('Por favor, complete todos los campos obligatorios.');
+            toastr.warning('Por favor, complete todos los campos obligatorios.', 'Atención');
         } else {
-            // Using standard JSON payload for name creation
+            setIsSaving(true);
             try {
                 await axios.post(endpoint, { name: name.trim() }, {
                     withCredentials: true,
                     headers: { Accept: 'application/json' },
                 });
                 
-                // Success feedback in Spanish and redirect to list
-                setSuccessMessage('Categoría de gasto creada exitosamente.');
-                setErrorMessage('');
+                toastr.success('Categoría de gasto creada exitosamente.', 'Éxito');
                 navigate('/expense_categories');
             } catch (error) {
-                console.error('Error creating category:', error.response || error);
-                
                 // Handle Laravel validation errors (422)
                 if (error.response?.data?.errors) {
                     setErrors(error.response.data.errors);
-                    setErrorMessage('Error de validación. Revise los campos.');
+                    toastr.error('Error de validación. Revise los campos.', 'Fallo');
                 } else {
-                    setErrorMessage('Fallo al crear la categoría.');
+                    const msg = error.response?.data?.message || 'Fallo al crear la categoría.';
+                    toastr.error(msg, 'Operación Fallida');
                 }
+            } finally {
+                setIsSaving(false);
             }
         }
         setFormValidated(true);
@@ -67,13 +69,6 @@ export default function CreateExpenseCategory() {
                             </h2>
                         </div>
                         <div className="card-body p-4">
-                            {/* Error Alert Display */}
-                            {errorMessage && (
-                                <div className="alert alert-danger text-center shadow-sm">
-                                    {errorMessage}
-                                </div>
-                            )}
-
                             <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
                                 
                                 {/* Category Name Input */}
@@ -96,8 +91,8 @@ export default function CreateExpenseCategory() {
                                 
                                 {/* Action Buttons */}
                                 <div className="d-flex gap-2 pt-3 border-top">
-                                    <button type='submit' className='btn btn-success px-4 shadow-sm'>
-                                        <i className="fas fa-save me-2"></i>Guardar Categoría
+                                    <button type='submit' className='btn btn-success px-4 shadow-sm' disabled={isSaving}>
+                                        <i className="fas fa-save me-2"></i>{isSaving ? 'Guardando...' : 'Guardar Categoría'}
                                     </button>
                                     <button 
                                         type='button' 

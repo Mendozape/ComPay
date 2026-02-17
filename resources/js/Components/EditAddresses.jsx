@@ -1,38 +1,37 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MessageContext } from './MessageContext';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const endpoint = '/api/addresses';
 const userSearchEndpoint = '/api/usuarios'; 
 const streetsEndpoint = '/api/streets';
 
+/**
+ * EditAddresses Component
+ * Manages the retrieval and update of property details, including resident assignment,
+ * street mapping, and occupation status.
+ */
 export default function EditAddresses() {
     // --- STATE FOR FORM INPUTS ---
     const [community, setCommunity] = useState('PRADOS DE LA HUERTA');
     const [streetId, setStreetId] = useState('');
     const [streetNumber, setStreetNumber] = useState('');
     const [type, setType] = useState('');
-    
-    /** * 🔥 IMPROVEMENT: Status initialized as empty string.
-     * This ensures the user manually selects the occupation status
-     * when the property type is "CASA".
-     */
     const [status, setStatus] = useState(''); 
-    
     const [comments, setComments] = useState('');
     const [monthsOverdue, setMonthsOverdue] = useState(0);
     const [formValidated, setFormValidated] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     // --- STATES FOR USER ASSIGNMENT ---
     const [userQuery, setUserQuery] = useState('');
     const [userId, setUserId] = useState(null); 
     const [userSuggestions, setUserSuggestions] = useState([]);
 
-    // --- STATE FOR STREETS ---
+    // --- STATE FOR STREETS CATALOG ---
     const [streets, setStreets] = useState([]);
 
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
     const { id } = useParams();
 
@@ -49,7 +48,7 @@ export default function EditAddresses() {
     };
 
     /**
-     * Handle historical debt field
+     * Manage historical debt field with a logical cap
      */
     const handleMonthsOverdueChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');
@@ -58,22 +57,48 @@ export default function EditAddresses() {
     };
 
     /**
-     * Fetch the list of active streets
+     * Fetch existing address data and streets catalog on load
      */
-    const fetchStreets = async () => {
-        try {
-            const response = await axios.get(streetsEndpoint, axiosOptions);
-            const data = response.data.data || response.data;
-            const activeStreets = data.filter(s => !s.deleted_at);
-            setStreets(activeStreets || []);
-        } catch (error) {
-            console.error('Error fetching streets:', error);
-            setErrorMessage('Fallo al cargar el catálogo de calles.');
-        }
-    };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                // Parallel fetching for performance
+                const [addressRes, streetsRes] = await Promise.all([
+                    axios.get(`${endpoint}/${id}`, axiosOptions),
+                    axios.get(streetsEndpoint, axiosOptions)
+                ]);
+
+                // 1. Process Street Catalog
+                const streetData = streetsRes.data.data || streetsRes.data;
+                setStreets(streetData.filter(s => !s.deleted_at) || []);
+
+                // 2. Process Address Data
+                const address = addressRes.data.data;
+                setCommunity(address.community || 'PRADOS DE LA HUERTA');
+                setStreetId(address.street_id || '');
+                setStreetNumber(address.street_number || '');
+                setType(address.type || '');
+                setStatus(address.status || ''); 
+                setComments(address.comments || '');
+                setMonthsOverdue(address.months_overdue ?? 0);
+                
+                if (address.user) {
+                    setUserId(address.user.id);
+                    setUserQuery(address.user.name);
+                }
+            } catch (error) {
+                console.error('Initial load error:', error);
+                toastr.error('Fallo al cargar los datos del predio.', 'Error');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [id]);
 
     /**
-     * User Autocomplete Logic (Debounce)
+     * User Autocomplete Logic (Debounced search)
      */
     useEffect(() => {
         if (!userQuery || userId) {
@@ -86,12 +111,15 @@ export default function EditAddresses() {
                 const data = response.data.data || response.data;
                 setUserSuggestions(Array.isArray(data) ? data : []);
             } catch (error) {
-                console.error('Error searching users:', error);
+                console.error('User search error:', error);
             }
         }, 300);
         return () => clearTimeout(delayDebounceFn);
     }, [userQuery, userId]);
 
+    /**
+     * Handle user selection from autocomplete
+     */
     const handleSelectUser = (userSelected) => {
         setUserId(userSelected.id);
         setUserQuery(userSelected.name);
@@ -99,57 +127,23 @@ export default function EditAddresses() {
     };
 
     /**
-     * Fetch existing address data on load
-     */
-    useEffect(() => {
-        const getAddressById = async () => {
-            try {
-                const response = await axios.get(`${endpoint}/${id}`, axiosOptions);
-                const address = response.data.data;
-
-                setCommunity(address.community || 'PRADOS DE LA HUERTA');
-                setStreetId(address.street_id || '');
-                setStreetNumber(address.street_number || '');
-                setType(address.type || '');
-                
-                /**
-                 * We populate the status from the database, but if for some reason
-                 * it's not set, we keep it empty to trigger validation.
-                 */
-                setStatus(address.status || ''); 
-                
-                setComments(address.comments || '');
-                setMonthsOverdue(address.months_overdue ?? 0);
-                
-                if (address.user) {
-                    setUserId(address.user.id);
-                    setUserQuery(address.user.name);
-                }
-            } catch (error) {
-                setErrorMessage('Error al cargar datos del predio.');
-            }
-        };
-        getAddressById();
-        fetchStreets();
-    }, [id]);
-
-    /**
      * Send update request to API
      */
-    const update = async (e) => {
+    const handleUpdate = async (e) => {
         e.preventDefault();
         const form = e.currentTarget;
 
-        // Validation: Ensure mandatory selections are made
+        // Strict Validation: Resident, Street, and Occupation Status (if CASA)
         const isStatusMissing = type === 'CASA' && !status;
 
         if (form.checkValidity() === false || !userId || !streetId || isStatusMissing) {
             e.stopPropagation();
-            setErrorMessage('Por favor, complete todos los campos obligatorios, incluyendo el estado de la casa.');
             setFormValidated(true);
+            toastr.warning('Por favor, complete los campos obligatorios, incluyendo el residente y el estado de ocupación.', 'Atención');
             return;
         }
 
+        setIsSaving(true);
         try {
             await axios.put(`${endpoint}/${id}`, {
                 community,
@@ -162,13 +156,22 @@ export default function EditAddresses() {
                 months_overdue: monthsOverdue
             }, axiosOptions);
 
-            setSuccessMessage('Dirección actualizada exitosamente.');
+            toastr.success('Dirección actualizada exitosamente.', 'Éxito');
             navigate('/addresses');
         } catch (error) {
-            setErrorMessage(error.response?.data?.message || 'Error al actualizar.');
+            const msg = error.response?.data?.message || 'Error al actualizar el predio.';
+            toastr.error(msg, 'Operación Fallida');
+        } finally {
+            setIsSaving(false);
         }
-        setFormValidated(true);
     };
+
+    if (loading) return (
+        <div className="text-center mt-5">
+            <div className="spinner-border text-success" role="status"></div>
+            <p className="mt-2">Cargando datos del predio...</p>
+        </div>
+    );
 
     return (
         <div className="container mt-4">
@@ -178,9 +181,7 @@ export default function EditAddresses() {
                     <h2 className="mb-0 h4"><i className="fas fa-edit me-2"></i>Editar Predio</h2>
                 </div>
                 <div className="card-body p-4">
-                    {errorMessage && <div className="alert alert-danger text-center shadow-sm">{errorMessage}</div>}
-                    
-                    <form onSubmit={update} noValidate className={formValidated ? 'was-validated' : ''}>
+                    <form onSubmit={handleUpdate} noValidate className={formValidated ? 'was-validated' : ''}>
                         
                         {/* ROW 1: USER ASSIGNMENT */}
                         <div className='mb-4 position-relative'>
@@ -288,7 +289,6 @@ export default function EditAddresses() {
                                         <option value="Habitada">Habitada</option>
                                         <option value="Deshabitada">Deshabitada</option>
                                     </select>
-                                    <div className="invalid-feedback">Debe elegir el estado de la casa.</div>
                                 </div>
                             )}
                         </div>
@@ -307,8 +307,8 @@ export default function EditAddresses() {
 
                         {/* ACTION BUTTONS */}
                         <div className="d-flex gap-2 pt-3 border-top">
-                            <button type='submit' className='btn btn-success px-4 shadow-sm'>
-                                <i className="fas fa-save me-1"></i> Actualizar Datos
+                            <button type='submit' className='btn btn-success px-4 shadow-sm' disabled={isSaving}>
+                                <i className="fas fa-save me-1"></i> {isSaving ? 'Actualizando...' : 'Actualizar Datos'}
                             </button>
                             <button type='button' className='btn btn-secondary px-4' onClick={() => navigate('/addresses')}>
                                 Cancelar

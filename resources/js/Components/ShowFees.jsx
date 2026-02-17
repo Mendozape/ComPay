@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import DataTable from 'react-data-table-component';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import usePermission from "../hooks/usePermission"; 
@@ -24,6 +23,10 @@ const customStyles = {
     },
 };
 
+/**
+ * FeesTable Component
+ * Manages the listing and administrative actions for association fees.
+ */
 const FeesTable = ({ user }) => {
     // --- STATE VARIABLES ---
     const [fees, setFees] = useState([]);
@@ -35,6 +38,7 @@ const FeesTable = ({ user }) => {
     const [showModal, setShowModal] = useState(false);
     const [feeToDeactivate, setFeeToDeactivate] = useState(null); 
     const [deactivationReason, setDeactivationReason] = useState(''); 
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // --- PERMISSIONS ---
     const { can } = usePermission(user);
@@ -42,7 +46,6 @@ const FeesTable = ({ user }) => {
     const canEdit = user ? can('Editar-cuotas') : false;
     const canDeactivate = user ? can('Eliminar-cuotas') : false;
 
-    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     /**
@@ -56,13 +59,12 @@ const FeesTable = ({ user }) => {
                 headers: { Accept: 'application/json' },
             });
             const data = response.data.data || response.data;
-            // Ensure we are working with an array
             const feesArray = Array.isArray(data) ? data : [];
             setFees(feesArray);
             setFilteredFees(feesArray);
         } catch (error) {
             console.error('Error fetching fees:', error);
-            setErrorMessage('Fallo al cargar el catálogo de cuotas.');
+            toastr.error('Fallo al cargar el catálogo de cuotas.', 'Fallo');
         } finally {
             setLoading(false);
         }
@@ -73,7 +75,7 @@ const FeesTable = ({ user }) => {
     }, []);
 
     /**
-     * Real-time filtering based on search input
+     * Client-side search logic
      */
     useEffect(() => {
         const result = fees.filter(fee => 
@@ -83,52 +85,41 @@ const FeesTable = ({ user }) => {
     }, [search, fees]);
 
     /**
-     * Logic to soft-delete/deactivate a fee
+     * Soft-delete/deactivate a fee with a required reason
      */
-    const deactivateFee = async (id, reason) => {
+    const handleDeactivation = async () => {
+        if (!deactivationReason.trim()) {
+            toastr.warning('Debe especificar un motivo de la baja.', 'Atención');
+            return;
+        }
+
+        setIsProcessing(true);
         try {
-            const response = await axios.delete(`${endpoint}/${id}`, {
+            await axios.delete(`${endpoint}/${feeToDeactivate}`, {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
-                data: { reason: reason } 
+                data: { reason: deactivationReason } 
             });
             
-            if (response.status === 200) {
-                setSuccessMessage('Cuota dada de baja exitosamente.');
-                setShowModal(false); 
-                setDeactivationReason(''); 
-                fetchFees(); 
-            } 
+            toastr.success('Cuota dada de baja exitosamente.', 'Éxito');
+            setShowModal(false); 
+            fetchFees(); 
         } catch (error) {
             const msg = error.response?.data?.message || 'Fallo al dar de baja la cuota.';
-            setErrorMessage(msg);
+            toastr.error(msg, 'Operación Fallida');
+        } finally {
+            setIsProcessing(false);
         }
     };
 
     const editFee = (id) => navigate(`/fees/edit/${id}`);
     const createFee = () => navigate('/fees/create');
     
-    const toggleModal = () => {
-        setShowModal(!showModal);
-        if (showModal) {
-            setErrorMessage(null);
-            setDeactivationReason('');
-        }
-    };
-    
     const confirmDeactivation = (id) => {
         setFeeToDeactivate(id);
         setDeactivationReason(''); 
         setShowModal(true);
     };
-    
-    const handleDeactivation = () => {
-        if (!deactivationReason.trim()) {
-            setErrorMessage('Debe especificar un motivo de la baja.');
-            return;
-        }
-        deactivateFee(feeToDeactivate, deactivationReason);
-    }
 
     /**
      * 🛡️ COLUMNS DEFINITION
@@ -203,19 +194,10 @@ const FeesTable = ({ user }) => {
         </div>
     );
 
-    // Auto-clear success messages
-    useEffect(() => {
-        if (successMessage) {
-            const timer = setTimeout(() => setSuccessMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, setSuccessMessage]);
-
     return (
-        <div className="mb-4 border border-primary rounded p-3 bg-white">
+        <div className="mb-4 border border-primary rounded p-3 bg-white shadow-sm">
             <div className="d-flex justify-content-between align-items-center mb-3">
                 {canCreate ? (
-                    // 🟢 Color Success (Verde) estandarizado
                     <button className='btn btn-success btn-sm text-white' onClick={createFee}>
                         <i className="fas fa-plus-circle me-1"></i> Crear Cuota
                     </button>
@@ -230,9 +212,6 @@ const FeesTable = ({ user }) => {
                 />
             </div>
 
-            {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-            {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
-
             <DataTable
                 title="Catálogo de Cuotas Administrativas" 
                 columns={columns}
@@ -246,16 +225,16 @@ const FeesTable = ({ user }) => {
                 customStyles={customStyles}
             />
 
-            {/* MODAL DE CONFIRMACIÓN */}
-            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
-                <div className="modal-dialog modal-dialog-centered" role="document">
+            {/* DEACTIVATION MODAL */}
+            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+                <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
                             <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Baja de Cuota</h5>
-                            <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
+                            <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
                         </div>
                         <div className="modal-body p-4">
-                            <p className="text-center mb-3">¿Está seguro de que desea dar de baja esta cuota? Esto afectará los registros futuros.</p>
+                            <p className="text-center mb-3">¿Está seguro de que desea dar de baja esta cuota? Esto afectará los cálculos futuros.</p>
                             <div className="form-group">
                                 <label htmlFor="reason" className="fw-bold mb-2">Motivo de la Baja <span className="text-danger">*</span></label>
                                 <textarea
@@ -267,17 +246,16 @@ const FeesTable = ({ user }) => {
                                     placeholder="Ingrese la razón de la baja..."
                                 />
                             </div>
-                            {errorMessage && <div className="alert alert-danger text-center mt-3 py-2">{errorMessage}</div>}
                         </div>
-                        <div className="modal-footer bg-light">
-                            <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button>
+                        <div className="modal-footer bg-light justify-content-center">
+                            <button type="button" className="btn btn-secondary px-4" onClick={() => setShowModal(false)}>Cancelar</button>
                             <button 
                                 type="button" 
-                                className="btn btn-danger" 
+                                className="btn btn-danger px-4" 
                                 onClick={handleDeactivation}
-                                disabled={!deactivationReason.trim()}
+                                disabled={isProcessing || !deactivationReason.trim()}
                             >
-                                Confirmar Baja
+                                {isProcessing ? 'Procesando...' : 'Confirmar Baja'}
                             </button>
                         </div>
                     </div>

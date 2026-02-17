@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 
 const endpoint = '/api/expenses';
@@ -21,9 +20,9 @@ export default function CreateExpense() {
     const [formValidated, setFormValidated] = useState(false);
     const [categories, setCategories] = useState([]);
     const [loadingCategories, setLoadingCategories] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
-    // --- CONTEXT AND NAVIGATION ---
-    const { setSuccessMessage, setErrorMessage, errorMessage } = useContext(MessageContext);
+    // --- NAVIGATION ---
     const navigate = useNavigate();
 
     /**
@@ -31,28 +30,26 @@ export default function CreateExpense() {
      */
     useEffect(() => {
         const fetchCategories = async () => {
-            setErrorMessage(''); 
             try {
                 const res = await axios.get(categoriesEndpoint, {
                     withCredentials: true,
                     headers: { Accept: 'application/json' },
                 });
                 
-                // Filter active categories from the response
                 const data = res.data.data || res.data;
+                // Filter active categories from the response
                 const activeCategories = data.filter(cat => !cat.deleted_at);
                 setCategories(activeCategories);
-                setErrorMessage(''); 
                 
             } catch (error) {
-                console.error("Error fetching categories:", error.response || error);
-                setErrorMessage("Fallo al cargar el catálogo de categorías.");
+                console.error("Error fetching categories:", error);
+                toastr.error("Fallo al cargar el catálogo de categorías.", "Fallo");
             } finally {
                 setLoadingCategories(false);
             }
         };
         fetchCategories();
-    }, [setErrorMessage]);
+    }, []);
 
     /**
      * Handle form submission to store a new expense
@@ -64,8 +61,9 @@ export default function CreateExpense() {
         // Form validation check
         if (form.checkValidity() === false || !expenseCategoryId) { 
             e.stopPropagation();
-            setErrorMessage('Por favor, complete todos los campos obligatorios correctamente.');
+            toastr.warning('Por favor, complete todos los campos obligatorios correctamente.', 'Atención');
         } else {
+            setIsSaving(true);
             const payload = {
                 expense_category_id: expenseCategoryId,
                 amount: amount,
@@ -78,15 +76,15 @@ export default function CreateExpense() {
                     headers: { Accept: 'application/json' },
                 });
 
-                setSuccessMessage('Gasto registrado exitosamente.');
-                setErrorMessage('');
+                toastr.success('Gasto registrado exitosamente.', 'Éxito');
                 navigate('/expenses');
             } catch (error) {
-                console.error('Error creating expense:', error.response || error);
                 const errorMsg = error.response?.data?.errors 
                     ? 'Error de validación. Revise los campos.' 
                     : 'Fallo al registrar el gasto.';
-                setErrorMessage(errorMsg);
+                toastr.error(errorMsg, 'Operación Fallida');
+            } finally {
+                setIsSaving(false);
             }
         }
         setFormValidated(true);
@@ -104,13 +102,6 @@ export default function CreateExpense() {
                             </h2>
                         </div>
                         <div className="card-body p-4">
-                            {/* Error Alert Display */}
-                            {errorMessage && (
-                                <div className="alert alert-danger text-center shadow-sm">
-                                    {errorMessage}
-                                </div>
-                            )}
-
                             <form onSubmit={store} noValidate className={formValidated ? 'was-validated' : ''}>
                                 <div className="row g-3">
                                     {/* 1. Category Selection */}
@@ -167,8 +158,8 @@ export default function CreateExpense() {
 
                                 {/* Action Buttons */}
                                 <div className="d-flex gap-2 mt-4 pt-3 border-top">
-                                    <button type='submit' className='btn btn-success px-4 shadow-sm'>
-                                        <i className="fas fa-save me-2"></i>Guardar Gasto
+                                    <button type='submit' className='btn btn-success px-4 shadow-sm' disabled={isSaving}>
+                                        <i className="fas fa-save me-2"></i>{isSaving ? 'Guardando...' : 'Guardar Gasto'}
                                     </button>
                                     <button 
                                         type='button' 

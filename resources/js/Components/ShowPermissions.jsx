@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MessageContext } from "./MessageContext";
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = "/api/permisos";
@@ -47,9 +46,6 @@ export default function PermisosList({ user }) {
   const canEdit = user ? can('Editar-permisos') : false;
   const canDelete = user ? can('Eliminar-permisos') : false;
 
-  const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } =
-    useContext(MessageContext);
-
   const navigate = useNavigate();
 
   /**
@@ -64,7 +60,7 @@ export default function PermisosList({ user }) {
       setFilteredPermisos(data);
     } catch (error) {
       console.error("Error fetching permisos:", error);
-      setErrorMessage("Error al cargar los permisos.");
+      toastr.error("Error al cargar los permisos.", "Fallo");
     } finally {
       setLoading(false);
     }
@@ -91,13 +87,13 @@ export default function PermisosList({ user }) {
     if (!permisoToDelete) return;
     try {
       await axios.delete(`${endpoint}/${permisoToDelete}`, axiosOptions);
-      setSuccessMessage("Permiso eliminado exitosamente.");
+      toastr.success("Permiso eliminado exitosamente.", "Éxito");
       fetchPermisos();
       setShowModal(false);
       setPermisoToDelete(null);
     } catch (error) {
       console.error(error);
-      setErrorMessage("Error al eliminar el permiso.");
+      toastr.error("Error al eliminar el permiso.", "Fallo");
       setShowModal(false);
       setPermisoToDelete(null);
     }
@@ -120,7 +116,7 @@ export default function PermisosList({ user }) {
       name: "Acciones",
       cell: (row) => (
         <div className="d-flex justify-content-end gap-2 w-100 pe-2">
-          {/* 🛡️ Edit - Standard Info Blue */}
+          {/* Edit - Standard Info Blue */}
           {canEdit && (
             <button
               className="btn btn-info btn-sm text-white"
@@ -130,7 +126,7 @@ export default function PermisosList({ user }) {
             </button>
           )}
 
-          {/* 🛡️ Delete - Standard Danger Red */}
+          {/* Delete - Standard Danger Red */}
           {canDelete && (
             <button
               className="btn btn-danger btn-sm"
@@ -148,26 +144,10 @@ export default function PermisosList({ user }) {
     },
   ], [canEdit, canDelete, navigate]);
 
-  // Message auto-clear effects
-  useEffect(() => {
-    if (successMessage) {
-      const timer = setTimeout(() => setSuccessMessage(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [successMessage, setSuccessMessage]);
-
-  useEffect(() => {
-    if (errorMessage) {
-      const timer = setTimeout(() => setErrorMessage(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [errorMessage, setErrorMessage]);
-
   return (
     <div className="mb-4 border border-primary rounded p-3 bg-white">
       <div className="d-flex justify-content-between align-items-center mb-3">
         {canCreate ? (
-          // 🟢 Standard Success Green
           <button
             className="btn btn-success btn-sm text-white"
             onClick={createPermiso}
@@ -187,13 +167,6 @@ export default function PermisosList({ user }) {
         />
       </div>
 
-      {successMessage && (
-        <div className="alert alert-success text-center py-2">{successMessage}</div>
-      )}
-      {errorMessage && (
-        <div className="alert alert-danger text-center py-2">{errorMessage}</div>
-      )}
-
       <DataTable
         title="Gestión de Permisos"
         columns={columns}
@@ -207,7 +180,7 @@ export default function PermisosList({ user }) {
         customStyles={customStyles}
       />
 
-      {/* MODAL DE CONFIRMACIÓN */}
+      {/* CONFIRMATION MODAL */}
       <div
         className={`modal fade ${showModal ? "show d-block" : "d-none"}`}
         style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
@@ -228,17 +201,17 @@ export default function PermisosList({ user }) {
             <div className="modal-body text-center p-4">
               <p className="mb-0">¿Está seguro de que desea eliminar este permiso? Esta acción no se puede deshacer.</p>
             </div>
-            <div className="modal-footer bg-light">
+            <div className="modal-footer bg-light justify-content-center">
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn btn-secondary px-4"
                 onClick={() => setShowModal(false)}
               >
                 Cancelar
               </button>
               <button
                 type="button"
-                className="btn btn-danger"
+                className="btn btn-danger px-4"
                 onClick={deletePermiso}
               >
                 Eliminar Permanentemente

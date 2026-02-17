@@ -1,8 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MessageContext } from './MessageContext';
 
+/**
+ * PaymentForm Component
+ * Handles the registration of association payments and waivers (condonaciones)
+ * for a specific property address.
+ */
 const PaymentForm = () => {
     // --- STATE VARIABLES ---
     const { id: addressId } = useParams();
@@ -18,10 +22,9 @@ const PaymentForm = () => {
     const [fees, setFees] = useState([]);
     const [formValidated, setFormValidated] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [validationWarning, setValidationWarning] = useState(false);
-    const [streetName, setStreetName] = useState('Loading...'); 
+    const [streetName, setStreetName] = useState('Cargando...'); 
+    const [isSaving, setIsSaving] = useState(false);
 
-    const { setSuccessMessage, setErrorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     const axiosOptions = {
@@ -30,7 +33,7 @@ const PaymentForm = () => {
     };
 
     /**
-     * Helper to get current date in YYYY-MM-DD format based on local time
+     * Get current local date in YYYY-MM-DD format
      */
     const getLocalDate = () => {
         const now = new Date();
@@ -40,7 +43,7 @@ const PaymentForm = () => {
     };
 
     /**
-     * Fetch address and street details on component mount
+     * Fetch address and related street details on mount
      */
     useEffect(() => {
         const fetchAddressDetails = async () => {
@@ -51,18 +54,18 @@ const PaymentForm = () => {
                 
                 if (details && details.street_id) {
                     const streetResponse = await axios.get(`/api/streets/${details.street_id}`, axiosOptions);
-                    setStreetName(streetResponse.data.name || 'Unknown Street');
+                    setStreetName(streetResponse.data.name || 'Calle Desconocida');
                 }
             } catch (error) {
-                console.error('Error fetching details:', error);
-                setErrorMessage('Failed to load address information.');
+                console.error('Error fetching address details:', error);
+                toastr.error('Fallo al cargar la información del predio.', 'Error');
             }
         };
         fetchAddressDetails();
     }, [addressId]);
 
     /**
-     * Fetch active fees catalog from API
+     * Fetch active fees catalog
      */
     useEffect(() => {
         const fetchFees = async () => {
@@ -79,7 +82,7 @@ const PaymentForm = () => {
     }, []);
 
     /**
-     * Fetch months already paid or waived for the selected year and fee type
+     * Fetch months status (paid/waived) for selected year and fee type
      */
     useEffect(() => {
         const fetchPaidMonths = async () => {
@@ -104,7 +107,7 @@ const PaymentForm = () => {
     const getMonthStatus = (monthNum) => paidMonths.find(item => item.month === monthNum);
 
     /**
-     * Set specific amount based on Property Type (House/Land) and Status (Occupied/Empty)
+     * Logic to determine correct amount based on Property Type and Status
      */
     const handleFeeChange = (e) => {
         const selectedFee = fees.find(fee => fee.id === parseInt(e.target.value));
@@ -135,7 +138,7 @@ const PaymentForm = () => {
     };
 
     /**
-     * Update internal lists for Pay or Waive actions per month
+     * Manage Radio button changes for Pay/Waive actions
      */
     const handleActionChange = (monthValue, action) => {
         const monthNum = Number(monthValue);
@@ -156,7 +159,7 @@ const PaymentForm = () => {
     };
     
     /**
-     * Toggle all unpaid months for a batch payment
+     * Batch select all unpaid months
      */
     const handleSelectAllMonths = (e) => {
         const isChecked = e.target.checked;
@@ -171,19 +174,19 @@ const PaymentForm = () => {
     };
 
     /**
-     * Submit payment/waiver records to the backend
+     * Final submission to API
      */
     const handleConfirmSubmit = async () => {
-        setErrorMessage('');
         const unpaidSelectedMonths = selectedMonths.filter(m => !isMonthRegistered(Number(m)));
         const monthsToWaive = unpaidSelectedMonths.filter(m => waivedMonths.includes(m));
 
         if (unpaidSelectedMonths.length === 0) {
-            setErrorMessage('Please select at least one month.');
+            toastr.warning('Por favor, seleccione al menos un mes.', 'Atención');
             setShowModal(false);
             return;
         }
 
+        setIsSaving(true);
         try {
             await axios.post('/api/address_payments', {
                 address_id: addressId, 
@@ -193,11 +196,15 @@ const PaymentForm = () => {
                 months: unpaidSelectedMonths,
                 waived_months: monthsToWaive,
             }, axiosOptions);
-            setSuccessMessage('Records registered successfully.');
+
+            toastr.success('Movimientos registrados exitosamente.', 'Éxito');
             navigate('/addresses', { replace: true });
         } catch (error) {
-            setErrorMessage(error.response?.data?.message || 'Error processing the payment.');
+            const msg = error.response?.data?.message || 'Error al procesar el pago.';
+            toastr.error(msg, 'Fallo');
             setShowModal(false); 
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -210,17 +217,14 @@ const PaymentForm = () => {
 
     const currentYear = new Date().getFullYear();
     const years = [
-        { value: '', label: 'Select Year' },
+        { value: '', label: 'Seleccionar Año' },
         { value: currentYear - 1, label: currentYear - 1 },
         { value: currentYear, label: currentYear },
         { value: currentYear + 1, label: currentYear + 1 }
     ];
     
-    /**
-     * 🔥 DYNAMIC HEADER: Displays Property Type and Status
-     */
     const getFormattedHeader = () => {
-        if (!addressDetails) return 'Loading...';
+        if (!addressDetails) return 'Cargando...';
         const { street_number, type, status } = addressDetails;
         const typeLabel = type === 'CASA' ? `CASA (${status})` : type;
         return `${streetName} #${street_number} - ${typeLabel}`;
@@ -235,7 +239,7 @@ const PaymentForm = () => {
                     <h2 className="mb-0 h4"><i className="fas fa-cash-register me-2"></i>Registrar Pago: {getFormattedHeader()}</h2>
                 </div>
                 <div className="card-body p-4">
-                    <form onSubmit={(e) => { e.preventDefault(); setFormValidated(true); if (!feeId || !year || !paymentDate) setValidationWarning(true); else setShowModal(true); }} noValidate className={formValidated ? 'was-validated' : ''}>
+                    <form onSubmit={(e) => { e.preventDefault(); setFormValidated(true); if (!feeId || !year || !paymentDate) toastr.warning('Complete los campos obligatorios'); else setShowModal(true); }} noValidate className={formValidated ? 'was-validated' : ''}>
                         
                         <div className="row">
                             <div className="col-md-8 mb-3">
@@ -342,9 +346,11 @@ const PaymentForm = () => {
                             <div className="modal-body p-4 text-center">
                                 <p className="fs-5">¿Desea registrar los pagos y/o condonaciones seleccionados?</p>
                             </div>
-                            <div className="modal-footer bg-light">
-                                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
-                                <button className="btn btn-success" onClick={handleConfirmSubmit}>Confirmar y Guardar</button>
+                            <div className="modal-footer bg-light justify-content-center">
+                                <button className="btn btn-secondary px-4" onClick={() => setShowModal(false)}>Cancelar</button>
+                                <button className="btn btn-success px-4" onClick={handleConfirmSubmit} disabled={isSaving}>
+                                    {isSaving ? 'Guardando...' : 'Confirmar y Guardar'}
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import DataTable from 'react-data-table-component';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import usePermission from "../hooks/usePermission"; 
@@ -24,6 +23,10 @@ const customStyles = {
     },
 };
 
+/**
+ * ShowExpenseCategories Component
+ * Displays the expense categories list with permissions-based actions.
+ */
 const ShowExpenseCategories = ({ user }) => {
     // --- STATE VARIABLES ---
     const [categories, setCategories] = useState([]);
@@ -34,7 +37,7 @@ const ShowExpenseCategories = ({ user }) => {
     // States for soft deletion modal
     const [showModal, setShowModal] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState(null); 
-    const [modalError, setModalError] = useState(''); 
+    const [isDeleting, setIsDeleting] = useState(false);
     
     // --- PERMISSIONS ---
     const { can } = usePermission(user);
@@ -42,7 +45,6 @@ const ShowExpenseCategories = ({ user }) => {
     const canEdit = user ? can('Editar-catalogo-gastos') : false;
     const canDelete = user ? can('Eliminar-catalogo-gastos') : false;
 
-    const { setSuccessMessage, setErrorMessage, errorMessage, successMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     /**
@@ -60,8 +62,7 @@ const ShowExpenseCategories = ({ user }) => {
             setCategories(categoriesArray);
             setFilteredCategories(categoriesArray);
         } catch (error) {
-            console.error('Error fetching categories:', error);
-            setErrorMessage('Fallo al cargar las categorías.');
+            toastr.error('Fallo al cargar las categorías.', 'Fallo');
         } finally {
             setLoading(false);
         }
@@ -72,7 +73,7 @@ const ShowExpenseCategories = ({ user }) => {
     }, []);
 
     /**
-     * Search filter logic
+     * Client-side search filtering
      */
     useEffect(() => {
         const result = categories.filter(category => 
@@ -82,46 +83,35 @@ const ShowExpenseCategories = ({ user }) => {
     }, [search, categories]);
 
     /**
-     * Delete/Deactivate category
+     * Delete/Deactivate category handler
      */
-    const deleteCategory = async (id) => {
-        setModalError('');
+    const handleDeletion = async () => {
+        if (!categoryToDelete) return;
+        setIsDeleting(true);
         try {
-            const response = await axios.delete(`${endpoint}/${id}`, {
+            await axios.delete(`${endpoint}/${categoryToDelete}`, {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
             });
             
-            if (response.status === 204 || response.status === 200) {
-                setSuccessMessage('Categoría dada de baja exitosamente.');
-                setShowModal(false);
-                fetchCategories();
-            } 
+            toastr.success('Categoría dada de baja exitosamente.', 'Éxito');
+            setShowModal(false);
+            setCategoryToDelete(null);
+            fetchCategories();
         } catch (error) {
-            console.error('Deletion error:', error);
             const msg = error.response?.data?.message || 'Fallo al eliminar la categoría.';
-            setModalError(msg);
+            toastr.error(msg, 'Operación Fallida');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
     const editCategory = (id) => navigate(`/expense_categories/edit/${id}`);
     const createCategory = () => navigate('/expense_categories/create');
     
-    const toggleModal = () => {
-        setShowModal(!showModal);
-        if (showModal) setModalError('');
-    };
-    
     const confirmDeletion = (id) => {
         setCategoryToDelete(id);
-        setModalError(''); 
         setShowModal(true);
-    };
-    
-    const handleDeletion = () => {
-        if (categoryToDelete) {
-            deleteCategory(categoryToDelete);
-        }
     };
 
     /**
@@ -183,20 +173,11 @@ const ShowExpenseCategories = ({ user }) => {
         </div>
     );
 
-    // Auto-clear success messages
-    useEffect(() => {
-        if (successMessage) {
-            const timer = setTimeout(() => setSuccessMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, setSuccessMessage]);
-
     return (
         <div className="container-fluid mt-4">
             <div className="mb-4 border border-primary rounded p-3 bg-white shadow-sm">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     {canCreate ? (
-                        // 🟢 Color Success Green
                         <button className='btn btn-success btn-sm text-white' onClick={createCategory}>
                             <i className="fas fa-plus-circle me-1"></i> Crear Categoría
                         </button>
@@ -210,9 +191,6 @@ const ShowExpenseCategories = ({ user }) => {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-
-                {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-                {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
                 <DataTable
                     title="Catálogo de Categorías de Gastos"
@@ -228,28 +206,28 @@ const ShowExpenseCategories = ({ user }) => {
                 />
             </div>
 
-            {/* MODAL DE CONFIRMACIÓN */}
-            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
-                <div className="modal-dialog modal-dialog-centered" role="document">
+            {/* CONFIRMATION MODAL */}
+            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+                <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
                             <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
-                            <button type="button" className="btn-close btn-close-white" onClick={toggleModal}></button>
+                            <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
                         </div>
                         <div className="modal-body text-center p-4">
                             <p className="mb-0">¿Está seguro de que desea dar de baja esta categoría?</p>
-                            {modalError && <div className="alert alert-danger text-center mt-3 py-2">{modalError}</div>}
                         </div>
-                        <div className="modal-footer bg-light">
-                            <button type="button" className="btn btn-secondary" onClick={toggleModal}>
+                        <div className="modal-footer bg-light justify-content-center">
+                            <button type="button" className="btn btn-secondary px-4" onClick={() => setShowModal(false)}>
                                 Cancelar
                             </button>
                             <button 
                                 type="button" 
-                                className="btn btn-danger" 
+                                className="btn btn-danger px-4" 
                                 onClick={handleDeletion}
+                                disabled={isDeleting}
                             >
-                                Confirmar Baja
+                                {isDeleting ? 'Procesando...' : 'Confirmar Baja'}
                             </button>
                         </div>
                     </div>

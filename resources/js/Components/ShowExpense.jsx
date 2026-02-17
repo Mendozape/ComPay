@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import DataTable from 'react-data-table-component';
-import { MessageContext } from './MessageContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import usePermission from "../hooks/usePermission"; 
@@ -24,6 +23,10 @@ const customStyles = {
     },
 };
 
+/**
+ * ExpensesTable Component
+ * Manages the list of expenses with permission handling and soft deletion logic.
+ */
 const ExpensesTable = ({ user }) => {
     // --- STATE VARIABLES ---
     const [expenses, setExpenses] = useState([]);
@@ -35,7 +38,7 @@ const ExpensesTable = ({ user }) => {
     const [showModal, setShowModal] = useState(false);
     const [expenseToDelete, setExpenseToDelete] = useState(null); 
     const [deletionReason, setDeletionReason] = useState(''); 
-    const [modalError, setModalError] = useState(''); 
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // --- PERMISSIONS ---
     const { can } = usePermission(user);
@@ -43,7 +46,6 @@ const ExpensesTable = ({ user }) => {
     const canEdit = user ? can('Editar-gastos') : false;
     const canDelete = user ? can('Eliminar-gastos') : false;
 
-    const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } = useContext(MessageContext);
     const navigate = useNavigate();
 
     /**
@@ -61,8 +63,7 @@ const ExpensesTable = ({ user }) => {
             setExpenses(expensesArray);
             setFilteredExpenses(expensesArray);
         } catch (error) {
-            console.error('Error fetching expenses:', error);
-            setErrorMessage('Fallo al cargar los gastos.');
+            toastr.error('Fallo al cargar el listado de gastos.', 'Fallo');
         } finally {
             setLoading(false);
         }
@@ -73,7 +74,7 @@ const ExpensesTable = ({ user }) => {
     }, []);
 
     /**
-     * Filter expenses based on search input
+     * Client-side filter logic
      */
     useEffect(() => {
         const lowerCaseSearch = search.toLowerCase();
@@ -87,24 +88,28 @@ const ExpensesTable = ({ user }) => {
     /**
      * Logic to delete an expense with a reason
      */
-    const deleteExpense = async (id, reason) => {
-        setModalError('');
+    const handleDeletion = async () => {
+        if (!deletionReason.trim() || deletionReason.trim().length < 10) { 
+            toastr.warning('Debe especificar un motivo de la eliminación (mínimo 10 caracteres).', 'Atención');
+            return;
+        }
+
+        setIsDeleting(true);
         try {
-            const response = await axios.delete(`${endpoint}/${id}`, {
+            await axios.delete(`${endpoint}/${expenseToDelete}`, {
                 withCredentials: true,
                 headers: { Accept: 'application/json' },
-                data: { reason: reason } 
+                data: { reason: deletionReason } 
             });
 
-            if (response.status === 204 || response.status === 200) {
-                setSuccessMessage('Gasto eliminado exitosamente.');
-                setShowModal(false); 
-                fetchExpenses(); 
-            } 
+            toastr.success('Gasto eliminado exitosamente.', 'Éxito');
+            setShowModal(false); 
+            fetchExpenses(); 
         } catch (error) {
-            console.error('Deletion error:', error);
             const msg = error.response?.data?.message || 'Fallo al eliminar el gasto.';
-            setModalError(msg); 
+            toastr.error(msg, 'Operación Fallida'); 
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -114,7 +119,6 @@ const ExpensesTable = ({ user }) => {
     const toggleModal = () => {
         setShowModal(!showModal);
         if (showModal) {
-            setModalError('');
             setDeletionReason('');
         }
     };
@@ -122,16 +126,7 @@ const ExpensesTable = ({ user }) => {
     const confirmDeletion = (id) => {
         setExpenseToDelete(id);
         setDeletionReason('');
-        setModalError(''); 
         setShowModal(true);
-    };
-
-    const handleDeletion = () => {
-        if (!deletionReason.trim() || deletionReason.trim().length < 10) { 
-            setModalError('Debe especificar un motivo de la eliminación (mínimo 10 caracteres).');
-            return;
-        }
-        deleteExpense(expenseToDelete, deletionReason);
     };
 
     /**
@@ -167,7 +162,6 @@ const ExpensesTable = ({ user }) => {
             name: 'Acciones',
             cell: row => (
                 <div className="d-flex gap-2 justify-content-end w-100 pe-2">
-                    {/* 🛡️ Edit - Standard Info Blue */}
                     {canEdit && (
                         <button 
                             className="btn btn-info btn-sm text-white" 
@@ -178,7 +172,6 @@ const ExpensesTable = ({ user }) => {
                         </button>
                     )}
                     
-                    {/* 🛡️ Delete - Standard Danger Red */}
                     {canDelete && (
                         <>
                             {row.deleted_at ? (
@@ -207,20 +200,11 @@ const ExpensesTable = ({ user }) => {
         </div>
     );
 
-    // Auto-clear success messages
-    useEffect(() => {
-        if (successMessage) {
-            const timer = setTimeout(() => setSuccessMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [successMessage, setSuccessMessage]);
-
     return (
         <div className="container-fluid mt-4">
             <div className="mb-4 border border-primary rounded p-3 bg-white shadow-sm">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     {canCreate ? (
-                        // 🟢 Standard Success Green
                         <button className='btn btn-success btn-sm text-white' onClick={createExpense}>
                             <i className="fas fa-plus-circle me-1"></i> Registrar Gasto
                         </button>
@@ -234,9 +218,6 @@ const ExpensesTable = ({ user }) => {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-
-                {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-                {errorMessage && !showModal && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
                 <DataTable
                     title="Control de Gastos"
@@ -252,9 +233,9 @@ const ExpensesTable = ({ user }) => {
                 />
             </div>
 
-            {/* MODAL DE CONFIRMACIÓN */}
-            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1" role="dialog">
-                <div className="modal-dialog modal-dialog-centered" role="document">
+            {/* CONFIRMATION MODAL */}
+            <div className={`modal fade ${showModal ? 'show d-block' : 'd-none'}`} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+                <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content border-0 shadow">
                         <div className="modal-header bg-danger text-white">
                             <h5 className="modal-title"><i className="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
@@ -273,16 +254,16 @@ const ExpensesTable = ({ user }) => {
                                     placeholder="Ingrese la razón (mínimo 10 caracteres)..."
                                 />
                             </div>
-                            {modalError && <div className="alert alert-danger text-center mt-3 py-2">{modalError}</div>}
                         </div>
-                        <div className="modal-footer bg-light">
-                            <button type="button" className="btn btn-secondary" onClick={toggleModal}>Cancelar</button>
+                        <div className="modal-footer bg-light justify-content-center">
+                            <button type="button" className="btn btn-secondary px-4" onClick={toggleModal}>Cancelar</button>
                             <button 
                                 type="button" 
-                                className="btn btn-danger" 
+                                className="btn btn-danger px-4" 
                                 onClick={handleDeletion}
+                                disabled={isDeleting}
                             >
-                                Confirmar Eliminación
+                                {isDeleting ? 'Eliminando...' : 'Confirmar Eliminación'}
                             </button>
                         </div>
                     </div>

@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import DataTable from "react-data-table-component";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { MessageContext } from "./MessageContext";
 import usePermission from "../hooks/usePermission"; 
 
 const endpoint = "/api/roles";
@@ -42,9 +41,6 @@ export default function ShowRoles({ user }) {
   const canEdit = user ? can('Editar-roles') : false;
   const canDelete = user ? can('Eliminar-roles') : false;
 
-  const { setSuccessMessage, setErrorMessage, successMessage, errorMessage } =
-    useContext(MessageContext);
-
   const navigate = useNavigate();
   const axiosOptions = { withCredentials: true, headers: { Accept: "application/json" } };
 
@@ -60,7 +56,7 @@ export default function ShowRoles({ user }) {
       setFilteredRoles(data);
     } catch (err) {
       console.error("Error fetching roles:", err);
-      setErrorMessage("Error al cargar los roles.");
+      toastr.error("Error al cargar los roles.", "Fallo");
     } finally {
       setLoading(false);
     }
@@ -91,7 +87,7 @@ export default function ShowRoles({ user }) {
 
     try {
       await axios.delete(`${endpoint}/${roleToDelete}`, axiosOptions);
-      setSuccessMessage("Role eliminado exitosamente.");
+      toastr.success("Role eliminado exitosamente.", "Éxito");
       
       // Reset modal states and refresh table
       setShowModal(false);
@@ -99,7 +95,8 @@ export default function ShowRoles({ user }) {
       fetchRoles();
     } catch (err) {
       console.error("Delete error:", err);
-      setErrorMessage("Error al eliminar el role.");
+      const errorMsg = err.response?.data?.message || "Error al eliminar el role.";
+      toastr.error(errorMsg, "Operación Fallida");
       setShowModal(false);
     }
   };
@@ -158,16 +155,6 @@ export default function ShowRoles({ user }) {
     },
   ], [canEdit, canDelete, navigate]);
 
-  /**
-   * Effect to automatically hide success messages after 5 seconds
-   */
-  useEffect(() => {
-    if (successMessage) {
-      const timer = setTimeout(() => setSuccessMessage(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [successMessage, setSuccessMessage]);
-
   return (
     <div className="mb-4 border border-primary rounded p-3 bg-white">
       {/* Header section: Create button and Search input */}
@@ -191,10 +178,6 @@ export default function ShowRoles({ user }) {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-
-      {/* Feedback Alerts */}
-      {successMessage && <div className="alert alert-success text-center py-2">{successMessage}</div>}
-      {errorMessage && <div className="alert alert-danger text-center py-2">{errorMessage}</div>}
 
       {/* Main Data Table */}
       <DataTable
