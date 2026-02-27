@@ -58,7 +58,7 @@
       "node_modules/dompurify/dist/purify.es.js",
       "node_modules/canvg/lib/index.es.js"
     ],
-    "file": "assets/ReactApp-c511a562.js",
+    "file": "assets/ReactApp-d0480e52.js",
     "imports": [
       "_axios-590845d0.js"
     ],
@@ -66,7 +66,7 @@
     "src": "resources/js/ReactApp.jsx"
   },
   "resources/js/app.css": {
-    "file": "assets/app-a8e05328.css",
+    "file": "assets/app-ac20e30d.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
@@ -81,9 +81,9 @@
       "assets/fa-v4compatibility-30f6abf6.ttf"
     ],
     "css": [
-      "assets/app-a8e05328.css"
+      "assets/app-ac20e30d.css"
     ],
-    "file": "assets/app-df1e104b.js",
+    "file": "assets/app-741463b4.js",
     "imports": [
       "_axios-590845d0.js"
     ],
