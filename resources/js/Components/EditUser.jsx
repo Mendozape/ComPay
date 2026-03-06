@@ -2,8 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 
-const axiosOptions = { withCredentials: true };
+const axiosOptions = { 
+    withCredentials: true,
+    headers: { Accept: "application/json" }
+};
 
+/**
+ * EditUser Component
+ * Handles the modification of existing users and residents.
+ */
 const EditUser = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -25,16 +32,21 @@ const EditUser = () => {
     const [errors, setErrors] = useState({});
     const [rolesError, setRolesError] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     /**
-     * Initial data load
+     * Fetch user data and available roles on mount
      */
     useEffect(() => {
-        const fetchUser = async () => {
+        const fetchData = async () => {
             try {
-                const res = await axios.get(`/api/usuarios/${id}`, axiosOptions);
-                const userData = res.data;
+                setLoading(true);
+                const [userRes, rolesRes] = await Promise.all([
+                    axios.get(`/api/usuarios/${id}`, axiosOptions),
+                    axios.get("/api/roles", axiosOptions)
+                ]);
 
+                const userData = userRes.data;
                 setUser({
                     name: userData.name || "",
                     email: userData.email || "",
@@ -42,34 +54,26 @@ const EditUser = () => {
                     comments: userData.comments || ""
                 });
 
-                setSelectedRole(userData.roles?.[0]?.id || "");
+                // Set initial role (assuming Spatie permissions roles array)
+                if (userData.roles && userData.roles.length > 0) {
+                    setSelectedRole(userData.roles[0].id.toString());
+                }
 
+                setRoles(rolesRes.data);
             } catch (err) {
-                console.error(err);
-                toastr.error("Error al cargar los datos del usuario.", "Error");
+                console.error("Error fetching data:", err);
+                if (err.response?.status === 403) {
+                    setRolesError(true);
+                    toastr.warning("No tienes permisos suficientes.", "Permisos");
+                } else {
+                    toastr.error("Error al cargar los datos del usuario.", "Error");
+                }
             } finally {
                 setLoading(false);
             }
         };
 
-        const fetchRoles = async () => {
-            try {
-                const res = await axios.get("/api/roles", axiosOptions);
-                setRoles(res.data);
-                setRolesError(false);
-
-            } catch (err) {
-                if (err.response?.status === 403) {
-                    setRolesError(true);
-                    toastr.warning("No tienes permisos para modificar roles.", "Permisos");
-                } else {
-                    toastr.error("Error al cargar los roles.", "Error");
-                }
-            }
-        };
-
-        fetchUser();
-        fetchRoles();
+        fetchData();
     }, [id]);
 
     /**
@@ -78,10 +82,13 @@ const EditUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
+        setIsSaving(true);
 
+        // --- FRONTEND VALIDATIONS ---
         if (!selectedRole) {
             setErrors({ roles: ["Debes seleccionar un rol"] });
             toastr.warning("Debes seleccionar un rol.");
+            setIsSaving(false);
             return;
         }
 
@@ -90,6 +97,7 @@ const EditUser = () => {
                 password_confirmation: ["La confirmación de la contraseña no coincide."]
             });
             toastr.warning("Las contraseñas no coinciden.");
+            setIsSaving(false);
             return;
         }
 
@@ -101,27 +109,29 @@ const EditUser = () => {
                     email: user.email,
                     phone: user.phone,
                     comments: user.comments,
-                    roles: [selectedRole],
+                    // We send the role inside an array as Laravel validation expects 'array'
+                    roles: [selectedRole], 
                     password: password || undefined,
                     password_confirmation: password ? passwordConfirmation : undefined,
                 },
                 axiosOptions
             );
 
-            toastr.success("Usuario/Residente actualizado correctamente.", "Éxito");
+            toastr.success("Usuario actualizado correctamente.", "Éxito");
             navigate("/users");
 
         } catch (err) {
-            console.error(err);
-
-            if (err.response?.status === 403) {
-                toastr.error(err.response.data?.error || "No tienes permisos.", "Error");
-            } else if (err.response?.status === 422) {
+            console.error("Update error:", err);
+            if (err.response?.status === 422) {
                 setErrors(err.response.data.errors);
-                toastr.warning("Hay errores en el formulario.");
+                toastr.warning("Hay errores de validación en el formulario.");
+            } else if (err.response?.status === 403) {
+                toastr.error(err.response.data?.error || "Acceso denegado.", "Error");
             } else {
                 toastr.error("Error al actualizar el usuario.", "Error");
             }
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -141,7 +151,6 @@ const EditUser = () => {
                     </h2>
                 </div>
                 <div className="card-body p-4">
-
                     <form onSubmit={handleSubmit}>
                         <div className="row g-3 mb-4">
                             <div className="col-md-6">
@@ -195,7 +204,7 @@ const EditUser = () => {
                                 >
                                     <option value="">Selecciona un rol</option>
                                     {roles.map((role) => (
-                                        <option key={role.id} value={role.id}>
+                                        <option key={role.id} value={role.id.toString()}>
                                             {role.name}
                                         </option>
                                     ))}
@@ -253,9 +262,10 @@ const EditUser = () => {
                             <button
                                 type="submit"
                                 className="btn btn-success px-5 shadow-sm"
-                                disabled={rolesError || !selectedRole}
+                                disabled={isSaving || rolesError || !selectedRole}
                             >
-                                <i className="fas fa-save me-2"></i>Actualizar Datos
+                                <i className="fas fa-save me-2"></i>
+                                {isSaving ? "Guardando..." : "Actualizar Datos"}
                             </button>
                             <button
                                 type="button"
@@ -266,7 +276,6 @@ const EditUser = () => {
                             </button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>

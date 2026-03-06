@@ -295,7 +295,7 @@ return [
     */
 
     'menu' => [
-        // Navbar items: (Keeping existing items)
+        // Navbar items
         [
             'type'         => 'navbar-search',
             'text'         => 'search',
@@ -307,111 +307,94 @@ return [
             'topnav_right' => true,
         ],
 
-        // Sidebar items:
+        // Sidebar items
         [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
         ],
 
-        // --- HOME/DASHBOARD (STATS) ---
+        // --- DASHBOARD SECTION ---
         [
-            'text' => 'Home',
+            'text' => 'Inicio',
             'url'  => '/home',
             'icon' => 'fas fa-fw fa-home',
         ],
-        // --- CONFIGURATION MENU (USERS, ROLES, PERMISSIONS) ---
-        // The submenu will only be visible if the user has AT LEAST ONE permission required by its children.
+
+        // --- USER PROFILE SECTION ---
+        // Top-level item, no longer nested inside CONFIG
         [
-            // 🚨 NEW TOP LEVEL ITEM: PROFILE
-            [
-                'text' => 'Profile',
-                'url'  => 'profile',
-                'icon' => 'fas fa-fw fa-id-card',
-                // Assuming profile is visible to all authenticated users (no 'can' required).
-            ],
-            'text'    => 'CONFIG',
+            'text' => 'Perfil',
+            'url'  => 'profile',
+            'icon' => 'fas fa-fw fa-id-card',
+        ],
+
+        // --- CONFIGURATION MODULE (Users, Roles, Permissions) ---
+        // Visible only if the user has specific management permissions
+        [
+            'text'    => 'CONFIGURACIÓN',
             'icon'    => 'fas fa-fw fa-share',
             'can'     => ['Ver-usuarios', 'Ver-roles', 'Ver-permisos'],
             'submenu' => [
-                // 🚨 REMOVED 'Profile' from here
                 [
                     'text' => 'Residentes',
                     'url'  => 'users',
                     'icon' => 'fas fa-fw fa-users',
-                    // Permission to view the User list.
                     'can'  => 'Ver-usuarios',
                 ],
                 [
                     'text' => 'Roles',
                     'url'  => 'roles',
                     'icon' => 'fas fa-fw fa-user-tag',
-                    // Permission to view Roles.
                     'can'  => 'Ver-roles',
                 ],
                 [
                     'text' => 'Permisos',
                     'url'  => 'permissions',
                     'icon' => 'fas fa-fw fa-key',
-                    // Permission to view Permissions.
                     'can'  => 'Ver-permisos',
                 ],
             ],
         ],
 
-        
-
-        // --- EXPENSE CATEGORIES MODULE ---
+        // --- FINANCIAL & CATALOG MODULES ---
         [
             'text' => 'CATÁLOGO GASTOS',
             'url'  => 'expense_categories',
             'icon' => 'fas fa-fw fa-receipt',
-            // Permission to view the Expense Categories catalog.
             'can'  => 'Ver-catalogo-gastos',
         ],
-
-        // --- EXPENSES MODULE ---
         [
             'text' => 'GASTOS',
             'url'  => 'expenses',
             'icon' => 'fas fa-fw fa-money-bill',
-            // Permission to view the Expenses list/transactions.
             'can'  => 'Ver-gastos',
         ],
-        // --- FEES MODULE ---
         [
             'text' => 'CATÁLOGO DE CUOTAS',
             'url'  => 'fees',
             'icon' => 'fas fa-cash-register',
-            // Permission to view the Fee list.
             'can'  => 'Ver-cuotas',
         ],
-        // --- STREETS MODULE ---
         [
             'text' => 'CATÁLOGO DE CALLES',
             'url'  => 'streets',
             'icon' => 'fas fa-road',
-            // Permission to view the Street list.
             'can'  => 'Ver-calles',
         ],
-
-        // --- ADDRESSES/PAYMENTS MODULE ---
         [
             'text' => 'PREDIOS Y PAGOS',
             'url'  => 'addresses',
-            'icon' => 'fas fa-map-marked-alt ',
-            // Permission to view the Addresses/Property list.
+            'icon' => 'fas fa-map-marked-alt',
             'can'  => 'Ver-predios',
         ],
 
-        // --- REPORTS MODULE ---
+        // --- REPORTING SECTION ---
         [
             'text' => 'REPORTES',
             'url'  => 'reports',
             'icon' => 'fas fa-fw fa-chart-bar',
-            // Permission to view Reports (using the specific permission name defined).
             'can'  => 'Reportes',
         ],
-        // ---
         [
             'text' => 'ESTADO DE CUENTA',
             'url'  => 'resident-access',

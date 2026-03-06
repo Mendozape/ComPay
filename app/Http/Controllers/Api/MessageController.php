@@ -55,7 +55,7 @@ class MessageController extends Controller
 
         // Execute pagination
         $usersPaginator = $query->paginate($perPage);
-        
+
         // Get the list of IDs for the current page to count unread messages
         $userIds = collect($usersPaginator->items())->pluck('id');
 
@@ -139,7 +139,7 @@ class MessageController extends Controller
         $message->load('sender');
 
         // Broadcast event to chat channel and receiver notification channel
-        broadcast(new MessageSent($message)); 
+        broadcast(new MessageSent($message));
 
         return response()->json([
             'status' => 'success',
@@ -165,7 +165,7 @@ class MessageController extends Controller
 
         if ($unread->count() > 0) {
             $unread->update(['read_at' => now()]);
-            
+
             // 🔥 Broadcast to notify the sender that their messages were read (Web/App)
             // No .toOthers() to ensure all instances sync blue ticks
             broadcast(new MessageRead($senderId, $receiverId));
@@ -182,11 +182,9 @@ class MessageController extends Controller
         $data = $request->validate([
             'receiver_id' => 'required|integer|exists:users,id',
         ]);
-
-        // 🔥 FIX: Pasamos explícitamente el ID del que escribe (Auth::id())
-        // Usamos toOthers() para que el emisor no reciba su propio evento
+        // 🔥 FIX: We explicitly pass the sender's ID (Auth::id())
+        // We use toOthers() so the sender doesn't receive its own event
         broadcast(new UserTyping($data['receiver_id'], Auth::id()))->toOthers();
-
         return response()->json(['status' => 'ok']);
     }
 }

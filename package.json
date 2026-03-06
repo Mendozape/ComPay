@@ -1,8 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "dev": "vite --host",
-        "serve": "php artisan serve --host=0.0.0.0",
+        "dev": "vite",
         "build": "vite build"
     },
     "devDependencies": {
@@ -51,7 +50,7 @@
         "is-glob": "^4.0.3",
         "is-number": "^7.0.0",
         "jquery": "^3.7.1",
-        "jspdf": "^2.5.2",
+        "jspdf": "^4.2.0",
         "jspdf-autotable": "^3.8.4",
         "mime-db": "^1.52.0",
         "mime-types": "^2.1.35",
@@ -68,6 +67,7 @@
         "readdirp": "^3.6.0",
         "rollup": "^3.26.2",
         "source-map-js": "^1.0.2",
+        "styled-components": "^6.3.11",
         "sweetalert2": "^11.7.27",
         "to-regex-range": "^5.0.1",
         "toastr": "^2.1.4",

@@ -42,10 +42,10 @@
     "isDynamicEntry": true,
     "src": "node_modules/canvg/lib/index.es.js"
   },
-  "node_modules/dompurify/dist/purify.es.js": {
-    "file": "assets/purify.es-2de9db7f.js",
+  "node_modules/dompurify/dist/purify.es.mjs": {
+    "file": "assets/purify.es-16e91ca1.js",
     "isDynamicEntry": true,
-    "src": "node_modules/dompurify/dist/purify.es.js"
+    "src": "node_modules/dompurify/dist/purify.es.mjs"
   },
   "node_modules/html2canvas/dist/html2canvas.esm.js": {
     "file": "assets/html2canvas.esm-e0a7d97b.js",
@@ -55,10 +55,10 @@
   "resources/js/ReactApp.jsx": {
     "dynamicImports": [
       "node_modules/html2canvas/dist/html2canvas.esm.js",
-      "node_modules/dompurify/dist/purify.es.js",
+      "node_modules/dompurify/dist/purify.es.mjs",
       "node_modules/canvg/lib/index.es.js"
     ],
-    "file": "assets/ReactApp-d0480e52.js",
+    "file": "assets/ReactApp-a057fac4.js",
     "imports": [
       "_axios-590845d0.js"
     ],

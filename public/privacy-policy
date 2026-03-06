@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es-419">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidad - Prados de la Huerta</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #28a745; }
+        h2 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .footer { margin-top: 40px; font-size: 0.8em; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>Política de Privacidad</h1>
+    <p>Última actualización: 3 de marzo de 2026</p>
+
+    <p>En <strong>Prados la Huerta</strong>, la privacidad de nuestros residentes es una prioridad. Esta política describe cómo recopilamos y protegemos su información a través de nuestra aplicación móvil y plataforma web.</p>
+
+    <h2>1. Información que Recopilamos</h2>
+    <ul>
+        <li><strong>Datos de Identificación:</strong> Nombre completo, correo electrónico y número de teléfono proporcionados para la creación de su cuenta.</li>
+        <li><strong>Fotografía de Perfil:</strong> Imágen que usted decida subir (opcional) para su identificación dentro del sistema.</li>
+        <li><strong>Información de la Propiedad:</strong> Datos sobre su predio, calle y número dentro del fraccionamiento.</li>
+        <li><strong>Comunicaciones:</strong> Mensajes enviados a través del chat interno con la administración.</li>
+    </ul>
+
+    <h2>2. Uso de la Información</h2>
+    <p>Utilizamos sus datos exclusivamente para:</p>
+    <ul>
+        <li>Gestionar el acceso seguro a la plataforma.</li>
+        <li>Facilitar la comunicación directa entre residentes y administración mediante el chat en tiempo real.</li>
+        <li>Mantener un registro transparente de pagos, cuotas y estados de cuenta.</li>
+        <li>Identificar correctamente a los usuarios en el directorio interno del fraccionamiento.</li>
+    </ul>
+
+    <h2>3. Protección y Compartición de Datos</h2>
+    <p><strong>No vendemos ni compartimos su información personal con terceras empresas.</strong> El acceso a los datos está restringido al personal administrativo autorizado y al propio residente. Utilizamos protocolos de seguridad para proteger su información contra accesos no autorizados.</p>
+
+    <h2>4. Permisos de la Aplicación</h2>
+    <p>La aplicación puede solicitar acceso a su <strong>Cámara o Galería</strong> únicamente cuando usted decida cambiar su foto de perfil.</p>
+
+    <h2>5. Sus Derechos</h2>
+    <p>Usted puede actualizar su información personal o solicitar la eliminación de su cuenta contactando directamente a la administración del fraccionamiento.</p>
+
+    <div class="footer">
+        <p>Contacto: comunidadpagos@gmail.com</p>
+    </div>
+</body>
+</html>

@@ -106,25 +106,50 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name'  => 'required|string',
+            'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'roles' => 'required|array|min:1',
         ]);
 
-        $user = User::withTrashed()->findOrFail($id);
-        $data = $request->only(['name', 'email', 'phone', 'comments']);
+        try {
+            DB::beginTransaction(); // Start transaction to ensure data integrity
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+            $user = User::withTrashed()->findOrFail($id);
+
+            $data = $request->only(['name', 'email', 'phone', 'comments']);
+            if ($request->filled('password')) {
+                $data['password'] = Hash::make($request->password);
+            }
+
+            $user->update($data);
+
+            // 🔥 FIX: Convert all elements in 'roles' array to Integers
+            if ($request->has('roles')) {
+                $roleIds = collect($request->input('roles'))
+                    ->map(fn($val) => (int)$val)
+                    ->filter(fn($val) => $val > 0)
+                    ->toArray();
+
+                // Using syncRoles with IDs explicitly
+                $user->syncRoles($roleIds);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Usuario actualizado correctamente',
+                'user' => $user->load('roles')
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // This will log the EXACT error in storage/logs/laravel.log
+            \Log::error("USER_UPDATE_FAILED: " . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Error en el servidor',
+                'details' => $e->getMessage() // This will help us see the error in React
+            ], 500);
         }
-
-        $user->update($data);
-
-        if ($request->has('roles')) {
-            $user->syncRoles($request->input('roles'));
-        }
-
-        return response()->json(['message' => 'Usuario actualizado', 'user' => $user]);
     }
 
     public function restore($id)

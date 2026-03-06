@@ -36,8 +36,11 @@ return [
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
             'options' => [
-                'cluster' => 'mt1',
-                'useTLS' => true
+                'cluster' => env('PUSHER_APP_CLUSTER', 'mt1'),
+                // If the schema in the .env file is https, use TLS. Otherwise, don't.
+                'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
+                'scheme' => env('PUSHER_SCHEME', 'https'),
+                'port' => env('PUSHER_PORT', 443),
             ],
         ],
 
