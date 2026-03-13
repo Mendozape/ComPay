@@ -2,7 +2,6 @@
 
 @section('adminlte_css_pre')
     <link rel="stylesheet" href="{{ asset('vendor/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-
     <link rel="stylesheet" href="{{ asset('css/login-custom.css') }}">
 @stop
 
@@ -23,13 +22,6 @@
 @section('auth_header', __('adminlte::adminlte.login_message'))
 
 @section('auth_body')
-    <!--
-    {{-- Display session flash messages like "session expired" --}}
-    @if (session('message'))
-        <div class="alert alert-warning" role="alert">
-            {{ session('message') }}
-        </div>
-    @endif-->
     <form action="{{ $login_url }}" method="post">
         @csrf
 
@@ -51,14 +43,16 @@
             @enderror
         </div>
 
-        {{-- Password field --}}
+        {{-- Password field with Visibility Toggle --}}
         <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
+            {{-- 🛡️ PASSWORD INPUT: Added ID for JS targeting --}}
+            <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror"
                    placeholder="{{ __('adminlte::adminlte.password') }}">
 
             <div class="input-group-append">
-                <div class="input-group-text">
-                    <span class="fas fa-lock {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                {{-- 🛡️ TOGGLE BUTTON: Clickable area for the eye icon --}}
+                <div class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                    <span class="fas fa-eye-slash" id="eyeIcon"></span>
                 </div>
             </div>
 
@@ -69,12 +63,11 @@
             @enderror
         </div>
 
-        {{-- Login field --}}
+        {{-- Login button and Remember Me --}}
         <div class="row">
             <div class="col-7">
                 <div class="icheck-primary" title="{{ __('adminlte::adminlte.remember_me_hint') }}">
                     <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
                     <label for="remember">
                         {{ __('adminlte::adminlte.remember_me') }}
                     </label>
@@ -82,18 +75,16 @@
             </div>
 
             <div class="col-5">
-                <button type=submit class="btn btn-block {{ config('adminlte.classes_auth_btn', 'btn-flat btn-primary') }}">
+                <button type="submit" class="btn btn-block {{ config('adminlte.classes_auth_btn', 'btn-flat btn-primary') }}">
                     <span class="fas fa-sign-in-alt"></span>
                     {{ __('adminlte::adminlte.sign_in') }}
                 </button>
             </div>
         </div>
-
     </form>
 @stop
 
 @section('auth_footer')
-    {{-- Password reset link --}}
     @if($password_reset_url)
         <p class="my-0">
             <a href="{{ $password_reset_url }}">
@@ -102,7 +93,6 @@
         </p>
     @endif
 
-    {{-- Register link --}}
     @if($register_url)
         <p class="my-0">
             <a href="{{ $register_url }}">
@@ -110,4 +100,30 @@
             </a>
         </p>
     @endif
+@stop
+
+{{-- 🛡️ CLIENT-SIDE LOGIC: Handles the password visibility toggle --}}
+@section('js')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
+        const eyeIcon = document.querySelector('#eyeIcon');
+
+        togglePassword.addEventListener('click', function () {
+            // 🛡️ TOGGLE TYPE: Switch between 'password' (dots) and 'text' (plain text)
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // 🛡️ UPDATE ICON: Switch between eye and eye-slash
+            if (type === 'password') {
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+    });
+</script>
 @stop
