@@ -134,6 +134,7 @@ class MessageController extends Controller
             'sender_id' => Auth::id(),
             'receiver_id' => $request->receiver_id,
             'content' => $request->content,
+            'read_at'     => null,
         ]);
 
         $message->load('sender');

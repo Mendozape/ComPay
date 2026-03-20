@@ -43,17 +43,21 @@ const ChatBadgeUpdater = () => {
 
     /**
      * 2. Real-Time Global Listener.
-     * Listens on the User's private channel to increment the global badge.
+     * Updated to use the environment prefix (dev_ or prod_)
      */
     useEffect(() => {
       if (!userId || !window.Echo) return;
 
-      const userChannel = `App.Models.User.${userId}`;
+      // GET PREFIX: Usamos el objeto que inyectamos en app.blade.php
+      const appEnv = window.Laravel && window.Laravel.env ? window.Laravel.env : 'local';
+      const prefix = appEnv === 'production' ? 'prod_' : 'dev_';
+
+      // APPLY PREFIX: Ahora el canal coincide con lo que Laravel espera
+      const userChannel = `${prefix}App.Models.User.${userId}`;
 
       window.Echo.private(userChannel)
         .listen('.MessageSent', (e) => {
-          // Verify the message is actually for this user
-          if (e.message.receiver_id === userId) {
+          if (Number(e.message.receiver_id) === Number(userId)) {
             setUnreadCount(prevCount => {
               const newCount = prevCount + 1;
               updateBadge(newCount);
@@ -72,7 +76,6 @@ const ChatBadgeUpdater = () => {
 
     /**
      * 3. UI Synchronization Listener.
-     * Listens for a custom 'chat-messages-read' event to re-sync with server.
      */
     useEffect(() => {
       if (!userId) return;

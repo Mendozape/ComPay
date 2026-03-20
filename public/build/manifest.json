@@ -58,7 +58,7 @@
       "node_modules/dompurify/dist/purify.es.mjs",
       "node_modules/canvg/lib/index.es.js"
     ],
-    "file": "assets/ReactApp-a057fac4.js",
+    "file": "assets/ReactApp-35053c94.js",
     "imports": [
       "_axios-590845d0.js"
     ],
@@ -83,7 +83,7 @@
     "css": [
       "assets/app-ac20e30d.css"
     ],
-    "file": "assets/app-741463b4.js",
+    "file": "assets/app-593f32e2.js",
     "imports": [
       "_axios-590845d0.js"
     ],

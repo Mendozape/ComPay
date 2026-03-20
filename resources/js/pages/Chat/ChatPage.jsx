@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import ChatWindow from '../../components/ChatWindow';
+import ChatWindow from '../../Components/ChatWindow';
 
 const ChatPage = ({ user }) => {
     const [activeContact, setActiveContact] = useState(null); 
@@ -32,18 +32,21 @@ const ChatPage = ({ user }) => {
 
     /**
      * Real-time listener on the USER'S notification channel.
-     * This ensures the list updates even if the user is browsing the contact list
-     * but not looking at the specific chat that received a message.
+     * UPDATED: Added environment prefix logic to fix 403 Forbidden error.
      */
     useEffect(() => {
         if (!user?.id || !window.Echo) return;
 
-        // Using the same global channel as ChatBadgeUpdater
-        const userChannel = `App.Models.User.${user.id}`;
+        // 1. Detect environment from the global object we injected in Blade
+        const appEnv = window.Laravel && window.Laravel.env ? window.Laravel.env : 'local';
+        const prefix = appEnv === 'production' ? 'prod_' : 'dev_';
+
+        // 2. Apply prefix to match Laravel's routes/channels.php rules
+        const userChannel = `${prefix}App.Models.User.${user.id}`;
 
         window.Echo.private(userChannel)
             .listen('.MessageSent', (e) => {
-                if (e.message.receiver_id === user.id) {
+                if (Number(e.message.receiver_id) === Number(user.id)) {
                     const senderId = e.message.sender_id;
                     const isViewingThisChat = activeContact && activeContact.id === senderId;
                     
@@ -51,7 +54,6 @@ const ChatPage = ({ user }) => {
                         setContacts(prevContacts => {
                             const contactExists = prevContacts.some(c => c.id === senderId);
                             
-                            // If contact exists in current list, increment unread count locally
                             if (contactExists) {
                                 return prevContacts.map(contact => {
                                     if (contact.id === senderId) {
@@ -63,13 +65,15 @@ const ChatPage = ({ user }) => {
                                     return contact;
                                 });
                             } else {
-                                // If contact is not in the list (e.g. filtered or new), refresh from server
                                 fetchContacts();
                                 return prevContacts;
                             }
                         });
                     }
                 }
+            })
+            .error((error) => {
+                console.error("Error en el canal de ChatPage:", error);
             });
 
         return () => {
@@ -83,14 +87,12 @@ const ChatPage = ({ user }) => {
     const handleSelectContact = (contact) => {
         setActiveContact(contact);
         
-        // Optimistic UI update: clear badge immediately
         setContacts(prevContacts => 
             prevContacts.map(c => 
                 c.id === contact.id ? { ...c, unread_count: 0 } : c
             )
         );
 
-        // Notify ChatBadgeUpdater and other components to sync global count
         window.dispatchEvent(new CustomEvent('chat-messages-read'));
     };
     

@@ -16,7 +16,7 @@ class UserTyping implements ShouldBroadcast
 
     /**
      * Create a new event instance.
-     * 🔥 Ahora recibe ambos IDs para asegurar la consistencia.
+     * 🔥 Now receives both IDs to ensure consistency.
      */
     public function __construct($receiverId, $senderId)
     {
@@ -29,10 +29,18 @@ class UserTyping implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        // Ordenamos los IDs para que el canal chat.1.2 sea el mismo que chat.2.1
+        /**
+         * ENVIRONMENT PREFIX:
+         * We apply the same prefix logic to match the authorized channels 
+         * and the mobile app listeners.
+         */
+        $prefix = config('app.env') === 'production' ? 'prod_' : 'dev_';
+
+        // Sort IDs to ensure chat.1.2 is the same as chat.2.1
         $ids = [$this->sender_id, $this->receiver_id];
         sort($ids);
-        return [new PrivateChannel('chat.' . implode('.', $ids))];
+
+        return [new PrivateChannel($prefix . 'chat.' . implode('.', $ids))];
     }
 
     /**

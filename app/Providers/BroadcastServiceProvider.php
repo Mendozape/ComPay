@@ -14,18 +14,19 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        /*
-         * ❌ DISABLED DEFAULT ROUTES
-         * We disable the default Broadcast::routes() here because they are 
-         * session-based and conflict with our mobile Sanctum authentication.
-         * The authorization route is now manually handled in routes/api.php.
+        /**
+         * HYBRID AUTHENTICATION FOR BROADCASTING
+         * We use both 'web' and 'auth:sanctum' middlewares.
+         * - 'web': Allows the PC/Browser to authorize via Session Cookies.
+         * - 'auth:sanctum': Allows the Mobile App to authorize via API Tokens.
+         * This prevents the PC version from breaking while enabling the App.
          */
-        // Broadcast::routes();
+        Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
-        /*
-         * ✅ LOAD CHANNELS
-         * We still need to require the channels file to define the 
-         * authorization logic for each private channel.
+        /**
+         * LOAD CHANNEL DEFINITIONS
+         * Requires the channels.php file where the 'prod_' prefixes 
+         * and authorization logic are defined.
          */
         require base_path('routes/channels.php');
     }

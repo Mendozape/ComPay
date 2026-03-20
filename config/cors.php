@@ -15,7 +15,8 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'logout'], // Added login/logout
+    //'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'logout'], // Added login/logout
+    'paths' => ['api/*','broadcasting/auth', 'sanctum/csrf-cookie', 'login', 'logout'],
     'allowed_methods' => ['*'],
     'allowed_origins' => [
         'http://localhost:8000',     // Your local web

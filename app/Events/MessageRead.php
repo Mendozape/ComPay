@@ -20,18 +20,36 @@ class MessageRead implements ShouldBroadcast
         $this->reader_id = $readerId;
     }
 
+    /**
+     * Get the channels the event should broadcast on.
+     */
     public function broadcastOn()
     {
+        /**
+         * ENVIRONMENT PREFIX:
+         * We apply the same prefix logic to match the authorized channels 
+         * and the mobile app listeners for read receipts.
+         */
+        $prefix = config('app.env') === 'production' ? 'prod_' : 'dev_';
+
         $ids = [$this->sender_id, $this->reader_id];
         sort($ids);
-        return [new PrivateChannel('chat.' . implode('.', $ids))];
+
+        // Dynamic channel name with prefix (dev_chat.x.y or prod_chat.x.y)
+        return [new PrivateChannel($prefix . 'chat.' . implode('.', $ids))];
     }
 
+    /**
+     * The event name in Pusher/Echo.
+     */
     public function broadcastAs()
     {
         return 'MessageRead';
     }
 
+    /**
+     * Data sent to the broadcast channel.
+     */
     public function broadcastWith()
     {
         return [

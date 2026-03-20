@@ -9,10 +9,21 @@ const ChatWindow = ({ currentUserId, receiver }) => {
     const typingTimeoutRef = useRef(null);
     const messagesEndRef = useRef(null);
 
+    /**
+     * Get the formatted channel name with the environment prefix.
+     */
     const getChannelName = (id1, id2) => {
         const ids = [Number(id1), Number(id2)];
         ids.sort((a, b) => a - b);
-        return `chat.${ids.join('.')}`;
+        
+        /**
+         * Get the prefix from the window.Laravel object injected in Blade.
+         * Defaults to 'dev_' if env is not defined or is 'local'.
+         */
+        const appEnv = window.Laravel && window.Laravel.env ? window.Laravel.env : 'local';
+        const prefix = appEnv === 'production' ? 'prod_' : 'dev_';
+        
+        return `${prefix}chat.${ids.join('.')}`;
     };
 
     useEffect(() => {
@@ -43,6 +54,9 @@ const ChatWindow = ({ currentUserId, receiver }) => {
 
         const channelName = getChannelName(currentUserId, receiver.id);
 
+        /**
+         * Line 46: Subscribing to the private channel using the prefixed name.
+         */
         window.Echo.private(channelName)
             .listen('.MessageSent', async (e) => {
                 if (Number(e.message.sender_id) === Number(receiver.id)) {
