@@ -100,7 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
      * This manually handles the Echo/Pusher authorization via POST.
      * Bypasses internal Laravel route conflicts and solves the 405 error on mobile.
      */
-    Route::post('/broadcasting/auth', function (Request $request) {
+    /*Route::post('/broadcasting/auth', function (Request $request) {
         return Broadcast::auth($request);
-    });
+    });*/
 });

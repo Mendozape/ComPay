@@ -21,7 +21,11 @@ class BroadcastServiceProvider extends ServiceProvider
          * - 'auth:sanctum': Allows the Mobile App to authorize via API Tokens.
          * This prevents the PC version from breaking while enabling the App.
          */
-        Broadcast::routes(['middleware' => ['auth:sanctum']]);
+        //Broadcast::routes(['middleware' => ['auth:sanctum']]);
+        Broadcast::routes([
+            'prefix' => 'api',
+            'middleware' => ['api', 'auth:sanctum']
+        ]);
 
         /**
          * LOAD CHANNEL DEFINITIONS

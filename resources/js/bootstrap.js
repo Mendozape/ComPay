@@ -40,7 +40,9 @@ import axios from 'axios';
 window.axios = axios;
 
 // Base API configuration
-window.axios.defaults.baseURL = 'http://192.168.1.16:8000';
+//window.axios.defaults.baseURL = 'http://192.168.1.16:8000';
+//window.axios.defaults.baseURL = 'https://huerta.mendodevelopments.com';
+window.axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 window.axios.defaults.withCredentials = true;
 
