@@ -1,363 +1,301 @@
 import React, { useEffect, useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
-/**
- * PaymentForm Component
- * Handles the registration of association payments and waivers (condonaciones)
- * for a specific property address.
- */
-const PaymentForm = () => {
-    // --- STATE VARIABLES ---
-    const { id: addressId } = useParams();
-    const [addressDetails, setAddressDetails] = useState(null); 
-    const [amount, setAmount] = useState('');
-    const [description, setDescription] = useState('');
-    const [paymentDate, setPaymentDate] = useState('');
-    const [feeId, setFeeId] = useState('');
-    const [selectedMonths, setSelectedMonths] = useState([]);
-    const [waivedMonths, setWaivedMonths] = useState([]);
-    const [paidMonths, setPaidMonths] = useState([]); 
-    const [year, setYear] = useState('');
-    const [fees, setFees] = useState([]);
-    const [formValidated, setFormValidated] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-    const [streetName, setStreetName] = useState('Cargando...'); 
-    const [isSaving, setIsSaving] = useState(false);
+import { API_BASE } from '../../../src/api/axios';
+import { ThemedText } from '@/components/themed-text';
 
-    const navigate = useNavigate();
+export default function CreatePaymentScreen() {
+  const { addressId } = useLocalSearchParams();
+  const router = useRouter();
 
-    const axiosOptions = {
-        withCredentials: true,
-        headers: { Accept: 'application/json' },
-    };
+  const [fees, setFees] = useState<any[]>([]);
+  const [feeId, setFeeId] = useState('');
+  const [year, setYear] = useState('');
+  const [paidMonths, setPaidMonths] = useState<any[]>([]);
+  const [selectedMonths, setSelectedMonths] = useState<number[]>([]);
+  const [waivedMonths, setWaivedMonths] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-    /**
-     * Get current local date in YYYY-MM-DD format
-     */
-    const getLocalDate = () => {
-        const now = new Date();
-        const offset = now.getTimezoneOffset();
-        const localDate = new Date(now.getTime() - offset * 60000);
-        return localDate.toISOString().split('T')[0];
-    };
+  const currentYear = new Date().getFullYear();
 
-    /**
-     * Fetch address and related street details on mount
-     */
-    useEffect(() => {
-        const fetchAddressDetails = async () => {
-            try {
-                const addressResponse = await axios.get(`/api/addresses/${addressId}`, axiosOptions);
-                const details = addressResponse.data.data;
-                setAddressDetails(details);
-                
-                if (details && details.street_id) {
-                    const streetResponse = await axios.get(`/api/streets/${details.street_id}`, axiosOptions);
-                    setStreetName(streetResponse.data.name || 'Calle Desconocida');
-                }
-            } catch (error) {
-                console.error('Error fetching address details:', error);
-                toastr.error('Fallo al cargar la información del predio.', 'Error');
-            }
-        };
-        fetchAddressDetails();
-    }, [addressId]);
+  const months = [
+    { value: 1, label: 'Ene' }, { value: 2, label: 'Feb' }, { value: 3, label: 'Mar' },
+    { value: 4, label: 'Abr' }, { value: 5, label: 'May' }, { value: 6, label: 'Jun' },
+    { value: 7, label: 'Jul' }, { value: 8, label: 'Ago' }, { value: 9, label: 'Sep' },
+    { value: 10, label: 'Oct' }, { value: 11, label: 'Nov' }, { value: 12, label: 'Dic' },
+  ];
 
-    /**
-     * Fetch active fees catalog
-     */
-    useEffect(() => {
-        const fetchFees = async () => {
-            try {
-                const response = await axios.get('/api/fees', axiosOptions);
-                const activeFees = (response.data.data || []).filter(fee => !fee.deleted_at);
-                setFees(activeFees);
-            } catch (error) {
-                console.error('Error fetching fees:', error);
-            }
-        };
-        fetchFees();
-        setPaymentDate(getLocalDate());
-    }, []);
+  useEffect(() => {
+    fetchFees();
+  }, []);
 
-    /**
-     * Fetch months status (paid/waived) for selected year and fee type
-     */
-    useEffect(() => {
-        const fetchPaidMonths = async () => {
-            if (!year || !feeId) return;
-            try {
-                const response = await axios.get(
-                    `/api/address_payments/paid-months/${addressId}/${year}?fee_id=${feeId}`,
-                    axiosOptions
-                );
-                setPaidMonths(response.data.months || []);
-            } catch (error) {
-                console.error('Error fetching paid months:', error);
-                setPaidMonths([]);
-            }
-        };
-        fetchPaidMonths();
-        setSelectedMonths([]);
-        setWaivedMonths([]);
-    }, [year, addressId, feeId]);
+  useEffect(() => {
+    if (feeId && year) {
+      fetchPaidMonths();
+    }
+  }, [feeId, year, addressId]);
 
-    const isMonthRegistered = (monthNum) => paidMonths.some(item => item.month === monthNum);
-    const getMonthStatus = (monthNum) => paidMonths.find(item => item.month === monthNum);
+  const fetchFees = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      const t = new Date().getTime();
 
-    /**
-     * Logic to determine correct amount based on Property Type and Status
-     */
-    const handleFeeChange = (e) => {
-        const selectedFee = fees.find(fee => fee.id === parseInt(e.target.value));
-        setFeeId(e.target.value);
-        setPaidMonths([]);
-        setSelectedMonths([]);
-        setWaivedMonths([]);
-        setYear('');
-        
-        if (selectedFee && addressDetails) {
-            let finalAmount = 0;
-            const propertyType = addressDetails.type.toLowerCase();
-            const propertyStatus = addressDetails.status; 
+      const res = await axios.get(`${API_BASE}/fees?t=${t}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-            if (propertyType === 'terreno') {
-                finalAmount = selectedFee.amount_land;
-            } else {
-                finalAmount = propertyStatus === 'Habitada' 
-                    ? selectedFee.amount_occupied 
-                    : selectedFee.amount_empty;
-            }
-            setAmount(finalAmount);
-            setDescription(selectedFee.description);
-        } else {
-            setAmount('');
-            setDescription('');
-        }
-    };
+      setFees(res.data.data);
+    } catch (e) {
+      Alert.alert('Error', 'No se pudieron cargar cuotas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    /**
-     * Manage Radio button changes for Pay/Waive actions
-     */
-    const handleActionChange = (monthValue, action) => {
-        const monthNum = Number(monthValue);
-        setSelectedMonths(prevSelected => {
-            let newSelected = prevSelected.filter(m => m !== monthNum);
-            let newWaived = waivedMonths.filter(m => m !== monthNum);
+  const fetchPaidMonths = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      const t = new Date().getTime();
 
-            if (action === 'pay') {
-                newSelected.push(monthNum);
-                setWaivedMonths(newWaived);
-            } else if (action === 'waive') {
-                newSelected.push(monthNum);
-                newWaived.push(monthNum);
-                setWaivedMonths(newWaived);
-            }
-            return newSelected;
-        });
-    };
-    
-    /**
-     * Batch select all unpaid months
-     */
-    const handleSelectAllMonths = (e) => {
-        const isChecked = e.target.checked;
-        const unpaidMonthsNums = months.map(m => m.value).filter(m => !isMonthRegistered(m));
-        if (isChecked) {
-            setSelectedMonths(unpaidMonthsNums);
-            setWaivedMonths([]);
-        } else {
-            setSelectedMonths([]);
-            setWaivedMonths([]);
-        }
-    };
+      const res = await axios.get(
+        `${API_BASE}/address_payments/paid-months/${addressId}/${year}?fee_id=${feeId}&t=${t}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    /**
-     * Final submission to API
-     */
-    const handleConfirmSubmit = async () => {
-        const unpaidSelectedMonths = selectedMonths.filter(m => !isMonthRegistered(Number(m)));
-        const monthsToWaive = unpaidSelectedMonths.filter(m => waivedMonths.includes(m));
+      setPaidMonths(res.data.months || []);
 
-        if (unpaidSelectedMonths.length === 0) {
-            toastr.warning('Por favor, seleccione al menos un mes.', 'Atención');
-            setShowModal(false);
-            return;
-        }
+      // 🔥 LIMPIAR SELECCIÓN CUANDO REFRESCA
+      setSelectedMonths([]);
+      setWaivedMonths([]);
 
-        setIsSaving(true);
-        try {
-            await axios.post('/api/address_payments', {
-                address_id: addressId, 
-                fee_id: feeId,
-                payment_date: paymentDate,
-                year,
-                months: unpaidSelectedMonths,
-                waived_months: monthsToWaive,
-            }, axiosOptions);
+    } catch (e) {
+      setPaidMonths([]);
+    }
+  };
 
-            toastr.success('Movimientos registrados exitosamente.', 'Éxito');
-            navigate('/addresses', { replace: true });
-        } catch (error) {
-            const msg = error.response?.data?.message || 'Error al procesar el pago.';
-            toastr.error(msg, 'Fallo');
-            setShowModal(false); 
-        } finally {
-            setIsSaving(false);
-        }
-    };
+  const isMonthRegistered = (m: number) =>
+    paidMonths.some((x) => x.month === m);
 
-    const months = [
-        { value: 1, label: 'Ene' }, { value: 2, label: 'Feb' }, { value: 3, label: 'Mar' }, 
-        { value: 4, label: 'Abr' }, { value: 5, label: 'May' }, { value: 6, label: 'Jun' },
-        { value: 7, label: 'Jul' }, { value: 8, label: 'Ago' }, { value: 9, label: 'Sep' }, 
-        { value: 10, label: 'Oct' }, { value: 11, label: 'Nov' }, { value: 12, label: 'Dic' },
-    ];
+  const getMonthStatus = (m: number) =>
+    paidMonths.find((x) => x.month === m);
 
-    const currentYear = new Date().getFullYear();
-    const years = [
-        { value: '', label: 'Seleccionar Año' },
-        { value: currentYear - 1, label: currentYear - 1 },
-        { value: currentYear, label: currentYear },
-        { value: currentYear + 1, label: currentYear + 1 }
-    ];
-    
-    const getFormattedHeader = () => {
-        if (!addressDetails) return 'Cargando...';
-        const { street_number, type, status } = addressDetails;
-        const typeLabel = type === 'CASA' ? `CASA (${status})` : type;
-        return `${streetName} #${street_number} - ${typeLabel}`;
-    };
-    
-    const allUnpaidSelected = months.filter(m => !isMonthRegistered(m.value)).length === selectedMonths.length && selectedMonths.length > 0;
+  const handleActionChange = (month: number, action: 'pay' | 'waive') => {
+    if (isMonthRegistered(month)) return;
 
-    return (
-        <div className="container mt-4">
-            <div className="card shadow-sm border-0">
-                <div className="card-header bg-success text-white p-3">
-                    <h2 className="mb-0 h4"><i className="fas fa-cash-register me-2"></i>Registrar Pago: {getFormattedHeader()}</h2>
-                </div>
-                <div className="card-body p-4">
-                    <form onSubmit={(e) => { e.preventDefault(); setFormValidated(true); if (!feeId || !year || !paymentDate) toastr.warning('Complete los campos obligatorios'); else setShowModal(true); }} noValidate className={formValidated ? 'was-validated' : ''}>
-                        
-                        <div className="row">
-                            <div className="col-md-8 mb-3">
-                                <label className="form-label fw-bold">Cuota a Cobrar <span className="text-danger">*</span></label>
-                                <select value={feeId} onChange={handleFeeChange} className="form-select border-primary" required>
-                                    <option value="">Seleccione una cuota...</option>
-                                    {fees.map(fee => <option key={fee.id} value={fee.id}>{fee.name}</option>)}
-                                </select>
-                            </div>
+    let newSelected = selectedMonths.filter(m => m !== month);
+    let newWaived = waivedMonths.filter(m => m !== month);
 
-                            <div className="col-md-4 mb-3">
-                                <label className="form-label fw-bold">Año <span className="text-danger">*</span></label>
-                                <select value={year} onChange={(e) => setYear(e.target.value)} className="form-select border-primary" required disabled={!feeId}>
-                                    {years.map(y => <option key={y.value} value={y.value}>{y.label}</option>)}
-                                </select>
-                            </div>
-                        </div>
-                        
-                        {feeId && (
-                            <div className="alert alert-info py-2 shadow-sm mb-4 text-center">
-                                <strong>Monto Unitario:</strong> <span className="fs-5 text-dark">${amount}</span>
-                                <span className="mx-3">|</span>
-                                <strong>Descripción:</strong> <small>{description || 'Sin descripción'}</small>
-                            </div>
-                        )}
+    newSelected.push(month);
 
-                        {feeId && year && (
-                            <div className="mb-4">
-                                <div className="d-flex justify-content-between align-items-center mb-2">
-                                    <label className="fw-bold"><i className="fas fa-calendar-check me-1 text-success"></i>Seleccione Meses:</label>
-                                    <div className="form-check form-switch">
-                                        <input type="checkbox" className="form-check-input" id="selectAllMonths" checked={allUnpaidSelected} onChange={handleSelectAllMonths} />
-                                        <label className="form-check-label fw-bold small" htmlFor="selectAllMonths">Seleccionar Todos (Pagar)</label>
-                                    </div>
-                                </div>
-                                <div className="table-responsive rounded shadow-sm border">
-                                    <table className="table table-sm table-hover text-center align-middle mb-0">
-                                        <thead className="table-light">
-                                            <tr>
-                                                <th className="bg-light border-end" style={{width: '100px'}}>Acción</th>
-                                                {months.map(m => <th key={m.value} className="small">{m.label}</th>)}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td className="fw-bold bg-light border-end small">P=Pago<br/>C=Condo.</td>
-                                                {months.map(m => {
-                                                    const status = getMonthStatus(m.value);
-                                                    const isPay = selectedMonths.includes(m.value) && !waivedMonths.includes(m.value);
-                                                    const isWaive = waivedMonths.includes(m.value);
-                                                    return (
-                                                        <td key={m.value} className={status ? 'bg-light' : ''}>
-                                                            {status ? (
-                                                                <span className={`badge ${status.status === 'Condonado' ? 'bg-info' : 'bg-success'} w-100`}>{status.status[0]}</span>
-                                                            ) : (
-                                                                <div className="d-flex flex-column gap-1 py-1">
-                                                                    <label className="m-0" style={{cursor: 'pointer'}} title="Pay">
-                                                                        <input type="radio" name={`m-${m.value}`} checked={isPay} onChange={() => handleActionChange(m.value, 'pay')} /> 
-                                                                        <span className="ms-1 small">P</span>
-                                                                    </label>
-                                                                    <label className="m-0 text-info" style={{cursor: 'pointer'}} title="Waive">
-                                                                        <input type="radio" name={`m-${m.value}`} checked={isWaive} onChange={() => handleActionChange(m.value, 'waive')} /> 
-                                                                        <span className="ms-1 small">C</span>
-                                                                    </label>
-                                                                </div>
-                                                            )}
-                                                        </td>
-                                                    );
-                                                })}
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
+    if (action === 'waive') {
+      newWaived.push(month);
+    }
 
-                        <div className="row align-items-end">
-                            <div className="col-md-4 mb-3">
-                                <label className="form-label fw-bold">Fecha del Pago <span className="text-danger">*</span></label>
-                                <input value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} type='date' className='form-control' required />
-                            </div>
-                            <div className="col-md-8 mb-3 text-end">
-                                <button type="submit" className="btn btn-success px-4 py-2 shadow-sm me-2">
-                                    <i className="fas fa-save me-2"></i>Registrar Movimientos
-                                </button>
-                                <button type="button" className="btn btn-secondary px-4 py-2" onClick={() => navigate('/addresses')}>
-                                    Cancelar
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    setSelectedMonths(newSelected);
+    setWaivedMonths(newWaived);
+  };
 
-            {/* CONFIRMATION MODAL */}
-            {showModal && (
-                <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.6)'}} tabIndex="-1">
-                    <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content border-0 shadow-lg">
-                            <div className="modal-header bg-success text-white">
-                                <h5 className="modal-title"><i className="fas fa-check-circle me-2"></i>Confirmar Registro</h5>
-                                <button type="button" className="btn-close btn-close-white" onClick={() => setShowModal(false)}></button>
-                            </div>
-                            <div className="modal-body p-4 text-center">
-                                <p className="fs-5">¿Desea registrar los pagos y/o condonaciones seleccionados?</p>
-                            </div>
-                            <div className="modal-footer bg-light justify-content-center">
-                                <button className="btn btn-secondary px-4" onClick={() => setShowModal(false)}>Cancelar</button>
-                                <button className="btn btn-success px-4" onClick={handleConfirmSubmit} disabled={isSaving}>
-                                    {isSaving ? 'Guardando...' : 'Confirmar y Guardar'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-};
+  const handleSave = async () => {
+    if (selectedMonths.length === 0) {
+      Toast.show({ type: 'error', text1: 'Selecciona meses' });
+      return;
+    }
 
-export default PaymentForm;
+    setIsSaving(true);
+
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+
+      await axios.post(`${API_BASE}/address_payments`, {
+        address_id: addressId,
+        fee_id: feeId,
+        year,
+        months: selectedMonths,
+        waived_months: waivedMonths
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: '¡Éxito!',
+        text2: 'Pagos registrados'
+      });
+
+      // 🔥 REFRESH REAL
+      await fetchPaidMonths();
+
+    } catch (e: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: e.response?.data?.message || 'Error al guardar'
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <ActivityIndicator style={{ flex: 1 }} size="large" />;
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+
+      <View style={styles.card}>
+
+        <ThemedText style={styles.label}>Cuota</ThemedText>
+        <Picker selectedValue={feeId} onValueChange={setFeeId}>
+          <Picker.Item label="Seleccione..." value="" />
+          {fees.map(f => (
+            <Picker.Item key={f.id} label={f.name} value={f.id} />
+          ))}
+        </Picker>
+
+        <ThemedText style={styles.label}>Año</ThemedText>
+        <Picker selectedValue={year} onValueChange={setYear}>
+          <Picker.Item label="Seleccionar" value="" />
+          <Picker.Item label={`${currentYear}`} value={`${currentYear}`} />
+        </Picker>
+
+        {/* 🔥 MESES */}
+        {feeId && year && (
+          <View style={styles.monthsContainer}>
+            {months.map(m => {
+              const status = getMonthStatus(m.value);
+              const isPay = selectedMonths.includes(m.value) && !waivedMonths.includes(m.value);
+              const isWaive = waivedMonths.includes(m.value);
+
+              return (
+                <View key={m.value} style={styles.monthBox}>
+
+                  <ThemedText style={styles.monthLabel}>{m.label}</ThemedText>
+
+                  {status ? (
+                    <View style={[
+                      styles.badge,
+                      status.status === 'Condonado' ? styles.condo : styles.paid
+                    ]}>
+                      <ThemedText style={styles.badgeText}>
+                        {status.status[0]}
+                      </ThemedText>
+                    </View>
+                  ) : (
+                    <View style={styles.actions}>
+                      <TouchableOpacity
+                        style={[styles.btn, isPay && styles.btnActive]}
+                        onPress={() => handleActionChange(m.value, 'pay')}
+                      >
+                        <ThemedText style={styles.btnText}>P</ThemedText>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        style={[styles.btn, isWaive && styles.btnCond]}
+                        onPress={() => handleActionChange(m.value, 'waive')}
+                      >
+                        <ThemedText style={styles.btnText}>C</ThemedText>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
+                </View>
+              );
+            })}
+          </View>
+        )}
+
+        <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={isSaving}>
+          <ThemedText style={styles.btnText}>
+            {isSaving ? 'Guardando...' : 'Guardar'}
+          </ThemedText>
+        </TouchableOpacity>
+
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f4f6f9' },
+  card: { margin: 20, backgroundColor: 'white', padding: 20, borderRadius: 12 },
+  label: { fontWeight: 'bold', marginTop: 10 },
+
+  monthsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 15
+  },
+
+  monthBox: {
+    width: '25%',
+    alignItems: 'center',
+    marginBottom: 15
+  },
+
+  monthLabel: { marginBottom: 5 },
+
+  actions: {
+    flexDirection: 'row',
+    gap: 5
+  },
+
+  btn: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 6,
+    borderRadius: 6
+  },
+
+  btnActive: {
+    backgroundColor: '#28a745'
+  },
+
+  btnCond: {
+    backgroundColor: '#17a2b8'
+  },
+
+  btnText: {
+    color: 'white',
+    fontWeight: 'bold'
+  },
+
+  badge: {
+    padding: 6,
+    borderRadius: 6
+  },
+
+  paid: {
+    backgroundColor: '#28a745'
+  },
+
+  condo: {
+    backgroundColor: '#17a2b8'
+  },
+
+  badgeText: {
+    color: 'white',
+    fontWeight: 'bold'
+  },
+
+  saveBtn: {
+    marginTop: 20,
+    backgroundColor: '#28a745',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center'
+  }
+});

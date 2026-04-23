@@ -21,29 +21,34 @@ class UserController extends Controller
     public function index(Request $request)
     {
         try {
+            // Load users including soft deleted ones with roles and addresses relationships
             $query = User::withTrashed()->with(['roles', 'addresses']);
 
+            // Check if a search query is provided
             if ($request->filled('search')) {
                 $search = trim($request->query('search'));
 
                 if (mb_strlen($search) >= 1) {
                     $query->where(function ($q) use ($search) {
                         /**
-                         * We use COLLATE utf8mb4_bin to force a binary comparison.
-                         * This ensures that characters like 'ñ' are not confused with 'n'.
-                         * It also makes the search case-sensitive for maximum precision.
+                         * We use COLLATE utf8mb4_general_ci to allow Case-Insensitive search.
+                         * 'ci' stands for Case Insensitive, which allows matching 'Erasto' 
+                         * even if the user searches for 'erasto' or 'ERASTO'.
                          */
-                        $q->where(DB::raw("name COLLATE utf8mb4_bin"), 'LIKE', "%{$search}%")
-                            ->orWhere(DB::raw("email COLLATE utf8mb4_bin"), 'LIKE', "%{$search}%");
+                        $q->where(DB::raw("name COLLATE utf8mb4_general_ci"), 'LIKE', "%{$search}%")
+                            ->orWhere(DB::raw("email COLLATE utf8mb4_general_ci"), 'LIKE', "%{$search}%");
                     });
                 }
             } elseif ($request->has('search')) {
+                // Return empty result if search key exists but is empty
                 return response()->json(['data' => [], 'total' => 0]);
             }
 
+            // Set pagination: 50 items for searches, 10 for default view
             $perPage = $request->filled('search') ? 50 : 10;
             $usuarios = $query->paginate($perPage);
 
+            // Transform the collection to include specific calculated fields and permissions
             $usuarios->getCollection()->transform(function ($user) {
                 return [
                     'id' => $user->id,
@@ -61,6 +66,7 @@ class UserController extends Controller
 
             return response()->json($usuarios);
         } catch (\Exception $e) {
+            // Log the error and return a 500 response in case of failure
             \Log::error("User Index Error: " . $e->getMessage());
             return response()->json(['error' => 'Internal Server Error', 'message' => $e->getMessage()], 500);
         }

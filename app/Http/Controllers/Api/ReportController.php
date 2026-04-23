@@ -14,7 +14,7 @@ class ReportController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:reportes', ['only' => ['debtors', 'expenses']]);
+        $this->middleware('permission:Reportes', ['only' => ['debtors', 'expenses']]);
     }
     
     /**
