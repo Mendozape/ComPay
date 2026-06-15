@@ -12,6 +12,7 @@ use App\Http\Controllers\PermisosController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ExpenseController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\PushTokenController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\StreetController;
 use App\Http\Controllers\Api\ExpenseCategoryController;
@@ -84,6 +85,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- EXPENSES MODULE ---
     Route::apiResource('expenses', ExpenseController::class);
     Route::apiResource('expense_categories', ExpenseCategoryController::class);
+
+    // --- PUSH NOTIFICATIONS (Firebase FCM) ---
+    Route::post('/push-token', [PushTokenController::class, 'store']);
+    Route::delete('/push-token', [PushTokenController::class, 'destroy']);
 
     // --- CHAT MODULE ---
     Route::prefix('chat')->group(function () {

@@ -38,5 +38,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class, 'user_id');
     }
-    
+
+    public function pushTokens(): HasMany
+    {
+        return $this->hasMany(PushToken::class);
+    }
 }

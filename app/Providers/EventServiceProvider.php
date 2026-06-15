@@ -5,7 +5,9 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Auth\Events\Logout;
+use App\Events\MessageSent;
 use App\Listeners\ClearLastLoginToken;
+use App\Listeners\SendChatPushNotification;
 //use App\Events\EmployeesUpdated;
 //use App\Listeners\SendEmployeesNotification;
 //use App\Listeners\SendNewUserNotification;
@@ -29,6 +31,9 @@ class EventServiceProvider extends ServiceProvider
         ],*/
         Logout::class => [
             ClearLastLoginToken::class,
+        ],
+        MessageSent::class => [
+            SendChatPushNotification::class,
         ],
     ];
 

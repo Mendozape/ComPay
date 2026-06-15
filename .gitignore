@@ -10,6 +10,7 @@
 /vendor
 .env
 .env.backup
+/storage/app/firebase-credentials.json
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json

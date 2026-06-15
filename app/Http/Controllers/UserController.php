@@ -22,7 +22,7 @@ class UserController extends Controller
     {
         try {
             // Load users including soft deleted ones with roles and addresses relationships
-            $query = User::withTrashed()->with(['roles', 'addresses']);
+            $query = User::with(['roles', 'addresses']);
 
             // Check if a search query is provided
             if ($request->filled('search')) {
