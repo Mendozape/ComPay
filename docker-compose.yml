@@ -1,0 +1,95 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: compay-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env.docker
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - compay
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: compay-nginx
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:80"
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - compay
+
+  mysql:
+    image: mysql:8.0
+    container_name: compay-mysql
+    restart: unless-stopped
+    ports:
+      - "${DB_FORWARD_PORT:-3307}:3306"
+    env_file:
+      - .env.docker
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-compay}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-xyz*1234}
+    volumes:
+      - compay-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - compay
+
+  phpmyadmin:
+    image: phpmyadmin:5-apache
+    container_name: compay-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "${PHPMYADMIN_PORT:-8080}:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_PASSWORD:-xyz*1234}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - compay
+
+  node:
+    image: node:20-alpine
+    container_name: compay-node
+    working_dir: /var/www/html
+    profiles:
+      - frontend
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    volumes:
+      - .:/var/www/html
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    networks:
+      - compay
+
+networks:
+  compay:
+    driver: bridge
+
+volumes:
+  compay-mysql-data:
+    driver: local
