@@ -3,7 +3,7 @@ APP_ENV=local
 #APP_ENV=production
 APP_KEY=base64:KPMIWozGztSR48/MgmTGZV4CbXynDgrb1n2J1bHNBSc=
 APP_DEBUG=true
-#APP_DEBUG=True
+#APP_DEBUG=false
 APP_URL=http://192.168.1.16:8000
 #APP_URL=https://huerta.mendodevelopments.com
 
